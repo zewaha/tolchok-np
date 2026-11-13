@@ -1,184 +1,792 @@
-89
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tolchok NP — отзывы Новополоцка</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1020">
+<title>Tolchok NP — BETA</title>
 
 <style>
+:root {
+ --bg:#0b1020;
+ --panel:#17243a;
+ --panel2:#111e32;
+ --green:#55edb0;
+ --text:#f4f6ff;
+ --muted:#aab9cb;
+ --border:#30425b;
+ --yellow:#ffd45c;
+}
+
 * {
-  box-sizing: border-box;
+ box-sizing:border-box;
+}
+
+html {
+ scroll-behavior:smooth;
 }
 
 body {
-  margin: 0;
-  background: #0b1020;
-  color: #f4f6ff;
-  font-family: Arial, sans-serif;
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
+ font-family:Arial,sans-serif;
+ overflow-x:hidden;
 }
 
-header {
-  padding: 35px 15px;
-  text-align: center;
-  background: linear-gradient(135deg, #172b45, #075b48);
-  border-bottom: 1px solid #31435a;
-}
-
-.logo {
-  font-size: 34px;
-  font-weight: 900;
-  color: #55edb0;
-}
-
-header p {
-  color: #c3d3e5;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-}
-
-h2 {
-  margin-top: 30px;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 20px 0;
-}
-
-.stat {
-  background: #172238;
-  border: 1px solid #2c3d55;
-  border-radius: 14px;
-  padding: 17px 8px;
-  text-align: center;
-}
-
-.stat strong {
-  display: block;
-  font-size: 25px;
-  color: #55edb0;
-}
-
-.stat span {
-  font-size: 12px;
-  color: #aab9cb;
-}
-
-.panel {
-  background: #172238;
-  border: 1px solid #2c3d55;
-  border-radius: 15px;
-  padding: 18px;
-  margin: 20px 0;
-}
-
-input, textarea, select {
-  width: 100%;
-  padding: 13px;
-  margin: 7px 0;
-  background: #0d1729;
-  color: white;
-  border: 1px solid #344760;
-  border-radius: 9px;
-  font-size: 15px;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 85px;
+button,input,textarea,select {
+ font:inherit;
 }
 
 button {
-  padding: 12px 17px;
-  border: none;
-  border-radius: 9px;
-  background: #55edb0;
-  color: #10251d;
-  font-weight: bold;
-  cursor: pointer;
+ cursor:pointer;
 }
 
-button:hover {
-  opacity: .85;
+/* HEADER */
+
+header {
+ position:relative;
+ overflow:hidden;
+ text-align:center;
+ padding:38px 15px;
+ background:
+ radial-gradient(circle at 15% 20%,#1d765b 0,transparent 40%),
+ radial-gradient(circle at 90% 10%,#47337a 0,transparent 35%),
+ linear-gradient(135deg,#142c42,#102d2c);
+ border-bottom:1px solid #315a50;
 }
 
-.review-button {
-  width: 100%;
-  margin-top: 12px;
+.logo {
+ font-size:clamp(30px,8vw,44px);
+ font-weight:1000;
+ color:var(--green);
+ text-shadow:0 0 25px #55edb055;
+ animation:fadeIn .7s ease;
 }
+
+header p {
+ color:#c5d7e6;
+ margin:10px 0;
+}
+
+.beta {
+ display:inline-flex;
+ align-items:center;
+ gap:7px;
+ padding:8px 16px;
+ margin-top:12px;
+ border:1px solid #55edb077;
+ border-radius:30px;
+ background:#55edb018;
+ color:var(--green);
+ font-size:12px;
+ font-weight:bold;
+ letter-spacing:1px;
+ animation:betaPulse 2s infinite;
+}
+
+.beta-dot {
+ width:7px;
+ height:7px;
+ border-radius:50%;
+ background:var(--green);
+ box-shadow:0 0 10px var(--green);
+}
+
+.floating {
+ position:absolute;
+ font-size:25px;
+ opacity:.35;
+ pointer-events:none;
+ animation:floatUp 4s ease-in-out infinite;
+}
+
+.f1 {top:15px;left:8%}
+.f2 {top:65px;right:9%;animation-delay:1s}
+.f3 {bottom:15px;left:20%;animation-delay:2s}
+.f4 {bottom:18px;right:20%;animation-delay:.5s}
+
+@keyframes floatUp {
+ 0%,100% {transform:translateY(0)}
+ 50% {transform:translateY(-12px)}
+}
+
+@keyframes betaPulse {
+ 50% {box-shadow:0 0 17px #55edb044}
+}
+
+@keyframes fadeIn {
+ from {opacity:0;transform:translateY(-12px)}
+ to {opacity:1;transform:translateY(0)}
+}
+
+/* MAIN */
+
+.container {
+ max-width:950px;
+ margin:auto;
+ padding:16px;
+}
+
+h2 {
+ font-size:21px;
+ margin:28px 0 15px;
+}
+
+.muted {
+ color:var(--muted);
+ font-size:13px;
+}
+
+/* STATS */
+
+.stats {
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:9px;
+ margin:20px 0;
+}
+
+.stat {
+ background:var(--panel);
+ border:1px solid var(--border);
+ border-radius:16px;
+ padding:17px 5px;
+ text-align:center;
+ transition:.25s;
+ animation:fadeIn .5s ease;
+}
+
+.stat:hover {
+ border-color:var(--green);
+ transform:translateY(-4px);
+}
+
+.stat strong {
+ display:block;
+ font-size:24px;
+ color:var(--green);
+ margin-bottom:5px;
+}
+
+.stat span {
+ font-size:11px;
+ color:var(--muted);
+}
+
+/* INPUTS */
+
+input,textarea,select {
+ width:100%;
+ padding:15px;
+ margin:7px 0;
+ color:white;
+ background:var(--panel2);
+ border:1px solid var(--border);
+ border-radius:13px;
+ outline:none;
+ transition:.25s;
+}
+
+input:focus,textarea:focus,select:focus {
+ border-color:var(--green);
+ box-shadow:0 0 0 4px #55edb019;
+}
+
+select option {
+ background:#17243a;
+}
+
+textarea {
+ min-height:100px;
+ resize:vertical;
+}
+
+/* SEARCH */
+
+.search-wrap {
+ position:relative;
+ margin-bottom:10px;
+}
+
+.search-wrap input {
+ height:62px;
+ padding:15px 52px;
+ margin:0;
+ border-radius:17px;
+ font-size:16px;
+}
+
+.search-icon {
+ position:absolute;
+ left:17px;
+ top:50%;
+ transform:translateY(-50%);
+ font-size:23px;
+ pointer-events:none;
+ animation:iconPulse 2s infinite;
+}
+
+@keyframes iconPulse {
+ 0%,100% {scale:1}
+ 50% {scale:1.12}
+}
+
+.clear-search {
+ display:none;
+ position:absolute;
+ right:10px;
+ top:50%;
+ transform:translateY(-50%);
+ width:35px;
+ height:35px;
+ border:0;
+ border-radius:50%;
+ background:#263750;
+ color:white;
+ font-size:20px;
+}
+
+.clear-search.show {
+ display:block;
+}
+
+.search-help {
+ padding:9px 3px;
+ color:var(--muted);
+ font-size:12px;
+ line-height:1.6;
+}
+
+/* SUGGESTIONS */
+
+.suggestions {
+ position:absolute;
+ z-index:30;
+ top:calc(100% + 7px);
+ left:0;
+ right:0;
+ padding:10px;
+ background:#192840;
+ border:1px solid #435b75;
+ border-radius:15px;
+ box-shadow:0 15px 40px #0008;
+ animation:drop .2s ease;
+}
+
+.suggestions.hidden {
+ display:none;
+}
+
+.suggestion-title {
+ color:var(--green);
+ font-size:12px;
+ font-weight:bold;
+ padding:8px;
+}
+
+.suggestion {
+ width:100%;
+ padding:12px;
+ display:flex;
+ align-items:center;
+ gap:12px;
+ color:white;
+ background:transparent;
+ border:0;
+ border-radius:10px;
+ text-align:left;
+ transition:.2s;
+}
+
+.suggestion:hover {
+ background:#263c53;
+}
+
+.suggestion-icon {
+ font-size:23px;
+ flex-shrink:0;
+}
+
+.suggestion-info {
+ min-width:0;
+ flex:1;
+}
+
+.suggestion-info strong {
+ display:block;
+ font-size:14px;
+}
+
+.suggestion-info small {
+ display:block;
+ margin-top:4px;
+ color:var(--muted);
+ font-size:11px;
+}
+
+.suggestion-empty {
+ padding:14px;
+ color:var(--muted);
+ font-size:13px;
+ line-height:1.6;
+}
+
+@keyframes drop {
+ from {opacity:0;transform:translateY(-8px)}
+ to {opacity:1;transform:translateY(0)}
+}
+
+/* CATEGORY FILTER ICONS */
+
+.category-heading {
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:10px;
+ margin-top:23px;
+}
+
+.category-heading h2 {
+ margin:0 0 15px;
+}
+
+.filter-status {
+ color:var(--green);
+ font-size:11px;
+ margin-bottom:15px;
+}
+
+.filter-grid {
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:10px;
+}
+
+.filter-card {
+ min-width:0;
+ position:relative;
+ overflow:hidden;
+ padding:15px 5px;
+ border:1px solid var(--border);
+ border-radius:15px;
+ background:var(--panel2);
+ color:white;
+ text-align:center;
+ transition:background .25s,border-color .25s,transform .25s;
+}
+
+.filter-card:active {
+ transform:scale(.95);
+}
+
+.filter-card:hover {
+ border-color:#55edb088;
+ transform:translateY(-3px);
+}
+
+.filter-card.active {
+ background:#164438;
+ border:2px solid var(--green);
+ box-shadow:0 0 17px #55edb033;
+ animation:cardPop .25s ease;
+}
+
+@keyframes cardPop {
+ 0% {transform:scale(.94)}
+ 100% {transform:scale(1)}
+}
+
+.filter-icon {
+ display:block;
+ font-size:29px;
+ margin-bottom:9px;
+ transform:none!important;
+ animation:none!important;
+}
+
+.filter-name {
+ display:block;
+ font-size:12px;
+ font-weight:bold;
+ line-height:1.35;
+}
+
+.filter-count {
+ display:inline-block;
+ margin-top:8px;
+ padding:4px 9px;
+ border-radius:20px;
+ background:#293a50;
+ color:#c6d5e5;
+ font-size:10px;
+}
+
+.filter-card.active .filter-count {
+ background:#55edb027;
+ color:var(--green);
+}
+
+/* CITY AND SORT */
+
+.filters {
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:15px;
+}
+
+.filters select {
+ margin:0;
+ min-width:0;
+}
+
+/* QUICK SEARCH */
+
+.quick-chips {
+ display:flex;
+ flex-wrap:wrap;
+ gap:8px;
+ margin:13px 0;
+}
+
+.chip {
+ border:1px solid var(--border);
+ background:#1b2c43;
+ color:white;
+ border-radius:25px;
+ padding:9px 13px;
+ font-size:12px;
+ transition:.2s;
+}
+
+.chip:active {
+ transform:scale(.95);
+ border-color:var(--green);
+}
+
+/* PANELS */
+
+.panel {
+ padding:19px;
+ margin:23px 0;
+ background:var(--panel);
+ border:1px solid var(--border);
+ border-radius:18px;
+ animation:fadeIn .5s ease;
+}
+
+.city-grid {
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+
+.city-button {
+ padding:16px 8px;
+ background:var(--panel2);
+ color:white;
+ border:1px solid var(--border);
+ border-radius:15px;
+ transition:.25s;
+}
+
+.city-button .emoji {
+ display:block;
+ font-size:30px;
+ margin-bottom:8px;
+ transform:none!important;
+}
+
+.city-button.active {
+ background:#164438;
+ border:2px solid var(--green);
+ box-shadow:0 0 17px #55edb033;
+}
+
+.category-grid {
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:11px;
+}
+
+.category-button {
+ padding:15px 11px;
+ text-align:left;
+ color:white;
+ background:var(--panel2);
+ border:1px solid var(--border);
+ border-radius:15px;
+ transition:.25s;
+}
+
+.category-button:active {
+ transform:scale(.97);
+}
+
+.category-button.active {
+ background:#164438;
+ border:2px solid var(--green);
+}
+
+.category-button .emoji {
+ display:block;
+ font-size:29px;
+ margin-bottom:10px;
+ transform:none!important;
+ animation:none!important;
+}
+
+.category-button strong {
+ display:block;
+ font-size:13px;
+}
+
+.category-button small {
+ display:block;
+ color:var(--muted);
+ margin-top:7px;
+ font-size:11px;
+}
+
+/* BUTTONS */
+
+.primary {
+ width:100%;
+ padding:15px;
+ color:#10251d;
+ background:linear-gradient(120deg,#55edb0,#39c9a0);
+ border:0;
+ border-radius:12px;
+ font-weight:bold;
+ transition:.25s;
+}
+
+.primary:hover {
+ box-shadow:0 8px 23px #55edb044;
+ transform:translateY(-2px);
+}
+
+.primary:active {
+ transform:scale(.97);
+}
+
+.secondary {
+ padding:11px 14px;
+ color:white;
+ background:#263750;
+ border:1px solid #405571;
+ border-radius:10px;
+ font-size:13px;
+}
+
+/* PLACES */
 
 .place {
-  background: #172238;
-  border: 1px solid #2c3d55;
-  padding: 19px;
-  margin: 14px 0;
-  border-radius: 15px;
+ position:relative;
+ overflow:hidden;
+ padding:19px;
+ margin:14px 0;
+ background:linear-gradient(145deg,#1a2941,#142137);
+ border:1px solid var(--border);
+ border-radius:18px;
+ animation:placeIn .45s ease both;
+ transition:.25s;
 }
 
-.place h3 {
-  margin: 0 0 10px;
-  font-size: 20px;
+.place:hover {
+ border-color:#55edb077;
+ transform:translateY(-3px);
 }
 
-.address {
-  color: #aab9cb;
-  font-size: 14px;
+.place:before {
+ content:"";
+ position:absolute;
+ top:0;
+ left:0;
+ width:4px;
+ height:100%;
+ background:var(--green);
+ opacity:.6;
 }
 
-.rating {
-  color: #ffd45c;
-  font-size: 18px;
-  font-weight: bold;
+@keyframes placeIn {
+ from {opacity:0;transform:translateY(15px)}
+ to {opacity:1;transform:translateY(0)}
+}
+
+.place-title {
+ font-size:19px;
+ font-weight:bold;
+ margin-bottom:12px;
+ overflow-wrap:anywhere;
+}
+
+.place-meta {
+ color:var(--muted);
+ font-size:13px;
+ line-height:1.8;
+}
+
+.place-rating {
+ color:var(--yellow);
+ font-size:20px;
+ font-weight:bold;
+ margin:14px 0 7px;
+}
+
+.place-actions {
+ display:flex;
+ flex-wrap:wrap;
+ gap:8px;
+ margin-top:15px;
+}
+
+.map-link {
+ text-decoration:none;
+ display:inline-flex;
+ align-items:center;
 }
 
 .review {
-  background: #0e192b;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 10px;
-  overflow-wrap: anywhere;
+ padding:13px;
+ margin-top:11px;
+ background:#0d192b;
+ border:1px solid #273a51;
+ border-radius:12px;
+ overflow-wrap:anywhere;
+ animation:fadeIn .3s ease;
 }
 
-.review small {
-  color: #9aabc0;
+.review-name {
+ color:var(--green);
+ font-weight:bold;
+}
+
+.review-stars {
+ color:var(--yellow);
+ margin:7px 0;
+}
+
+.review-date {
+ font-size:11px;
+ color:var(--muted);
+ margin-top:9px;
+}
+
+/* RATING */
+
+.rating-buttons {
+ display:flex;
+ justify-content:center;
+ gap:7px;
+ margin:12px 0;
+}
+
+.star-button {
+ width:47px;
+ height:47px;
+ font-size:27px;
+ color:#718096;
+ background:#263750;
+ border:1px solid #405571;
+ border-radius:10px;
+ transition:.2s;
+}
+
+.star-button.active {
+ color:var(--yellow);
+ background:#3d351f;
+ border-color:var(--yellow);
+ transform:translateY(-2px);
+}
+
+/* NOTICE */
+
+.notice {
+ padding:14px;
+ background:#142c2b;
+ border:1px solid #28624f;
+ border-radius:13px;
+ color:#a8ebd1;
+ font-size:12px;
+ line-height:1.7;
 }
 
 .empty {
-  text-align: center;
-  color: #aab9cb;
-  padding: 30px 10px;
+ padding:30px 15px;
+ text-align:center;
+ color:var(--muted);
+ background:var(--panel);
+ border:1px dashed #40536e;
+ border-radius:16px;
+ line-height:1.7;
+}
+
+/* TOAST */
+
+.toast {
+ position:fixed;
+ bottom:25px;
+ left:50%;
+ z-index:100;
+ width:max-content;
+ max-width:90%;
+ padding:14px 19px;
+ border:1px solid #55edb077;
+ border-radius:13px;
+ background:#173b32;
+ color:white;
+ box-shadow:0 8px 30px #0008;
+ opacity:0;
+ transform:translate(-50%,20px);
+ pointer-events:none;
+ transition:.3s;
+ font-size:14px;
+}
+
+.toast.show {
+ opacity:1;
+ transform:translate(-50%,0);
 }
 
 .hidden {
-  display: none;
+ display:none!important;
 }
+
+/* FOOTER */
 
 footer {
-  text-align: center;
-  color: #8292a8;
-  padding: 30px;
-  font-size: 13px;
+ text-align:center;
+ padding:35px 15px;
+ color:#8292a8;
+ font-size:13px;
+ border-top:1px solid #24334a;
+ margin-top:35px;
 }
 
-@media(max-width: 500px) {
-  .stats {
-    gap: 6px;
-  }
+footer strong {
+ color:var(--green);
+}
 
-  .stat {
-    padding: 13px 4px;
-  }
+@media(max-width:430px) {
+ .container {padding:12px}
+ .filter-grid {gap:7px}
+ .filter-card {padding:13px 3px}
+ .filter-name {font-size:11px}
+ .filter-icon {font-size:26px}
+ .stats {gap:6px}
+ .stat strong {font-size:21px}
+ .star-button {width:43px;height:45px}
+}
 
-  .stat strong {
-    font-size: 20px;
-  }
+@media(prefers-reduced-motion:reduce) {
+ *,*::before,*::after {
+  animation:none!important;
+  transition:none!important;
+  scroll-behavior:auto!important;
+ }
 }
 </style>
 </head>
@@ -186,509 +794,1136 @@ footer {
 <body>
 
 <header>
-  <div class="logo">🚽 TOLCHOK NP</div>
-  <p>Главный рейтинг туалетов Новополоцка</p>
-  <p>Честные отзывы. Реальные оценки. Твой город.</p>
+ <div class="floating f1">🚽</div>
+ <div class="floating f2">⭐</div>
+ <div class="floating f3">✨</div>
+ <div class="floating f4">🏆</div>
+
+ <div class="logo">🚽 TOLCHOK NP</div>
+ <p>Городской рейтинг туалетов</p>
+ <p>Новополоцк · Полоцк</p>
+
+ <div class="beta">
+  <span class="beta-dot"></span>
+  BETA VERSION 5.0
+ </div>
 </header>
 
 <main class="container">
 
-  <div class="stats">
-    <div class="stat">
-      <strong id="totalPlaces">0</strong>
-      <span>Туалетов</span>
-    </div>
-    <div class="stat">
-      <strong id="totalReviews">0</strong>
-      <span>Отзывов</span>
-    </div>
-    <div class="stat">
-      <strong id="average">—</strong>
-      <span>Средняя оценка</span>
-    </div>
+<!-- STATISTICS -->
+
+<div class="stats">
+ <div class="stat">
+  <strong id="totalPlaces">0</strong>
+  <span>🚽 Мест</span>
+ </div>
+
+ <div class="stat">
+  <strong id="totalReviews">0</strong>
+  <span>💬 Отзывов</span>
+ </div>
+
+ <div class="stat">
+  <strong id="average">—</strong>
+  <span>⭐ Средняя оценка</span>
+ </div>
+</div>
+
+<!-- SEARCH -->
+
+<h2>🔍 Найти место</h2>
+
+<div class="search-wrap">
+ <span class="search-icon">🔎</span>
+
+ <input id="search"
+  type="search"
+  autocomplete="off"
+  placeholder="Название, адрес или улица...">
+
+ <button id="clearSearch"
+  class="clear-search"
+  type="button">×</button>
+
+ <div id="suggestions"
+  class="suggestions hidden"></div>
+</div>
+
+<div class="search-help">
+ 💡 Начни вводить название, улицу или город.
+ Сайт предложит подходящие места из каталога.
+</div>
+
+<div class="quick-chips">
+ <button class="chip" data-city="Новополоцк">🏙️ Новополоцк</button>
+ <button class="chip" data-city="Полоцк">🏛️ Полоцк</button>
+ <button class="chip" data-category="Торговый центр">🏬 ТЦ</button>
+</div>
+
+<!-- NEW CATEGORY FILTER -->
+
+<div class="category-heading">
+ <h2>📂 Категории</h2>
+</div>
+
+<div class="filter-status" id="filterStatus">
+ ✨ Выбери категорию для поиска
+</div>
+
+<div class="filter-grid">
+
+ <button class="filter-card active"
+  data-filter="all"
+  aria-pressed="true">
+
+  <span class="filter-icon">🗂️</span>
+  <span class="filter-name">Все места</span>
+  <span class="filter-count" id="count-all">0</span>
+
+ </button>
+
+ <button class="filter-card"
+  data-filter="Общественный туалет"
+  aria-pressed="false">
+
+  <span class="filter-icon">🚻</span>
+  <span class="filter-name">Общественные</span>
+  <span class="filter-count" id="count-public">0</span>
+
+ </button>
+
+ <button class="filter-card"
+  data-filter="Торговый центр"
+  aria-pressed="false">
+
+  <span class="filter-icon">🏬</span>
+  <span class="filter-name">Торговые центры</span>
+  <span class="filter-count" id="count-mall">0</span>
+
+ </button>
+
+ <button class="filter-card"
+  data-filter="Кафе или заведение"
+  aria-pressed="false">
+
+  <span class="filter-icon">🍔</span>
+  <span class="filter-name">Кафе</span>
+  <span class="filter-count" id="count-cafe">0</span>
+
+ </button>
+
+ <button class="filter-card"
+  data-filter="Другое"
+  aria-pressed="false">
+
+  <span class="filter-icon">📍</span>
+  <span class="filter-name">Другое</span>
+  <span class="filter-count" id="count-other">0</span>
+
+ </button>
+
+</div>
+
+<!-- FILTERS -->
+
+<div class="filters">
+
+ <select id="cityFilter">
+  <option value="all">🌍 Все города</option>
+  <option value="Новополоцк">🏙️ Новополоцк</option>
+  <option value="Полоцк">🏛️ Полоцк</option>
+ </select>
+
+ <select id="sort">
+  <option value="rating">🏆 Лучший рейтинг</option>
+  <option value="reviews">💬 Больше отзывов</option>
+  <option value="new">🆕 Сначала новые</option>
+ </select>
+
+</div>
+
+<!-- PLACES -->
+
+<h2>🏆 Рейтинг мест</h2>
+
+<div id="places"></div>
+
+<!-- ADD PLACE -->
+
+<section class="panel">
+
+ <h2>➕ Добавить туалет</h2>
+
+ <p class="muted">
+  Помоги другим найти хорошее место!
+ </p>
+
+ <form id="placeForm">
+
+  <p class="muted">📍 Выбери город</p>
+
+  <div class="city-grid">
+
+   <button type="button"
+    class="city-button active"
+    data-city="Новополоцк">
+
+    <span class="emoji">🏙️</span>
+    <strong>Новополоцк</strong>
+
+   </button>
+
+   <button type="button"
+    class="city-button"
+    data-city="Полоцк">
+
+    <span class="emoji">🏛️</span>
+    <strong>Полоцк</strong>
+
+   </button>
+
   </div>
 
-  <section>
-    <h2>🔎 Найти толчок</h2>
-
-    <input
-      id="search"
-      placeholder="Название или адрес..."
-    >
-
-    <select id="sort">
-      <option value="rating">Сначала лучшие</option>
-      <option value="reviews">По количеству отзывов</option>
-      <option value="new">Сначала новые</option>
-    </select>
-  </section>
-
-  <section>
-    <h2>🏆 Рейтинг Новополоцка</h2>
-    <div id="places"></div>
-  </section>
-
-  <section class="panel">
-    <h2>➕ Добавить туалет</h2>
-
-    <form id="placeForm">
-      <input
-        id="placeName"
-        placeholder="Название места"
-        maxlength="70"
-        required
-      >
-
-      <input
-        id="placeAddress"
-        placeholder="Адрес в Новополоцке"
-        maxlength="120"
-        required
-      >
-
-      <select id="category">
-        <option>Общественный туалет</option>
-        <option>Торговый центр</option>
-        <option>Кафе или заведение</option>
-        <option>Другое</option>
-      </select>
-
-      <button type="submit">Добавить место</button>
-    </form>
-  </section>
-
-  <section class="panel hidden" id="reviewPanel">
-    <h2>⭐ Оставить отзыв</h2>
-    <p id="reviewPlace"></p>
-
-    <form id="reviewForm">
-      <input
-        id="nickname"
-        placeholder="Никнейм (необязательно)"
-        maxlength="30"
-      >
-
-      <select id="stars">
-        <option value="5">⭐⭐⭐⭐⭐ — Отлично</option>
-        <option value="4">⭐⭐⭐⭐ — Хорошо</option>
-        <option value="3">⭐⭐⭐ — Нормально</option>
-        <option value="2">⭐⭐ — Плохо</option>
-        <option value="1">⭐ — Ужасно</option>
-      </select>
-
-      <textarea
-        id="comment"
-        placeholder="Расскажи о своём впечатлении..."
-        maxlength="500"
-        required
-      ></textarea>
-
-      <button type="submit">Опубликовать отзыв</button>
-      <button type="button" id="cancelReview"
-        style="background:#52627a;color:white;margin-top:8px">
-        Отмена
-      </button>
-    </form>
-  </section>
-
-  <p style="color:#8292a8;font-size:12px">
-    Отзывы должны быть честными и не содержать личных данных,
-    оскорблений или неподтверждённых обвинений.
+  <p class="muted" style="margin-top:20px">
+   🚻 Выбери категорию
   </p>
+
+  <div class="category-grid">
+
+   <button type="button"
+    class="category-button active"
+    data-category="Общественный туалет">
+
+    <span class="emoji">🚻</span>
+    <strong>Общественный туалет</strong>
+    <small>Городские уборные</small>
+
+   </button>
+
+   <button type="button"
+    class="category-button"
+    data-category="Торговый центр">
+
+    <span class="emoji">🏬</span>
+    <strong>Торговый центр</strong>
+    <small>Туалеты в ТЦ</small>
+
+   </button>
+
+   <button type="button"
+    class="category-button"
+    data-category="Кафе или заведение">
+
+    <span class="emoji">🍔</span>
+    <strong>Кафе или заведение</strong>
+    <small>Кафе и рестораны</small>
+
+   </button>
+
+   <button type="button"
+    class="category-button"
+    data-category="Другое">
+
+    <span class="emoji">📍</span>
+    <strong>Другое</strong>
+    <small>Другие места</small>
+
+   </button>
+
+  </div>
+
+  <input type="hidden"
+   id="selectedCity"
+   value="Новополоцк">
+
+  <input type="hidden"
+   id="selectedCategory"
+   value="Общественный туалет">
+
+  <p class="muted">📝 Информация о месте</p>
+
+  <input id="placeName"
+   placeholder="🏷️ Название места"
+   maxlength="70"
+   required>
+
+  <input id="placeAddress"
+   placeholder="📍 Улица, дом или адрес"
+   maxlength="150"
+   required>
+
+  <button type="submit" class="primary">
+   🚀 Добавить в каталог
+  </button>
+
+ </form>
+</section>
+
+<!-- REVIEW -->
+
+<section class="panel hidden" id="reviewPanel">
+
+ <h2>⭐ Оставить отзыв</h2>
+
+ <p id="reviewPlace" class="muted"></p>
+
+ <form id="reviewForm">
+
+  <input id="nickname"
+   placeholder="👤 Твой никнейм (необязательно)"
+   maxlength="30">
+
+  <p class="muted">Как тебе это место?</p>
+
+  <div class="rating-buttons">
+
+   <button type="button" class="star-button active" data-stars="1">★</button>
+   <button type="button" class="star-button active" data-stars="2">★</button>
+   <button type="button" class="star-button active" data-stars="3">★</button>
+   <button type="button" class="star-button active" data-stars="4">★</button>
+   <button type="button" class="star-button active" data-stars="5">★</button>
+
+  </div>
+
+  <p id="ratingLabel"
+   style="text-align:center;color:#ffd45c">
+   ⭐ 5 из 5 — Отлично!
+  </p>
+
+  <input type="hidden" id="stars" value="5">
+
+  <textarea id="comment"
+   maxlength="500"
+   placeholder="💬 Напиши свой отзыв..."
+   required></textarea>
+
+  <button type="submit" class="primary">
+   ✨ Опубликовать отзыв
+  </button>
+
+  <button type="button"
+   id="cancelReview"
+   class="secondary"
+   style="width:100%;margin-top:10px">
+   Отмена
+  </button>
+
+ </form>
+</section>
+
+<div class="notice">
+ 🛡️ TOLCHOK NP BETA — тестовая версия проекта.
+ Публикуй честные отзывы, не размещай личные данные
+ и оскорбления.
+</div>
 
 </main>
 
 <footer>
-  🚽 Tolchok NP © 2026
-  <br>
-  Проект о туалетах Новополоцка
+ 🚽 <strong>TOLCHOK NP</strong> © 2026
+ <br><br>
+ 🏙️ Новополоцк · 🏛️ Полоцк
+ <br><br>
+ <span style="color:#55edb0">BETA VERSION 5.0</span>
+ <br><br>
+ Сделано для городского сообщества ✨
 </footer>
+
+<div class="toast" id="toast"></div>
 
 <script>
 
-// Хранение данных
+/* ===================================
+   TOLCHOK NP 5.0
+   =================================== */
+
+const STORAGE_KEY = "tolchokNP_v3";
+
 let places = [];
+let selectedPlaceId = null;
+let selectedStars = 5;
+let selectedFilter = "all";
+let toastTimer;
+
+// LOAD
 
 try {
-  places = JSON.parse(
-    localStorage.getItem("tolchokNP") || "[]"
-  );
+ const saved = JSON.parse(
+  localStorage.getItem(STORAGE_KEY) || "[]"
+ );
 
-  if (!Array.isArray(places)) places = [];
-} catch {
-  places = [];
+ if (Array.isArray(saved)) {
+  places = saved.filter(p =>
+   p &&
+   typeof p.id === "string" &&
+   typeof p.name === "string" &&
+   typeof p.address === "string" &&
+   Array.isArray(p.reviews)
+  ).map(p => ({
+   ...p,
+   city: p.city === "Полоцк"
+    ? "Полоцк"
+    : "Новополоцк",
+   category: p.category || "Общественный туалет",
+   createdAt: Number(p.createdAt) || Date.now(),
+   reviews: p.reviews.filter(r =>
+    r &&
+    typeof r.comment === "string" &&
+    Number(r.stars) >= 1 &&
+    Number(r.stars) <= 5
+   )
+  }));
+ }
+} catch(e) {
+ places = [];
 }
 
-let selectedPlace = null;
+// HELPERS
+
+function el(tag,cls,text) {
+ const node = document.createElement(tag);
+
+ if (cls) node.className = cls;
+ if (text !== undefined) node.textContent = text;
+
+ return node;
+}
 
 function save() {
-  try {
-    localStorage.setItem(
-      "tolchokNP",
-      JSON.stringify(places)
-    );
-  } catch {
-    alert("Не удалось сохранить данные браузера.");
-  }
+ try {
+  localStorage.setItem(
+   STORAGE_KEY,
+   JSON.stringify(places)
+  );
+ } catch(e) {
+  showToast("⚠️ Ошибка сохранения");
+ }
+}
+
+function showToast(message) {
+ const toast = document.getElementById("toast");
+
+ toast.textContent = message;
+ toast.classList.add("show");
+
+ clearTimeout(toastTimer);
+
+ toastTimer = setTimeout(() => {
+  toast.classList.remove("show");
+ },2500);
 }
 
 function average(place) {
-  if (!place.reviews.length) return 0;
+ if (!place.reviews.length) return 0;
 
-  return place.reviews.reduce(
-    (sum, r) => sum + r.stars, 0
-  ) / place.reviews.length;
+ return place.reviews.reduce(
+  (sum,r) => sum + Number(r.stars),0
+ ) / place.reviews.length;
 }
 
-// Статистика
+// STATISTICS
+
 function updateStats() {
-  const reviews = places.reduce(
-    (sum, p) => sum + p.reviews.length, 0
-  );
 
-  const allRatings = places.flatMap(
-    p => p.reviews.map(r => r.stars)
-  );
+ const totalReviews = places.reduce(
+  (sum,p) => sum + p.reviews.length,0
+ );
 
-  const avg = allRatings.length
-    ? allRatings.reduce((a,b) => a+b, 0) /
-      allRatings.length
-    : null;
+ const ratings = places.flatMap(
+  p => p.reviews.map(r => Number(r.stars))
+ );
 
-  document.getElementById("totalPlaces")
-    .textContent = places.length;
+ const avg = ratings.length
+  ? ratings.reduce((a,b) => a+b,0) / ratings.length
+  : null;
 
-  document.getElementById("totalReviews")
-    .textContent = reviews;
+ document.getElementById("totalPlaces")
+  .textContent = places.length;
 
-  document.getElementById("average")
-    .textContent = avg === null ? "—" : avg.toFixed(1);
+ document.getElementById("totalReviews")
+  .textContent = totalReviews;
+
+ document.getElementById("average")
+  .textContent = avg === null ? "—" : avg.toFixed(1);
+
 }
 
-// Создание элемента с безопасным текстом
-function element(tag, className, text) {
-  const el = document.createElement(tag);
+// CATEGORY COUNTERS
 
-  if (className) el.className = className;
-  if (text !== undefined) el.textContent = text;
+function updateCategoryCounts() {
 
-  return el;
+ const counts = {
+  all:places.length,
+  public:0,
+  mall:0,
+  cafe:0,
+  other:0
+ };
+
+ places.forEach(p => {
+
+  if (p.category === "Общественный туалет")
+   counts.public++;
+
+  if (p.category === "Торговый центр")
+   counts.mall++;
+
+  if (p.category === "Кафе или заведение")
+   counts.cafe++;
+
+  if (p.category === "Другое")
+   counts.other++;
+
+ });
+
+ document.getElementById("count-all").textContent = counts.all;
+ document.getElementById("count-public").textContent = counts.public;
+ document.getElementById("count-mall").textContent = counts.mall;
+ document.getElementById("count-cafe").textContent = counts.cafe;
+ document.getElementById("count-other").textContent = counts.other;
+
 }
 
-// Отображение мест
+// CATEGORY FILTER FUNCTIONALITY
+
+const categoryLabels = {
+ all:"Все места",
+ "Общественный туалет":"Общественные туалеты",
+ "Торговый центр":"Торговые центры",
+ "Кафе или заведение":"Кафе и заведения",
+ "Другое":"Другие места"
+};
+
+document.querySelectorAll(".filter-card").forEach(button => {
+
+ button.addEventListener("click",() => {
+
+  selectedFilter = button.dataset.filter;
+
+  document.querySelectorAll(".filter-card")
+   .forEach(b => {
+    const active = b === button;
+    b.classList.toggle("active",active);
+    b.setAttribute("aria-pressed",String(active));
+   });
+
+  document.getElementById("filterStatus")
+   .textContent = "✨ Выбрано: " + categoryLabels[selectedFilter];
+
+  render();
+
+ });
+
+});
+
+// SEARCH
+
+const searchInput = document.getElementById("search");
+const suggestions = document.getElementById("suggestions");
+const clearSearch = document.getElementById("clearSearch");
+
+function closeSuggestions() {
+ suggestions.classList.add("hidden");
+}
+
+function updateClear() {
+ clearSearch.classList.toggle(
+  "show",
+  searchInput.value.length > 0
+ );
+}
+
+function showSuggestions() {
+
+ const query = searchInput.value.trim().toLowerCase();
+
+ suggestions.replaceChildren();
+
+ suggestions.appendChild(
+  el("div","suggestion-title",
+   query ? "🔍 Результаты поиска" : "✨ Популярные места"
+  )
+ );
+
+ let matches = places.filter(p =>
+  (
+   p.name + " " +
+   p.address + " " +
+   p.city + " " +
+   p.category
+  ).toLowerCase().includes(query)
+ );
+
+ if (!query) {
+  matches = [...places].sort(
+   (a,b) => b.reviews.length-a.reviews.length
+  );
+ }
+
+ matches = matches.slice(0,6);
+
+ if (!matches.length) {
+
+  suggestions.appendChild(
+   el(
+    "div",
+    "suggestion-empty",
+    query
+     ? "🤔 Ничего не найдено. Попробуй другое название или улицу. Можно также добавить это место в каталог!"
+     : "Пока нет мест. Добавь первое!"
+   )
+  );
+
+ } else {
+
+  matches.forEach(place => {
+
+   const button = el("button","suggestion");
+   button.type = "button";
+
+   const icon = el(
+    "span",
+    "suggestion-icon",
+    place.category === "Торговый центр" ? "🏬" :
+    place.category === "Кафе или заведение" ? "🍔" :
+    place.category === "Другое" ? "📍" : "🚻"
+   );
+
+   const info = el("div","suggestion-info");
+
+   info.appendChild(el("strong","",place.name));
+
+   info.appendChild(
+    el("small","",
+     "📍 " + place.city + " · " + place.address
+    )
+   );
+
+   button.append(icon,info);
+
+   button.addEventListener("click",() => {
+    searchInput.value = place.name;
+    updateClear();
+    closeSuggestions();
+    render();
+   });
+
+   suggestions.appendChild(button);
+
+  });
+
+ }
+
+ suggestions.classList.remove("hidden");
+}
+
+searchInput.addEventListener("focus",showSuggestions);
+
+searchInput.addEventListener("input",() => {
+ updateClear();
+ showSuggestions();
+ render();
+});
+
+clearSearch.addEventListener("click",() => {
+ searchInput.value = "";
+ updateClear();
+ render();
+ showSuggestions();
+ searchInput.focus();
+});
+
+searchInput.addEventListener("keydown",e => {
+ if (e.key === "Escape") closeSuggestions();
+
+ if (e.key === "Enter") {
+  closeSuggestions();
+  render();
+  searchInput.blur();
+ }
+});
+
+document.addEventListener("click",e => {
+ if (!e.target.closest(".search-wrap")) {
+  closeSuggestions();
+ }
+});
+
+// QUICK CHIPS
+
+document.querySelectorAll(".chip").forEach(button => {
+
+ button.addEventListener("click",() => {
+
+  if (button.dataset.city) {
+   document.getElementById("cityFilter").value =
+    button.dataset.city;
+  }
+
+  if (button.dataset.category) {
+
+   selectedFilter = button.dataset.category;
+
+   document.querySelectorAll(".filter-card")
+    .forEach(b => {
+     const active =
+      b.dataset.filter === selectedFilter;
+
+     b.classList.toggle("active",active);
+     b.setAttribute("aria-pressed",String(active));
+    });
+
+   document.getElementById("filterStatus")
+    .textContent = "✨ Выбрано: " +
+     categoryLabels[selectedFilter];
+
+  }
+
+  searchInput.value = "";
+  updateClear();
+  closeSuggestions();
+  render();
+
+  document.getElementById("places")
+   .scrollIntoView({behavior:"smooth"});
+
+ });
+
+});
+
+// RENDER
+
 function render() {
-  const container = document.getElementById("places");
-  container.replaceChildren();
 
-  const search = document.getElementById("search")
-    .value.trim().toLowerCase();
+ const container = document.getElementById("places");
 
-  let filtered = places.filter(p =>
-    (p.name + " " + p.address + " " + p.category)
-      .toLowerCase().includes(search)
+ container.replaceChildren();
+
+ const query = searchInput.value.trim().toLowerCase();
+
+ const city = document.getElementById("cityFilter").value;
+
+ const sort = document.getElementById("sort").value;
+
+ let filtered = places.filter(p => {
+
+  const textMatch = (
+   p.name + " " +
+   p.address + " " +
+   p.city + " " +
+   p.category
+  ).toLowerCase().includes(query);
+
+  const cityMatch = city === "all" || p.city === city;
+
+  const categoryMatch =
+   selectedFilter === "all" ||
+   p.category === selectedFilter;
+
+  return textMatch && cityMatch && categoryMatch;
+
+ });
+
+ if (sort === "rating") {
+
+  filtered.sort((a,b) => {
+
+   if (!a.reviews.length && !b.reviews.length) return 0;
+   if (!a.reviews.length) return 1;
+   if (!b.reviews.length) return -1;
+
+   return average(b)-average(a);
+
+  });
+
+ }
+
+ if (sort === "reviews") {
+  filtered.sort((a,b) =>
+   b.reviews.length-a.reviews.length
+  );
+ }
+
+ if (sort === "new") {
+  filtered.sort((a,b) =>
+   b.createdAt-a.createdAt
+  );
+ }
+
+ if (!filtered.length) {
+
+  const empty = el("div","empty");
+
+  empty.appendChild(el("div","","🔎"));
+
+  empty.appendChild(
+   el(
+    "h3",
+    "",
+    places.length ? "Ничего не найдено" : "Каталог пока пустой"
+   )
   );
 
-  const sort = document.getElementById("sort").value;
+  empty.appendChild(
+   el(
+    "p",
+    "",
+    places.length
+     ? "Измени поиск или выбери другую категорию."
+     : "Добавь первое место в Tolchok NP!"
+   )
+  );
 
-  if (sort === "rating") {
-    filtered.sort((a,b) => average(b)-average(a));
-  }
+  container.appendChild(empty);
 
-  if (sort === "reviews") {
-    filtered.sort((a,b) =>
-      b.reviews.length-a.reviews.length
-    );
-  }
+ }
 
-  if (sort === "new") {
-    filtered.sort((a,b) => b.createdAt-a.createdAt);
-  }
+ filtered.forEach((place,index) => {
 
-  if (!filtered.length) {
-    container.appendChild(
-      element("div", "empty",
-        places.length
-          ? "Ничего не найдено."
-          : "Пока здесь нет туалетов. Добавь первый!")
-    );
-  }
+  const card = el("article","place");
 
-  filtered.forEach(place => {
-    const card = element("div", "place");
+  card.style.animationDelay =
+   Math.min(index*.05,.4)+"s";
 
-    card.appendChild(
-      element("h3", "", "🚽 " + place.name)
-    );
+  const icon =
+   place.category === "Торговый центр" ? "🏬" :
+   place.category === "Кафе или заведение" ? "🍔" :
+   place.category === "Другое" ? "📍" : "🚻";
 
-    card.appendChild(
-      element("p", "address",
-        "📍 " + place.address)
-    );
+  card.appendChild(
+   el("div","place-title",icon+" "+place.name)
+  );
 
-    card.appendChild(
-      element("small", "", place.category)
-    );
+  card.appendChild(
+   el("div","place-meta",
+    "📍 "+place.city+", "+place.address
+   )
+  );
 
-    const score = place.reviews.length
-      ? average(place).toFixed(1) + " / 5"
-      : "Нет оценок";
+  card.appendChild(
+   el("div","place-meta",
+    "📂 "+place.category
+   )
+  );
 
-    card.appendChild(
-      element("p", "rating",
-        "⭐ " + score +
-        " · " + place.reviews.length + " отзывов")
-    );
+  card.appendChild(
+   el(
+    "div",
+    "place-rating",
+    place.reviews.length
+     ? "⭐ "+average(place).toFixed(1)+" / 5"
+     : "⭐ Пока нет оценок"
+   )
+  );
 
-    place.reviews.forEach(review => {
-      const item = element("div", "review");
+  card.appendChild(
+   el("div","muted",
+    "💬 "+place.reviews.length+" отзывов"
+   )
+  );
 
-      item.appendChild(
-        element("strong", "",
-          review.nickname || "Аноним")
-      );
+  place.reviews.forEach(review => {
 
-      item.appendChild(
-        element("p", "",
-          "⭐".repeat(review.stars))
-      );
+   const item = el("div","review");
 
-      item.appendChild(
-        element("p", "", review.comment)
-      );
+   item.appendChild(
+    el("div","review-name",
+     "👤 "+(review.nickname || "Аноним")
+    )
+   );
 
-      item.appendChild(
-        element("small", "",
-          new Date(review.date).toLocaleDateString("ru-RU"))
-      );
+   item.appendChild(
+    el("div","review-stars",
+     "⭐".repeat(review.stars)
+    )
+   );
 
-      card.appendChild(item);
-    });
+   item.appendChild(
+    el("div","",review.comment)
+   );
 
-    const button = element(
-      "button", "review-button", "✍️ Оставить отзыв"
-    );
+   item.appendChild(
+    el("div","review-date",
+     "🕒 "+new Date(review.date)
+      .toLocaleDateString("ru-RU")
+    )
+   );
 
-    button.addEventListener("click", () => {
-      selectedPlace = place.id;
+   card.appendChild(item);
 
-      document.getElementById("reviewPlace")
-        .textContent = "Место: " + place.name;
-
-      document.getElementById("reviewPanel")
-        .classList.remove("hidden");
-
-      document.getElementById("reviewPanel")
-        .scrollIntoView({behavior:"smooth"});
-    });
-
-    card.appendChild(button);
-    container.appendChild(card);
   });
 
-  updateStats();
+  const actions = el("div","place-actions");
+
+  const reviewButton = el(
+   "button","secondary","✍️ Написать отзыв"
+  );
+
+  reviewButton.type = "button";
+
+  reviewButton.addEventListener("click",() => {
+   openReview(place);
+  });
+
+  actions.appendChild(reviewButton);
+
+  const mapButton = el(
+   "a","secondary map-link","🗺️ Карта"
+  );
+
+  mapButton.href =
+   "https://www.openstreetmap.org/search?query="+
+   encodeURIComponent(place.city+", "+place.address);
+
+  mapButton.target = "_blank";
+  mapButton.rel = "noopener noreferrer";
+
+  actions.appendChild(mapButton);
+
+  card.appendChild(actions);
+
+  container.appendChild(card);
+
+ });
+
+ updateStats();
+ updateCategoryCounts();
+
 }
 
-// Добавление туалета
+// ADD PLACE
+
+const selectedCity = document.getElementById("selectedCity");
+const selectedCategory = document.getElementById("selectedCategory");
+
+document.querySelectorAll(".city-button").forEach(button => {
+
+ button.addEventListener("click",() => {
+
+  document.querySelectorAll(".city-button")
+   .forEach(b => b.classList.remove("active"));
+
+  button.classList.add("active");
+
+  selectedCity.value = button.dataset.city;
+
+ });
+
+});
+
+document.querySelectorAll(".category-button").forEach(button => {
+
+ button.addEventListener("click",() => {
+
+  document.querySelectorAll(".category-button")
+   .forEach(b => b.classList.remove("active"));
+
+  button.classList.add("active");
+
+  selectedCategory.value = button.dataset.category;
+
+ });
+
+});
+
 document.getElementById("placeForm")
-  .addEventListener("submit", function(e) {
-    e.preventDefault();
+ .addEventListener("submit",function(e) {
 
-    const name = document.getElementById("placeName")
-      .value.trim();
+  e.preventDefault();
 
-    const address = document.getElementById("placeAddress")
-      .value.trim();
+  const name = document.getElementById("placeName").value.trim();
+  const address = document.getElementById("placeAddress").value.trim();
 
-    const category = document.getElementById("category")
-      .value;
+  if (!name || !address) {
+   showToast("⚠️ Заполни все поля");
+   return;
+  }
 
-    if (!name || !address) return;
+  const city = selectedCity.value;
+  const category = selectedCategory.value;
 
-    const exists = places.some(p =>
-      p.name.toLowerCase() === name.toLowerCase() &&
-      p.address.toLowerCase() === address.toLowerCase()
-    );
+  const duplicate = places.some(p =>
+   p.name.toLowerCase() === name.toLowerCase() &&
+   p.address.toLowerCase() === address.toLowerCase() &&
+   p.city === city
+  );
 
-    if (exists) {
-      alert("Такое место уже добавлено!");
-      return;
-    }
+  if (duplicate) {
+   showToast("⚠️ Такое место уже есть!");
+   return;
+  }
 
-    places.push({
-      id: Date.now().toString(),
-      name,
-      address,
-      category,
-      createdAt: Date.now(),
-      reviews: []
-    });
-
-    save();
-    render();
-    this.reset();
-
-    alert("Место добавлено!");
+  places.push({
+   id:Date.now().toString()+
+    Math.random().toString(36).slice(2,8),
+   name,
+   address,
+   city,
+   category,
+   createdAt:Date.now(),
+   reviews:[]
   });
 
-// Добавление отзыва
+  save();
+
+  this.reset();
+
+  selectedCity.value = "Новополоцк";
+  selectedCategory.value = "Общественный туалет";
+
+  document.querySelectorAll(".city-button").forEach(b => {
+   b.classList.toggle(
+    "active",
+    b.dataset.city === "Новополоцк"
+   );
+  });
+
+  document.querySelectorAll(".category-button").forEach(b => {
+   b.classList.toggle(
+    "active",
+    b.dataset.category === "Общественный туалет"
+   );
+  });
+
+  render();
+
+  showToast("🎉 Место добавлено!");
+
+  document.getElementById("places")
+   .scrollIntoView({behavior:"smooth"});
+
+ });
+
+// REVIEWS
+
+const ratingNames = {
+ 1:"Ужасно 😖",
+ 2:"Плохо 😕",
+ 3:"Нормально 🙂",
+ 4:"Хорошо 😎",
+ 5:"Отлично 🤩"
+};
+
+function setStars(value) {
+
+ selectedStars = value;
+
+ document.getElementById("stars").value = value;
+
+ document.querySelectorAll(".star-button").forEach(button => {
+
+  button.classList.toggle(
+   "active",
+   Number(button.dataset.stars) <= value
+  );
+
+ });
+
+ document.getElementById("ratingLabel").textContent =
+  "⭐ "+value+" из 5 — "+ratingNames[value];
+
+}
+
+document.querySelectorAll(".star-button").forEach(button => {
+
+ button.addEventListener("click",() => {
+  setStars(Number(button.dataset.stars));
+ });
+
+});
+
+function openReview(place) {
+
+ selectedPlaceId = place.id;
+
+ document.getElementById("reviewPlace").textContent =
+  "🚽 "+place.name+" · "+place.city;
+
+ setStars(5);
+
+ const panel = document.getElementById("reviewPanel");
+
+ panel.classList.remove("hidden");
+
+ panel.scrollIntoView({
+  behavior:"smooth",
+  block:"center"
+ });
+
+}
+
 document.getElementById("reviewForm")
-  .addEventListener("submit", function(e) {
-    e.preventDefault();
+ .addEventListener("submit",function(e) {
 
-    const place = places.find(
-      p => p.id === selectedPlace
-    );
+  e.preventDefault();
 
-    if (!place) return;
+  const place = places.find(
+   p => p.id === selectedPlaceId
+  );
 
-    const nickname = document.getElementById("nickname")
-      .value.trim();
+  if (!place) {
+   showToast("⚠️ Место не найдено");
+   return;
+  }
 
-    const comment = document.getElementById("comment")
-      .value.trim();
+  const nickname =
+   document.getElementById("nickname").value.trim();
 
-    const stars = Number(
-      document.getElementById("stars").value
-    );
+  const comment =
+   document.getElementById("comment").value.trim();
 
-    if (!comment) return;
+  if (!comment) {
+   showToast("Напиши отзыв 💬");
+   return;
+  }
 
-    place.reviews.push({
-      nickname: nickname || "Аноним",
-      comment,
-      stars,
-      date: Date.now()
-    });
-
-    save();
-    render();
-
-    this.reset();
-
-    document.getElementById("reviewPanel")
-      .classList.add("hidden");
-
-    selectedPlace = null;
-
-    alert("Спасибо! Отзыв добавлен.");
+  place.reviews.push({
+   nickname:nickname || "Аноним",
+   comment,
+   stars:selectedStars,
+   date:Date.now()
   });
+
+  save();
+
+  this.reset();
+
+  selectedPlaceId = null;
+
+  document.getElementById("reviewPanel")
+   .classList.add("hidden");
+
+  render();
+
+  showToast("⭐ Отзыв опубликован!");
+
+ });
 
 document.getElementById("cancelReview")
-  .addEventListener("click", () => {
-    selectedPlace = null;
+ .addEventListener("click",() => {
 
-    document.getElementById("reviewPanel")
-      .classList.add("hidden");
-  });
+  selectedPlaceId = null;
 
-// Поиск и сортировка
-document.getElementById("search")
-  .addEventListener("input", render);
+  document.getElementById("reviewPanel")
+   .classList.add("hidden");
+
+ });
+
+// FILTER EVENTS
+
+document.getElementById("cityFilter")
+ .addEventListener("change",render);
 
 document.getElementById("sort")
-  .addEventListener("change", render);
+ .addEventListener("change",render);
 
+// START
+
+updateClear();
 render();
 
 </script>
+
 </body>
 </html>
-
-/* TOLCHOK NP — CUSTOM ANIMATIONS */
-
-.tnp-picker-title {
-  font-size: 17px;
-  font-weight: bold;
-  margin: 20px 0 12px;
-  color: #f4f6ff;
-}
-
-.tnp-city-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.tnp-city, .tnp-category {
-  background: #111d31;
-  color: white;
-  border: 1px solid #344760;
-  border-radius: 14px;
-  padding: 17px 12px;
-  cursor: pointer;
-  text-align: left;
-  transition: all .25s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.tnp-city {
-  text-align: center;
-}
-
-.tnp-city span, .tnp-category span {
-  display: block;
-  font-size: 25px;
-  margin-bottom: 8px;
-}
-
-.tnp-city strong, .tnp-category strong {
-  font-size: 14px;
-}
-
-.tnp-category small {
-  display: block;
-  color: #aab9cb;
-  margin-top: 6px;
-  font-size: 12px;
-}
-
-.tnp-category-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.tnp-city.active,
-.tnp-category.active {
-  border: 2px solid #55edb0;
-  background: #153c35;
-  box-shadow: 0 0 18px #55edb044;
-  transform: translateY(-3px);
-  animation: tnp-pop .3s ease;
-}
-
-.tnp-city:active,
-.tnp-category:active {
-  transform: scale(.95);
-}
-
-@keyframes tnp-pop {
-  0% { transform: scale(.94); }
-  60% { transform: scale(1.04); }
-  100% { transform: scale(1); }
-}
-
-.tnp-category:hover,
-.tnp-city:hover {
-  border-color: #55edb0;
-  background: #1b3445;
-}
-
-.tnp-category.active small {
-  color: #a5f5d1;
-}
-
-#category {
-  display: none !important;
-}
-
-@media(max-width:400px) {
-  .tnp-category-grid {
-    gap: 8px;
-  }
-
-  .tnp-category {
-    padding: 14px 9px;
-  }
-}
