@@ -7,7 +7,6 @@
 <meta name="theme-color" content="#0b1020">
 <title>Tolchok NP — BETA</title>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -88,9 +87,15 @@ header p {color:#c5d7e6;margin:10px 0}
  position:absolute;
  font-size:25px;
  opacity:.35;
- pointer-events:none;
+ pointer-events:auto;
+ cursor:grab;
+ touch-action:none;
+ user-select:none;
+ -webkit-user-select:none;
  animation:floatUp 4s ease-in-out infinite;
 }
+
+.floating:active {cursor:grabbing}
 
 .f1 {top:15px;left:8%}
 .f2 {top:65px;right:9%;animation-delay:1s}
@@ -98,8 +103,8 @@ header p {color:#c5d7e6;margin:10px 0}
 .f4 {bottom:18px;right:20%;animation-delay:.5s}
 
 @keyframes floatUp {
- 0%,100% {transform:translateY(0)}
- 50% {transform:translateY(-12px)}
+ 0%,100% {translate:0 0}
+ 50% {translate:0 -12px}
 }
 
 @keyframes betaPulse {
@@ -215,6 +220,14 @@ textarea {min-height:100px;resize:vertical}
 
 .account-status.error {color:#ff9292}
 .account-status.success {color:var(--green)}
+
+.auth-extra-actions {
+ display:grid;
+ gap:9px;
+ margin-top:10px;
+}
+
+.auth-extra-actions button {width:100%}
 
 /* SEARCH */
 
@@ -514,6 +527,7 @@ textarea {min-height:100px;resize:vertical}
 
 .primary:hover {box-shadow:0 8px 23px #55edb044;transform:translateY(-2px)}
 .primary:active {transform:scale(.97)}
+.primary:disabled,.secondary:disabled {opacity:.55;cursor:wait}
 
 .secondary {
  padding:11px 14px;
@@ -713,7 +727,7 @@ footer strong {color:var(--green)}
 
  <div class="beta">
   <span class="beta-dot"></span>
-  BETA VERSION 5.0
+  BETA VERSION 5.1
  </div>
 </header>
 
@@ -772,6 +786,16 @@ footer strong {color:var(--green)}
    <button type="submit" class="primary">
     🚀 Войти в аккаунт
    </button>
+
+   <div class="auth-extra-actions">
+    <button type="button" id="resendConfirmation" class="secondary">
+     📨 Отправить письмо повторно
+    </button>
+
+    <button type="button" id="forgotPasswordButton" class="secondary">
+     🔑 Забыл пароль?
+    </button>
+   </div>
   </form>
 
   <form id="registerForm" class="hidden">
@@ -817,6 +841,39 @@ footer strong {color:var(--green)}
   <button type="button" id="logoutButton" class="secondary">
    🚪 Выйти из аккаунта
   </button>
+ </div>
+
+ <!-- PASSWORD RECOVERY -->
+
+ <div id="recoveryPanel" class="account-profile hidden">
+  <h3>🔐 Новый пароль</h3>
+  <p class="muted" id="recoveryHint">
+   Придумай новый пароль для своего аккаунта.
+  </p>
+
+  <form id="recoveryForm">
+   <input
+    id="newPassword"
+    type="password"
+    placeholder="🔒 Новый пароль (минимум 8 символов)"
+    minlength="8"
+    autocomplete="new-password"
+    required
+   >
+
+   <input
+    id="confirmNewPassword"
+    type="password"
+    placeholder="🔒 Повтори новый пароль"
+    minlength="8"
+    autocomplete="new-password"
+    required
+   >
+
+   <button type="submit" class="primary">
+    🔒 Сохранить новый пароль
+   </button>
+  </form>
  </div>
 
  <div id="accountStatus" class="account-status" aria-live="polite"></div>
@@ -1073,7 +1130,7 @@ footer strong {color:var(--green)}
  <br><br>
  🏙️ Новополоцк · 🏛️ Полоцк
  <br><br>
- <span style="color:#55edb0">BETA VERSION 5.0</span>
+ <span style="color:#55edb0">BETA VERSION 5.1</span>
  <br><br>
  Сделано для городского сообщества ✨
 </footer>
@@ -1096,6 +1153,9 @@ const supabaseClient = window.supabase.createClient(
 
 let currentAccountNickname = "";
 
+let isPasswordRecovery =
+ new URLSearchParams(window.location.hash.slice(1)).get("type") === "recovery";
+
 const authForms = document.getElementById("authForms");
 const profileBox = document.getElementById("profileBox");
 const accountStatus = document.getElementById("accountStatus");
@@ -1103,6 +1163,7 @@ const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
 const loginTab = document.getElementById("loginTab");
 const registerTab = document.getElementById("registerTab");
+const recoveryPanel = document.getElementById("recoveryPanel");
 
 function setAccountStatus(message,type="") {
  accountStatus.textContent = message;
@@ -1263,9 +1324,190 @@ loginForm.addEventListener("submit",async function(e) {
  }
 });
 
+/* RESEND CONFIRMATION EMAIL */
+
+function getAccountEmail() {
+ const identity = document.getElementById("loginIdentity").value.trim();
+
+ if (!identity || !identity.includes("@")) {
+  setAccountStatus(
+   "Введи свою почту в поле входа (не никнейм), чтобы отправить письмо.",
+   "error"
+  );
+  document.getElementById("loginIdentity").focus();
+  return null;
+ }
+
+ return identity.toLowerCase();
+}
+
+document.getElementById("resendConfirmation")
+ .addEventListener("click",async function() {
+  const email = getAccountEmail();
+  if (!email) return;
+
+  const button = this;
+  button.disabled = true;
+  button.textContent = "📨 Отправляем...";
+
+  setAccountStatus("Проверяем возможность отправки письма...");
+
+  try {
+   const {error} = await supabaseClient.auth.resend({
+    type:"signup",
+    email
+   });
+
+   if (error) throw error;
+
+   setAccountStatus(
+    "Если регистрация с этой почтой ещё не подтверждена, письмо отправлено. Проверь входящие и папку «Спам».",
+    "success"
+   );
+
+   showToast("📨 Запрос на отправку письма выполнен!");
+
+  } catch(error) {
+   console.error("Resend email error:",error);
+   setAccountStatus(
+    error.message || "Не удалось отправить письмо. Попробуй позже.",
+    "error"
+   );
+  } finally {
+   button.disabled = false;
+   button.textContent = "📨 Отправить письмо повторно";
+  }
+ });
+
+/* FORGOT PASSWORD */
+
+document.getElementById("forgotPasswordButton")
+ .addEventListener("click",async function() {
+  const email = getAccountEmail();
+  if (!email) return;
+
+  const button = this;
+  button.disabled = true;
+  button.textContent = "🔑 Отправляем...";
+
+  setAccountStatus("Готовим письмо для восстановления пароля...");
+
+  try {
+   const redirectUrl =
+    window.location.origin + window.location.pathname;
+
+   const {error} = await supabaseClient.auth.resetPasswordForEmail(
+    email,
+    {
+     redirectTo:redirectUrl
+    }
+   );
+
+   if (error) throw error;
+
+   setAccountStatus(
+    "Если аккаунт с такой почтой существует, письмо для восстановления отправлено. Открой его и перейди по ссылке, чтобы задать новый пароль.",
+    "success"
+   );
+
+   showToast("📨 Проверь свою почту!");
+
+  } catch(error) {
+   console.error("Password reset error:",error);
+   setAccountStatus(
+    error.message || "Не удалось отправить письмо. Попробуй позже.",
+    "error"
+   );
+  } finally {
+   button.disabled = false;
+   button.textContent = "🔑 Забыл пароль?";
+  }
+ });
+
+/* SAVE NEW PASSWORD */
+
+document.getElementById("recoveryForm")
+ .addEventListener("submit",async function(e) {
+  e.preventDefault();
+
+  const password = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmNewPassword").value;
+
+  if (password.length < 8) {
+   setAccountStatus("Пароль должен содержать минимум 8 символов.","error");
+   return;
+  }
+
+  if (password !== confirmPassword) {
+   setAccountStatus("Пароли не совпадают. Проверь оба поля.","error");
+   return;
+  }
+
+  const button = this.querySelector("button[type=submit]");
+  button.disabled = true;
+  button.textContent = "Сохраняем пароль...";
+
+  setAccountStatus("Обновляем пароль...");
+
+  try {
+   const {error} = await supabaseClient.auth.updateUser({
+    password:password
+   });
+
+   if (error) throw error;
+
+   isPasswordRecovery = false;
+
+   history.replaceState(
+    null,
+    document.title,
+    window.location.pathname + window.location.search
+   );
+
+   this.reset();
+   recoveryPanel.classList.add("hidden");
+
+   const {data} = await supabaseClient.auth.getSession();
+
+   await updateAccountUI(data.session);
+
+   setAccountStatus(
+    "🎉 Пароль успешно изменён! Теперь можешь входить с новым паролем.",
+    "success"
+   );
+
+   showToast("🔐 Пароль изменён!");
+
+  } catch(error) {
+   console.error("Update password error:",error);
+   setAccountStatus(
+    error.message || "Не удалось изменить пароль. Возможно, ссылка устарела.",
+    "error"
+   );
+  } finally {
+   button.disabled = false;
+   button.textContent = "🔒 Сохранить новый пароль";
+  }
+ });
+
 /* UPDATE PROFILE DISPLAY */
 
 async function updateAccountUI(session) {
+
+ if (isPasswordRecovery) {
+  authForms.classList.add("hidden");
+  profileBox.classList.add("hidden");
+  recoveryPanel.classList.remove("hidden");
+
+  document.getElementById("recoveryHint").textContent =
+   session
+    ? "Ссылка подтверждена. Придумай и сохрани новый пароль."
+    : "Ссылка для восстановления не активирована или устарела. Запроси новое письмо на странице входа.";
+
+  return;
+ }
+
+ recoveryPanel.classList.add("hidden");
 
  if (!session) {
   currentAccountNickname = "";
@@ -1318,8 +1560,21 @@ async function updateAccountUI(session) {
 
 /* AUTH STATE */
 
-supabaseClient.auth.onAuthStateChange((_event,session) => {
- Promise.resolve().then(() => updateAccountUI(session));
+supabaseClient.auth.onAuthStateChange((event,session) => {
+ Promise.resolve().then(() => {
+  if (event === "PASSWORD_RECOVERY") {
+   isPasswordRecovery = true;
+  }
+
+  updateAccountUI(session);
+
+  if (event === "PASSWORD_RECOVERY") {
+   setAccountStatus(
+    "Ссылка подтверждена! Теперь придумай новый пароль.",
+    "success"
+   );
+  }
+ });
 });
 
 supabaseClient.auth.getSession().then(({data,error}) => {
@@ -1355,7 +1610,7 @@ document.getElementById("logoutButton").addEventListener("click",async() => {
 
 
 /* ===================================
-   TOLCHOK NP 5.0
+   TOLCHOK NP 5.1
    =================================== */
 
 const STORAGE_KEY = "tolchokNP_v3";
@@ -2004,8 +2259,79 @@ document.getElementById("cityFilter")
 document.getElementById("sort")
  .addEventListener("change",render);
 
+/* ===================================
+   DRAGGABLE HEADER EMOJIS
+   =================================== */
+
+function enableHeaderEmojiDragging() {
+ const header = document.querySelector("header");
+
+ header.querySelectorAll(".floating").forEach(emoji => {
+  let pointerId = null;
+  let startX = 0;
+  let startY = 0;
+  let startLeft = 0;
+  let startTop = 0;
+
+  emoji.addEventListener("pointerdown",e => {
+   if (e.pointerType === "mouse" && e.button !== 0) return;
+
+   startLeft = emoji.offsetLeft;
+   startTop = emoji.offsetTop;
+
+   emoji.style.animationPlayState = "paused";
+
+   emoji.style.left = startLeft + "px";
+   emoji.style.top = startTop + "px";
+   emoji.style.right = "auto";
+   emoji.style.bottom = "auto";
+
+   startX = e.clientX;
+   startY = e.clientY;
+   pointerId = e.pointerId;
+
+   emoji.setPointerCapture(pointerId);
+   e.preventDefault();
+  });
+
+  emoji.addEventListener("pointermove",e => {
+   if (pointerId !== e.pointerId) return;
+
+   const dx = e.clientX - startX;
+   const dy = e.clientY - startY;
+
+   const maxLeft = header.clientWidth - emoji.offsetWidth;
+   const maxTop = header.clientHeight - emoji.offsetHeight;
+
+   const left = Math.max(
+    0,
+    Math.min(maxLeft,startLeft + dx)
+   );
+
+   const top = Math.max(
+    0,
+    Math.min(maxTop,startTop + dy)
+   );
+
+   emoji.style.left = left + "px";
+   emoji.style.top = top + "px";
+  });
+
+  function stopDragging(e) {
+   if (pointerId !== e.pointerId) return;
+
+   pointerId = null;
+   emoji.style.animationPlayState = "running";
+  }
+
+  emoji.addEventListener("pointerup",stopDragging);
+  emoji.addEventListener("pointercancel",stopDragging);
+ });
+}
+
 // START
 
+enableHeaderEmojiDragging();
 updateClear();
 render();
 
