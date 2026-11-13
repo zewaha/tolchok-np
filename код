@@ -1,4 +1,4 @@
-
+89
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -593,3 +593,102 @@ render();
 </script>
 </body>
 </html>
+
+/* TOLCHOK NP — CUSTOM ANIMATIONS */
+
+.tnp-picker-title {
+  font-size: 17px;
+  font-weight: bold;
+  margin: 20px 0 12px;
+  color: #f4f6ff;
+}
+
+.tnp-city-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.tnp-city, .tnp-category {
+  background: #111d31;
+  color: white;
+  border: 1px solid #344760;
+  border-radius: 14px;
+  padding: 17px 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: all .25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.tnp-city {
+  text-align: center;
+}
+
+.tnp-city span, .tnp-category span {
+  display: block;
+  font-size: 25px;
+  margin-bottom: 8px;
+}
+
+.tnp-city strong, .tnp-category strong {
+  font-size: 14px;
+}
+
+.tnp-category small {
+  display: block;
+  color: #aab9cb;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.tnp-category-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.tnp-city.active,
+.tnp-category.active {
+  border: 2px solid #55edb0;
+  background: #153c35;
+  box-shadow: 0 0 18px #55edb044;
+  transform: translateY(-3px);
+  animation: tnp-pop .3s ease;
+}
+
+.tnp-city:active,
+.tnp-category:active {
+  transform: scale(.95);
+}
+
+@keyframes tnp-pop {
+  0% { transform: scale(.94); }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+.tnp-category:hover,
+.tnp-city:hover {
+  border-color: #55edb0;
+  background: #1b3445;
+}
+
+.tnp-category.active small {
+  color: #a5f5d1;
+}
+
+#category {
+  display: none !important;
+}
+
+@media(max-width:400px) {
+  .tnp-category-grid {
+    gap: 8px;
+  }
+
+  .tnp-category {
+    padding: 14px 9px;
+  }
+}
