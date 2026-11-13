@@ -7,6 +7,9 @@
 <meta name="theme-color" content="#0b1020">
 <title>Tolchok NP — BETA</title>
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root {
  --bg:#0b1020;
@@ -19,13 +22,8 @@
  --yellow:#ffd45c;
 }
 
-* {
- box-sizing:border-box;
-}
-
-html {
- scroll-behavior:smooth;
-}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth}
 
 body {
  margin:0;
@@ -35,13 +33,8 @@ body {
  overflow-x:hidden;
 }
 
-button,input,textarea,select {
- font:inherit;
-}
-
-button {
- cursor:pointer;
-}
+button,input,textarea,select {font:inherit}
+button {cursor:pointer}
 
 /* HEADER */
 
@@ -65,10 +58,7 @@ header {
  animation:fadeIn .7s ease;
 }
 
-header p {
- color:#c5d7e6;
- margin:10px 0;
-}
+header p {color:#c5d7e6;margin:10px 0}
 
 .beta {
  display:inline-flex;
@@ -123,21 +113,9 @@ header p {
 
 /* MAIN */
 
-.container {
- max-width:950px;
- margin:auto;
- padding:16px;
-}
-
-h2 {
- font-size:21px;
- margin:28px 0 15px;
-}
-
-.muted {
- color:var(--muted);
- font-size:13px;
-}
+.container {max-width:950px;margin:auto;padding:16px}
+h2 {font-size:21px;margin:28px 0 15px}
+.muted {color:var(--muted);font-size:13px}
 
 /* STATS */
 
@@ -158,22 +136,14 @@ h2 {
  animation:fadeIn .5s ease;
 }
 
-.stat:hover {
- border-color:var(--green);
- transform:translateY(-4px);
-}
-
+.stat:hover {border-color:var(--green);transform:translateY(-4px)}
 .stat strong {
  display:block;
  font-size:24px;
  color:var(--green);
  margin-bottom:5px;
 }
-
-.stat span {
- font-size:11px;
- color:var(--muted);
-}
+.stat span {font-size:11px;color:var(--muted)}
 
 /* INPUTS */
 
@@ -194,21 +164,61 @@ input:focus,textarea:focus,select:focus {
  box-shadow:0 0 0 4px #55edb019;
 }
 
-select option {
- background:#17243a;
+select option {background:#17243a}
+textarea {min-height:100px;resize:vertical}
+
+/* ACCOUNT */
+
+.account-tabs {
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+ margin:12px 0;
 }
 
-textarea {
- min-height:100px;
- resize:vertical;
+.account-tabs button {
+ padding:13px;
+ border:1px solid var(--border);
+ border-radius:11px;
+ background:var(--panel2);
+ color:white;
 }
+
+.account-tabs button.active {
+ background:#164438;
+ border:1px solid var(--green);
+ color:var(--green);
+}
+
+.account-profile {
+ padding:16px;
+ background:var(--panel2);
+ border:1px solid #365b50;
+ border-radius:14px;
+ margin-top:12px;
+}
+
+.account-profile strong {
+ display:block;
+ color:var(--green);
+ font-size:20px;
+ margin:8px 0 15px;
+ overflow-wrap:anywhere;
+}
+
+.account-status {
+ font-size:12px;
+ line-height:1.6;
+ margin-top:12px;
+ color:var(--muted);
+}
+
+.account-status.error {color:#ff9292}
+.account-status.success {color:var(--green)}
 
 /* SEARCH */
 
-.search-wrap {
- position:relative;
- margin-bottom:10px;
-}
+.search-wrap {position:relative;margin-bottom:10px}
 
 .search-wrap input {
  height:62px;
@@ -248,9 +258,7 @@ textarea {
  font-size:20px;
 }
 
-.clear-search.show {
- display:block;
-}
+.clear-search.show {display:block}
 
 .search-help {
  padding:9px 3px;
@@ -275,9 +283,7 @@ textarea {
  animation:drop .2s ease;
 }
 
-.suggestions.hidden {
- display:none;
-}
+.suggestions.hidden {display:none}
 
 .suggestion-title {
  color:var(--green);
@@ -300,25 +306,10 @@ textarea {
  transition:.2s;
 }
 
-.suggestion:hover {
- background:#263c53;
-}
-
-.suggestion-icon {
- font-size:23px;
- flex-shrink:0;
-}
-
-.suggestion-info {
- min-width:0;
- flex:1;
-}
-
-.suggestion-info strong {
- display:block;
- font-size:14px;
-}
-
+.suggestion:hover {background:#263c53}
+.suggestion-icon {font-size:23px;flex-shrink:0}
+.suggestion-info {min-width:0;flex:1}
+.suggestion-info strong {display:block;font-size:14px}
 .suggestion-info small {
  display:block;
  margin-top:4px;
@@ -348,15 +339,8 @@ textarea {
  margin-top:23px;
 }
 
-.category-heading h2 {
- margin:0 0 15px;
-}
-
-.filter-status {
- color:var(--green);
- font-size:11px;
- margin-bottom:15px;
-}
+.category-heading h2 {margin:0 0 15px}
+.filter-status {color:var(--green);font-size:11px;margin-bottom:15px}
 
 .filter-grid {
  display:grid;
@@ -377,14 +361,8 @@ textarea {
  transition:background .25s,border-color .25s,transform .25s;
 }
 
-.filter-card:active {
- transform:scale(.95);
-}
-
-.filter-card:hover {
- border-color:#55edb088;
- transform:translateY(-3px);
-}
+.filter-card:active {transform:scale(.95)}
+.filter-card:hover {border-color:#55edb088;transform:translateY(-3px)}
 
 .filter-card.active {
  background:#164438;
@@ -437,19 +415,11 @@ textarea {
  margin-top:15px;
 }
 
-.filters select {
- margin:0;
- min-width:0;
-}
+.filters select {margin:0;min-width:0}
 
 /* QUICK SEARCH */
 
-.quick-chips {
- display:flex;
- flex-wrap:wrap;
- gap:8px;
- margin:13px 0;
-}
+.quick-chips {display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
 
 .chip {
  border:1px solid var(--border);
@@ -461,10 +431,7 @@ textarea {
  transition:.2s;
 }
 
-.chip:active {
- transform:scale(.95);
- border-color:var(--green);
-}
+.chip:active {transform:scale(.95);border-color:var(--green)}
 
 /* PANELS */
 
@@ -477,11 +444,7 @@ textarea {
  animation:fadeIn .5s ease;
 }
 
-.city-grid {
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
-}
+.city-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
 .city-button {
  padding:16px 8px;
@@ -505,11 +468,7 @@ textarea {
  box-shadow:0 0 17px #55edb033;
 }
 
-.category-grid {
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:11px;
-}
+.category-grid {display:grid;grid-template-columns:1fr 1fr;gap:11px}
 
 .category-button {
  padding:15px 11px;
@@ -521,14 +480,8 @@ textarea {
  transition:.25s;
 }
 
-.category-button:active {
- transform:scale(.97);
-}
-
-.category-button.active {
- background:#164438;
- border:2px solid var(--green);
-}
+.category-button:active {transform:scale(.97)}
+.category-button.active {background:#164438;border:2px solid var(--green)}
 
 .category-button .emoji {
  display:block;
@@ -538,11 +491,7 @@ textarea {
  animation:none!important;
 }
 
-.category-button strong {
- display:block;
- font-size:13px;
-}
-
+.category-button strong {display:block;font-size:13px}
 .category-button small {
  display:block;
  color:var(--muted);
@@ -563,14 +512,8 @@ textarea {
  transition:.25s;
 }
 
-.primary:hover {
- box-shadow:0 8px 23px #55edb044;
- transform:translateY(-2px);
-}
-
-.primary:active {
- transform:scale(.97);
-}
+.primary:hover {box-shadow:0 8px 23px #55edb044;transform:translateY(-2px)}
+.primary:active {transform:scale(.97)}
 
 .secondary {
  padding:11px 14px;
@@ -595,10 +538,7 @@ textarea {
  transition:.25s;
 }
 
-.place:hover {
- border-color:#55edb077;
- transform:translateY(-3px);
-}
+.place:hover {border-color:#55edb077;transform:translateY(-3px)}
 
 .place:before {
  content:"";
@@ -623,11 +563,7 @@ textarea {
  overflow-wrap:anywhere;
 }
 
-.place-meta {
- color:var(--muted);
- font-size:13px;
- line-height:1.8;
-}
+.place-meta {color:var(--muted);font-size:13px;line-height:1.8}
 
 .place-rating {
  color:var(--yellow);
@@ -636,18 +572,9 @@ textarea {
  margin:14px 0 7px;
 }
 
-.place-actions {
- display:flex;
- flex-wrap:wrap;
- gap:8px;
- margin-top:15px;
-}
+.place-actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
 
-.map-link {
- text-decoration:none;
- display:inline-flex;
- align-items:center;
-}
+.map-link {text-decoration:none;display:inline-flex;align-items:center}
 
 .review {
  padding:13px;
@@ -659,21 +586,9 @@ textarea {
  animation:fadeIn .3s ease;
 }
 
-.review-name {
- color:var(--green);
- font-weight:bold;
-}
-
-.review-stars {
- color:var(--yellow);
- margin:7px 0;
-}
-
-.review-date {
- font-size:11px;
- color:var(--muted);
- margin-top:9px;
-}
+.review-name {color:var(--green);font-weight:bold}
+.review-stars {color:var(--yellow);margin:7px 0}
+.review-date {font-size:11px;color:var(--muted);margin-top:9px}
 
 /* RATING */
 
@@ -746,16 +661,11 @@ textarea {
  font-size:14px;
 }
 
-.toast.show {
- opacity:1;
- transform:translate(-50%,0);
-}
-
-.hidden {
- display:none!important;
-}
+.toast.show {opacity:1;transform:translate(-50%,0)}
 
 /* FOOTER */
+
+.hidden {display:none!important}
 
 footer {
  text-align:center;
@@ -766,9 +676,7 @@ footer {
  margin-top:35px;
 }
 
-footer strong {
- color:var(--green);
-}
+footer strong {color:var(--green)}
 
 @media(max-width:430px) {
  .container {padding:12px}
@@ -830,6 +738,90 @@ footer strong {
  </div>
 </div>
 
+<!-- ACCOUNT -->
+
+<section class="panel" id="accountPanel">
+ <h2>👤 Аккаунт Tolchok NP</h2>
+
+ <div id="authForms">
+  <div class="account-tabs">
+   <button type="button" id="loginTab" class="active">🔑 Вход</button>
+   <button type="button" id="registerTab">✨ Регистрация</button>
+  </div>
+
+  <p class="muted" id="accountHint">
+   Войди в аккаунт или создай новый.
+  </p>
+
+  <form id="loginForm">
+   <input
+    id="loginIdentity"
+    placeholder="📧 Почта или никнейм"
+    autocomplete="username"
+    required
+   >
+
+   <input
+    id="loginPassword"
+    type="password"
+    placeholder="🔒 Пароль"
+    autocomplete="current-password"
+    required
+   >
+
+   <button type="submit" class="primary">
+    🚀 Войти в аккаунт
+   </button>
+  </form>
+
+  <form id="registerForm" class="hidden">
+   <input
+    id="registerNickname"
+    placeholder="👤 Придумай никнейм"
+    minlength="3"
+    maxlength="24"
+    pattern="[A-Za-zА-Яа-яЁё0-9_]{3,24}"
+    title="От 3 до 24 символов: буквы, цифры или нижнее подчёркивание"
+    autocomplete="username"
+    required
+   >
+
+   <input
+    id="registerEmail"
+    type="email"
+    placeholder="📧 Твоя почта"
+    autocomplete="email"
+    required
+   >
+
+   <input
+    id="registerPassword"
+    type="password"
+    placeholder="🔒 Пароль (минимум 8 символов)"
+    minlength="8"
+    autocomplete="new-password"
+    required
+   >
+
+   <button type="submit" class="primary">
+    ✨ Создать аккаунт
+   </button>
+  </form>
+ </div>
+
+ <div id="profileBox" class="account-profile hidden">
+  <span class="muted">Ты вошёл как:</span>
+  <strong id="profileNickname">Пользователь</strong>
+  <p class="muted" id="profileEmail"></p>
+
+  <button type="button" id="logoutButton" class="secondary">
+   🚪 Выйти из аккаунта
+  </button>
+ </div>
+
+ <div id="accountStatus" class="account-status" aria-live="polite"></div>
+</section>
+
 <!-- SEARCH -->
 
 <h2>🔍 Найти место</h2>
@@ -861,7 +853,7 @@ footer strong {
  <button class="chip" data-category="Торговый центр">🏬 ТЦ</button>
 </div>
 
-<!-- NEW CATEGORY FILTER -->
+<!-- CATEGORY FILTER -->
 
 <div class="category-heading">
  <h2>📂 Категории</h2>
@@ -876,51 +868,41 @@ footer strong {
  <button class="filter-card active"
   data-filter="all"
   aria-pressed="true">
-
   <span class="filter-icon">🗂️</span>
   <span class="filter-name">Все места</span>
   <span class="filter-count" id="count-all">0</span>
-
  </button>
 
  <button class="filter-card"
   data-filter="Общественный туалет"
   aria-pressed="false">
-
   <span class="filter-icon">🚻</span>
   <span class="filter-name">Общественные</span>
   <span class="filter-count" id="count-public">0</span>
-
  </button>
 
  <button class="filter-card"
   data-filter="Торговый центр"
   aria-pressed="false">
-
   <span class="filter-icon">🏬</span>
   <span class="filter-name">Торговые центры</span>
   <span class="filter-count" id="count-mall">0</span>
-
  </button>
 
  <button class="filter-card"
   data-filter="Кафе или заведение"
   aria-pressed="false">
-
   <span class="filter-icon">🍔</span>
   <span class="filter-name">Кафе</span>
   <span class="filter-count" id="count-cafe">0</span>
-
  </button>
 
  <button class="filter-card"
   data-filter="Другое"
   aria-pressed="false">
-
   <span class="filter-icon">📍</span>
   <span class="filter-name">Другое</span>
   <span class="filter-count" id="count-other">0</span>
-
  </button>
 
 </div>
@@ -928,7 +910,6 @@ footer strong {
 <!-- FILTERS -->
 
 <div class="filters">
-
  <select id="cityFilter">
   <option value="all">🌍 Все города</option>
   <option value="Новополоцк">🏙️ Новополоцк</option>
@@ -940,19 +921,16 @@ footer strong {
   <option value="reviews">💬 Больше отзывов</option>
   <option value="new">🆕 Сначала новые</option>
  </select>
-
 </div>
 
 <!-- PLACES -->
 
 <h2>🏆 Рейтинг мест</h2>
-
 <div id="places"></div>
 
 <!-- ADD PLACE -->
 
 <section class="panel">
-
  <h2>➕ Добавить туалет</h2>
 
  <p class="muted">
@@ -960,29 +938,22 @@ footer strong {
  </p>
 
  <form id="placeForm">
-
   <p class="muted">📍 Выбери город</p>
 
   <div class="city-grid">
-
    <button type="button"
     class="city-button active"
     data-city="Новополоцк">
-
     <span class="emoji">🏙️</span>
     <strong>Новополоцк</strong>
-
    </button>
 
    <button type="button"
     class="city-button"
     data-city="Полоцк">
-
     <span class="emoji">🏛️</span>
     <strong>Полоцк</strong>
-
    </button>
-
   </div>
 
   <p class="muted" style="margin-top:20px">
@@ -990,56 +961,41 @@ footer strong {
   </p>
 
   <div class="category-grid">
-
    <button type="button"
     class="category-button active"
     data-category="Общественный туалет">
-
     <span class="emoji">🚻</span>
     <strong>Общественный туалет</strong>
     <small>Городские уборные</small>
-
    </button>
 
    <button type="button"
     class="category-button"
     data-category="Торговый центр">
-
     <span class="emoji">🏬</span>
     <strong>Торговый центр</strong>
     <small>Туалеты в ТЦ</small>
-
    </button>
 
    <button type="button"
     class="category-button"
     data-category="Кафе или заведение">
-
     <span class="emoji">🍔</span>
     <strong>Кафе или заведение</strong>
     <small>Кафе и рестораны</small>
-
    </button>
 
    <button type="button"
     class="category-button"
     data-category="Другое">
-
     <span class="emoji">📍</span>
     <strong>Другое</strong>
     <small>Другие места</small>
-
    </button>
-
   </div>
 
-  <input type="hidden"
-   id="selectedCity"
-   value="Новополоцк">
-
-  <input type="hidden"
-   id="selectedCategory"
-   value="Общественный туалет">
+  <input type="hidden" id="selectedCity" value="Новополоцк">
+  <input type="hidden" id="selectedCategory" value="Общественный туалет">
 
   <p class="muted">📝 Информация о месте</p>
 
@@ -1056,20 +1012,16 @@ footer strong {
   <button type="submit" class="primary">
    🚀 Добавить в каталог
   </button>
-
  </form>
 </section>
 
 <!-- REVIEW -->
 
 <section class="panel hidden" id="reviewPanel">
-
  <h2>⭐ Оставить отзыв</h2>
-
  <p id="reviewPlace" class="muted"></p>
 
  <form id="reviewForm">
-
   <input id="nickname"
    placeholder="👤 Твой никнейм (необязательно)"
    maxlength="30">
@@ -1077,17 +1029,14 @@ footer strong {
   <p class="muted">Как тебе это место?</p>
 
   <div class="rating-buttons">
-
    <button type="button" class="star-button active" data-stars="1">★</button>
    <button type="button" class="star-button active" data-stars="2">★</button>
    <button type="button" class="star-button active" data-stars="3">★</button>
    <button type="button" class="star-button active" data-stars="4">★</button>
    <button type="button" class="star-button active" data-stars="5">★</button>
-
   </div>
 
-  <p id="ratingLabel"
-   style="text-align:center;color:#ffd45c">
+  <p id="ratingLabel" style="text-align:center;color:#ffd45c">
    ⭐ 5 из 5 — Отлично!
   </p>
 
@@ -1108,7 +1057,6 @@ footer strong {
    style="width:100%;margin-top:10px">
    Отмена
   </button>
-
  </form>
 </section>
 
@@ -1133,6 +1081,278 @@ footer strong {
 <div class="toast" id="toast"></div>
 
 <script>
+
+/* ===================================
+   SUPABASE ACCOUNT SYSTEM
+   =================================== */
+
+const SUPABASE_URL = "https://ddlbvswesbqyghmtmlxv.supabase.co";
+const SUPABASE_KEY = "sb_publishable_RHcQvREUKdBGXpYI851FVQ_JI-lIq0X";
+
+const supabaseClient = window.supabase.createClient(
+ SUPABASE_URL,
+ SUPABASE_KEY
+);
+
+let currentAccountNickname = "";
+
+const authForms = document.getElementById("authForms");
+const profileBox = document.getElementById("profileBox");
+const accountStatus = document.getElementById("accountStatus");
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+const loginTab = document.getElementById("loginTab");
+const registerTab = document.getElementById("registerTab");
+
+function setAccountStatus(message,type="") {
+ accountStatus.textContent = message;
+ accountStatus.className = "account-status " + type;
+}
+
+function showAuthTab(tab) {
+ const isLogin = tab === "login";
+
+ loginForm.classList.toggle("hidden",!isLogin);
+ registerForm.classList.toggle("hidden",isLogin);
+
+ loginTab.classList.toggle("active",isLogin);
+ registerTab.classList.toggle("active",!isLogin);
+
+ document.getElementById("accountHint").textContent =
+  isLogin
+   ? "Введи свою почту или никнейм и пароль."
+   : "Придумай никнейм, укажи почту и создай пароль.";
+}
+
+loginTab.addEventListener("click",() => showAuthTab("login"));
+registerTab.addEventListener("click",() => showAuthTab("register"));
+
+/* REGISTRATION */
+
+registerForm.addEventListener("submit",async function(e) {
+ e.preventDefault();
+
+ const nickname = document.getElementById("registerNickname").value.trim();
+ const email = document.getElementById("registerEmail").value.trim().toLowerCase();
+ const password = document.getElementById("registerPassword").value;
+
+ if (nickname.length < 3 || nickname.length > 24) {
+  setAccountStatus("Никнейм должен содержать от 3 до 24 символов.","error");
+  return;
+ }
+
+ if (password.length < 8) {
+  setAccountStatus("Пароль должен содержать минимум 8 символов.","error");
+  return;
+ }
+
+ const submitButton = registerForm.querySelector("button[type=submit]");
+ submitButton.disabled = true;
+ submitButton.textContent = "Создаём аккаунт...";
+
+ setAccountStatus("Регистрируем аккаунт...");
+
+ try {
+  const {data,error} = await supabaseClient.auth.signUp({
+   email,
+   password,
+   options:{
+    data:{
+     nickname:nickname
+    }
+   }
+  });
+
+  if (error) throw error;
+
+  if (data.session) {
+   setAccountStatus("Аккаунт создан! Ты успешно вошёл.","success");
+   showToast("🎉 Аккаунт создан!");
+  } else {
+   setAccountStatus(
+    "Аккаунт создан! Проверь почту и подтверди регистрацию по ссылке из письма.",
+    "success"
+   );
+  }
+
+  registerForm.reset();
+
+ } catch(error) {
+  console.error("Registration error:",error);
+  setAccountStatus(
+   error.message || "Не удалось создать аккаунт. Проверь данные.",
+   "error"
+  );
+ } finally {
+  submitButton.disabled = false;
+  submitButton.textContent = "✨ Создать аккаунт";
+ }
+});
+
+/* LOGIN */
+
+loginForm.addEventListener("submit",async function(e) {
+ e.preventDefault();
+
+ const identity = document.getElementById("loginIdentity").value.trim();
+ const password = document.getElementById("loginPassword").value;
+
+ if (!identity || !password) {
+  setAccountStatus("Заполни все поля.","error");
+  return;
+ }
+
+ const submitButton = loginForm.querySelector("button[type=submit]");
+ submitButton.disabled = true;
+ submitButton.textContent = "Входим...";
+
+ setAccountStatus("Проверяем данные...");
+
+ try {
+  if (identity.includes("@")) {
+
+   const {error} = await supabaseClient.auth.signInWithPassword({
+    email:identity.toLowerCase(),
+    password
+   });
+
+   if (error) throw error;
+
+  } else {
+
+   const {data,error} = await supabaseClient.functions.invoke(
+    "login-with-nickname",
+    {
+     body:{
+      nickname:identity,
+      password:password
+     }
+    }
+   );
+
+   if (error) throw error;
+
+   const accessToken = data?.access_token || data?.session?.access_token;
+   const refreshToken = data?.refresh_token || data?.session?.refresh_token;
+
+   if (!accessToken || !refreshToken) {
+    throw new Error(data?.error || "Не удалось войти. Проверь никнейм и пароль.");
+   }
+
+   const {error:sessionError} = await supabaseClient.auth.setSession({
+    access_token:accessToken,
+    refresh_token:refreshToken
+   });
+
+   if (sessionError) throw sessionError;
+  }
+
+  loginForm.reset();
+  setAccountStatus("Ты успешно вошёл в аккаунт!","success");
+  showToast("👋 С возвращением!");
+
+ } catch(error) {
+  console.error("Login error:",error);
+  setAccountStatus(
+   "Не удалось войти. Проверь никнейм/почту и пароль.",
+   "error"
+  );
+ } finally {
+  submitButton.disabled = false;
+  submitButton.textContent = "🚀 Войти в аккаунт";
+ }
+});
+
+/* UPDATE PROFILE DISPLAY */
+
+async function updateAccountUI(session) {
+
+ if (!session) {
+  currentAccountNickname = "";
+
+  authForms.classList.remove("hidden");
+  profileBox.classList.add("hidden");
+
+  const nicknameInput = document.getElementById("nickname");
+  nicknameInput.value = "";
+  nicknameInput.readOnly = false;
+
+  return;
+ }
+
+ let nickname = session.user.user_metadata?.nickname || "";
+
+ try {
+  const {data,error} = await supabaseClient
+   .from("profiles")
+   .select("nickname")
+   .eq("id",session.user.id)
+   .maybeSingle();
+
+  if (!error && data?.nickname) {
+   nickname = data.nickname;
+  }
+ } catch(error) {
+  console.warn("Profile loading error:",error);
+ }
+
+ if (!nickname) {
+  nickname = session.user.email?.split("@")[0] || "Пользователь";
+ }
+
+ currentAccountNickname = nickname;
+
+ document.getElementById("profileNickname").textContent = nickname;
+ document.getElementById("profileEmail").textContent =
+  session.user.email || "";
+
+ const nicknameInput = document.getElementById("nickname");
+ nicknameInput.value = nickname;
+ nicknameInput.readOnly = true;
+
+ authForms.classList.add("hidden");
+ profileBox.classList.remove("hidden");
+
+ setAccountStatus("Аккаунт активен.","success");
+}
+
+/* AUTH STATE */
+
+supabaseClient.auth.onAuthStateChange((_event,session) => {
+ Promise.resolve().then(() => updateAccountUI(session));
+});
+
+supabaseClient.auth.getSession().then(({data,error}) => {
+ if (error) {
+  setAccountStatus("Не удалось проверить сессию. Попробуй обновить страницу.","error");
+  return;
+ }
+
+ updateAccountUI(data.session);
+});
+
+/* LOGOUT */
+
+document.getElementById("logoutButton").addEventListener("click",async() => {
+ const button = document.getElementById("logoutButton");
+ button.disabled = true;
+
+ try {
+  const {error} = await supabaseClient.auth.signOut();
+
+  if (error) throw error;
+
+  showToast("Ты вышел из аккаунта.");
+  setAccountStatus("Ты вышел из аккаунта.");
+
+ } catch(error) {
+  console.error("Logout error:",error);
+  setAccountStatus("Не удалось выйти. Попробуй ещё раз.","error");
+ } finally {
+  button.disabled = false;
+ }
+});
+
 
 /* ===================================
    TOLCHOK NP 5.0
@@ -1162,12 +1382,10 @@ try {
    Array.isArray(p.reviews)
   ).map(p => ({
    ...p,
-   city: p.city === "Полоцк"
-    ? "Полоцк"
-    : "Новополоцк",
-   category: p.category || "Общественный туалет",
-   createdAt: Number(p.createdAt) || Date.now(),
-   reviews: p.reviews.filter(r =>
+   city:p.city === "Полоцк" ? "Полоцк" : "Новополоцк",
+   category:p.category || "Общественный туалет",
+   createdAt:Number(p.createdAt) || Date.now(),
+   reviews:p.reviews.filter(r =>
     r &&
     typeof r.comment === "string" &&
     Number(r.stars) >= 1 &&
@@ -1192,10 +1410,7 @@ function el(tag,cls,text) {
 
 function save() {
  try {
-  localStorage.setItem(
-   STORAGE_KEY,
-   JSON.stringify(places)
-  );
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(places));
  } catch(e) {
   showToast("⚠️ Ошибка сохранения");
  }
@@ -1225,7 +1440,6 @@ function average(place) {
 // STATISTICS
 
 function updateStats() {
-
  const totalReviews = places.reduce(
   (sum,p) => sum + p.reviews.length,0
  );
@@ -1238,21 +1452,15 @@ function updateStats() {
   ? ratings.reduce((a,b) => a+b,0) / ratings.length
   : null;
 
- document.getElementById("totalPlaces")
-  .textContent = places.length;
-
- document.getElementById("totalReviews")
-  .textContent = totalReviews;
-
- document.getElementById("average")
-  .textContent = avg === null ? "—" : avg.toFixed(1);
-
+ document.getElementById("totalPlaces").textContent = places.length;
+ document.getElementById("totalReviews").textContent = totalReviews;
+ document.getElementById("average").textContent =
+  avg === null ? "—" : avg.toFixed(1);
 }
 
 // CATEGORY COUNTERS
 
 function updateCategoryCounts() {
-
  const counts = {
   all:places.length,
   public:0,
@@ -1262,19 +1470,10 @@ function updateCategoryCounts() {
  };
 
  places.forEach(p => {
-
-  if (p.category === "Общественный туалет")
-   counts.public++;
-
-  if (p.category === "Торговый центр")
-   counts.mall++;
-
-  if (p.category === "Кафе или заведение")
-   counts.cafe++;
-
-  if (p.category === "Другое")
-   counts.other++;
-
+  if (p.category === "Общественный туалет") counts.public++;
+  if (p.category === "Торговый центр") counts.mall++;
+  if (p.category === "Кафе или заведение") counts.cafe++;
+  if (p.category === "Другое") counts.other++;
  });
 
  document.getElementById("count-all").textContent = counts.all;
@@ -1282,10 +1481,9 @@ function updateCategoryCounts() {
  document.getElementById("count-mall").textContent = counts.mall;
  document.getElementById("count-cafe").textContent = counts.cafe;
  document.getElementById("count-other").textContent = counts.other;
-
 }
 
-// CATEGORY FILTER FUNCTIONALITY
+// CATEGORY FILTER
 
 const categoryLabels = {
  all:"Все места",
@@ -1296,25 +1494,20 @@ const categoryLabels = {
 };
 
 document.querySelectorAll(".filter-card").forEach(button => {
-
  button.addEventListener("click",() => {
-
   selectedFilter = button.dataset.filter;
 
-  document.querySelectorAll(".filter-card")
-   .forEach(b => {
-    const active = b === button;
-    b.classList.toggle("active",active);
-    b.setAttribute("aria-pressed",String(active));
-   });
+  document.querySelectorAll(".filter-card").forEach(b => {
+   const active = b === button;
+   b.classList.toggle("active",active);
+   b.setAttribute("aria-pressed",String(active));
+  });
 
-  document.getElementById("filterStatus")
-   .textContent = "✨ Выбрано: " + categoryLabels[selectedFilter];
+  document.getElementById("filterStatus").textContent =
+   "✨ Выбрано: " + categoryLabels[selectedFilter];
 
   render();
-
  });
-
 });
 
 // SEARCH
@@ -1328,14 +1521,10 @@ function closeSuggestions() {
 }
 
 function updateClear() {
- clearSearch.classList.toggle(
-  "show",
-  searchInput.value.length > 0
- );
+ clearSearch.classList.toggle("show",searchInput.value.length > 0);
 }
 
 function showSuggestions() {
-
  const query = searchInput.value.trim().toLowerCase();
 
  suggestions.replaceChildren();
@@ -1364,7 +1553,6 @@ function showSuggestions() {
  matches = matches.slice(0,6);
 
  if (!matches.length) {
-
   suggestions.appendChild(
    el(
     "div",
@@ -1374,11 +1562,8 @@ function showSuggestions() {
      : "Пока нет мест. Добавь первое!"
    )
   );
-
  } else {
-
   matches.forEach(place => {
-
    const button = el("button","suggestion");
    button.type = "button";
 
@@ -1391,7 +1576,6 @@ function showSuggestions() {
    );
 
    const info = el("div","suggestion-info");
-
    info.appendChild(el("strong","",place.name));
 
    info.appendChild(
@@ -1410,9 +1594,7 @@ function showSuggestions() {
    });
 
    suggestions.appendChild(button);
-
   });
-
  }
 
  suggestions.classList.remove("hidden");
@@ -1445,39 +1627,28 @@ searchInput.addEventListener("keydown",e => {
 });
 
 document.addEventListener("click",e => {
- if (!e.target.closest(".search-wrap")) {
-  closeSuggestions();
- }
+ if (!e.target.closest(".search-wrap")) closeSuggestions();
 });
 
 // QUICK CHIPS
 
 document.querySelectorAll(".chip").forEach(button => {
-
  button.addEventListener("click",() => {
-
   if (button.dataset.city) {
-   document.getElementById("cityFilter").value =
-    button.dataset.city;
+   document.getElementById("cityFilter").value = button.dataset.city;
   }
 
   if (button.dataset.category) {
-
    selectedFilter = button.dataset.category;
 
-   document.querySelectorAll(".filter-card")
-    .forEach(b => {
-     const active =
-      b.dataset.filter === selectedFilter;
+   document.querySelectorAll(".filter-card").forEach(b => {
+    const active = b.dataset.filter === selectedFilter;
+    b.classList.toggle("active",active);
+    b.setAttribute("aria-pressed",String(active));
+   });
 
-     b.classList.toggle("active",active);
-     b.setAttribute("aria-pressed",String(active));
-    });
-
-   document.getElementById("filterStatus")
-    .textContent = "✨ Выбрано: " +
-     categoryLabels[selectedFilter];
-
+   document.getElementById("filterStatus").textContent =
+    "✨ Выбрано: " + categoryLabels[selectedFilter];
   }
 
   searchInput.value = "";
@@ -1487,27 +1658,20 @@ document.querySelectorAll(".chip").forEach(button => {
 
   document.getElementById("places")
    .scrollIntoView({behavior:"smooth"});
-
  });
-
 });
 
 // RENDER
 
 function render() {
-
  const container = document.getElementById("places");
-
  container.replaceChildren();
 
  const query = searchInput.value.trim().toLowerCase();
-
  const city = document.getElementById("cityFilter").value;
-
  const sort = document.getElementById("sort").value;
 
  let filtered = places.filter(p => {
-
   const textMatch = (
    p.name + " " +
    p.address + " " +
@@ -1522,47 +1686,31 @@ function render() {
    p.category === selectedFilter;
 
   return textMatch && cityMatch && categoryMatch;
-
  });
 
  if (sort === "rating") {
-
   filtered.sort((a,b) => {
-
    if (!a.reviews.length && !b.reviews.length) return 0;
    if (!a.reviews.length) return 1;
    if (!b.reviews.length) return -1;
-
    return average(b)-average(a);
-
   });
-
  }
 
  if (sort === "reviews") {
-  filtered.sort((a,b) =>
-   b.reviews.length-a.reviews.length
-  );
+  filtered.sort((a,b) => b.reviews.length-a.reviews.length);
  }
 
  if (sort === "new") {
-  filtered.sort((a,b) =>
-   b.createdAt-a.createdAt
-  );
+  filtered.sort((a,b) => b.createdAt-a.createdAt);
  }
 
  if (!filtered.length) {
-
   const empty = el("div","empty");
-
   empty.appendChild(el("div","","🔎"));
 
   empty.appendChild(
-   el(
-    "h3",
-    "",
-    places.length ? "Ничего не найдено" : "Каталог пока пустой"
-   )
+   el("h3","",places.length ? "Ничего не найдено" : "Каталог пока пустой")
   );
 
   empty.appendChild(
@@ -1576,35 +1724,25 @@ function render() {
   );
 
   container.appendChild(empty);
-
  }
 
  filtered.forEach((place,index) => {
-
   const card = el("article","place");
-
-  card.style.animationDelay =
-   Math.min(index*.05,.4)+"s";
+  card.style.animationDelay = Math.min(index*.05,.4)+"s";
 
   const icon =
    place.category === "Торговый центр" ? "🏬" :
    place.category === "Кафе или заведение" ? "🍔" :
    place.category === "Другое" ? "📍" : "🚻";
 
+  card.appendChild(el("div","place-title",icon+" "+place.name));
+
   card.appendChild(
-   el("div","place-title",icon+" "+place.name)
+   el("div","place-meta","📍 "+place.city+", "+place.address)
   );
 
   card.appendChild(
-   el("div","place-meta",
-    "📍 "+place.city+", "+place.address
-   )
-  );
-
-  card.appendChild(
-   el("div","place-meta",
-    "📂 "+place.category
-   )
+   el("div","place-meta","📂 "+place.category)
   );
 
   card.appendChild(
@@ -1618,59 +1756,39 @@ function render() {
   );
 
   card.appendChild(
-   el("div","muted",
-    "💬 "+place.reviews.length+" отзывов"
-   )
+   el("div","muted","💬 "+place.reviews.length+" отзывов")
   );
 
   place.reviews.forEach(review => {
-
    const item = el("div","review");
 
    item.appendChild(
-    el("div","review-name",
-     "👤 "+(review.nickname || "Аноним")
-    )
+    el("div","review-name","👤 "+(review.nickname || "Аноним"))
    );
 
    item.appendChild(
-    el("div","review-stars",
-     "⭐".repeat(review.stars)
-    )
+    el("div","review-stars","⭐".repeat(review.stars))
    );
 
-   item.appendChild(
-    el("div","",review.comment)
-   );
+   item.appendChild(el("div","",review.comment));
 
    item.appendChild(
     el("div","review-date",
-     "🕒 "+new Date(review.date)
-      .toLocaleDateString("ru-RU")
+     "🕒 "+new Date(review.date).toLocaleDateString("ru-RU")
     )
    );
 
    card.appendChild(item);
-
   });
 
   const actions = el("div","place-actions");
 
-  const reviewButton = el(
-   "button","secondary","✍️ Написать отзыв"
-  );
-
+  const reviewButton = el("button","secondary","✍️ Написать отзыв");
   reviewButton.type = "button";
-
-  reviewButton.addEventListener("click",() => {
-   openReview(place);
-  });
-
+  reviewButton.addEventListener("click",() => openReview(place));
   actions.appendChild(reviewButton);
 
-  const mapButton = el(
-   "a","secondary map-link","🗺️ Карта"
-  );
+  const mapButton = el("a","secondary map-link","🗺️ Карта");
 
   mapButton.href =
    "https://www.openstreetmap.org/search?query="+
@@ -1680,16 +1798,12 @@ function render() {
   mapButton.rel = "noopener noreferrer";
 
   actions.appendChild(mapButton);
-
   card.appendChild(actions);
-
   container.appendChild(card);
-
  });
 
  updateStats();
  updateCategoryCounts();
-
 }
 
 // ADD PLACE
@@ -1698,38 +1812,27 @@ const selectedCity = document.getElementById("selectedCity");
 const selectedCategory = document.getElementById("selectedCategory");
 
 document.querySelectorAll(".city-button").forEach(button => {
-
  button.addEventListener("click",() => {
-
   document.querySelectorAll(".city-button")
    .forEach(b => b.classList.remove("active"));
 
   button.classList.add("active");
-
   selectedCity.value = button.dataset.city;
-
  });
-
 });
 
 document.querySelectorAll(".category-button").forEach(button => {
-
  button.addEventListener("click",() => {
-
   document.querySelectorAll(".category-button")
    .forEach(b => b.classList.remove("active"));
 
   button.classList.add("active");
-
   selectedCategory.value = button.dataset.category;
-
  });
-
 });
 
 document.getElementById("placeForm")
  .addEventListener("submit",function(e) {
-
   e.preventDefault();
 
   const name = document.getElementById("placeName").value.trim();
@@ -1755,8 +1858,7 @@ document.getElementById("placeForm")
   }
 
   places.push({
-   id:Date.now().toString()+
-    Math.random().toString(36).slice(2,8),
+   id:Date.now().toString()+Math.random().toString(36).slice(2,8),
    name,
    address,
    city,
@@ -1766,17 +1868,13 @@ document.getElementById("placeForm")
   });
 
   save();
-
   this.reset();
 
   selectedCity.value = "Новополоцк";
   selectedCategory.value = "Общественный туалет";
 
   document.querySelectorAll(".city-button").forEach(b => {
-   b.classList.toggle(
-    "active",
-    b.dataset.city === "Новополоцк"
-   );
+   b.classList.toggle("active",b.dataset.city === "Новополоцк");
   });
 
   document.querySelectorAll(".category-button").forEach(b => {
@@ -1787,12 +1885,10 @@ document.getElementById("placeForm")
   });
 
   render();
-
   showToast("🎉 Место добавлено!");
 
   document.getElementById("places")
    .scrollIntoView({behavior:"smooth"});
-
  });
 
 // REVIEWS
@@ -1806,35 +1902,27 @@ const ratingNames = {
 };
 
 function setStars(value) {
-
  selectedStars = value;
-
  document.getElementById("stars").value = value;
 
  document.querySelectorAll(".star-button").forEach(button => {
-
   button.classList.toggle(
    "active",
    Number(button.dataset.stars) <= value
   );
-
  });
 
  document.getElementById("ratingLabel").textContent =
   "⭐ "+value+" из 5 — "+ratingNames[value];
-
 }
 
 document.querySelectorAll(".star-button").forEach(button => {
-
  button.addEventListener("click",() => {
   setStars(Number(button.dataset.stars));
  });
-
 });
 
 function openReview(place) {
-
  selectedPlaceId = place.id;
 
  document.getElementById("reviewPlace").textContent =
@@ -1842,25 +1930,24 @@ function openReview(place) {
 
  setStars(5);
 
- const panel = document.getElementById("reviewPanel");
+ const nicknameInput = document.getElementById("nickname");
+ nicknameInput.value = currentAccountNickname || "";
+ nicknameInput.readOnly = Boolean(currentAccountNickname);
 
+ const panel = document.getElementById("reviewPanel");
  panel.classList.remove("hidden");
 
  panel.scrollIntoView({
   behavior:"smooth",
   block:"center"
  });
-
 }
 
 document.getElementById("reviewForm")
  .addEventListener("submit",function(e) {
-
   e.preventDefault();
 
-  const place = places.find(
-   p => p.id === selectedPlaceId
-  );
+  const place = places.find(p => p.id === selectedPlaceId);
 
   if (!place) {
    showToast("⚠️ Место не найдено");
@@ -1868,6 +1955,7 @@ document.getElementById("reviewForm")
   }
 
   const nickname =
+   currentAccountNickname ||
    document.getElementById("nickname").value.trim();
 
   const comment =
@@ -1886,28 +1974,26 @@ document.getElementById("reviewForm")
   });
 
   save();
-
   this.reset();
+
+  document.getElementById("nickname").value =
+   currentAccountNickname || "";
+
+  document.getElementById("nickname").readOnly =
+   Boolean(currentAccountNickname);
 
   selectedPlaceId = null;
 
-  document.getElementById("reviewPanel")
-   .classList.add("hidden");
+  document.getElementById("reviewPanel").classList.add("hidden");
 
   render();
-
   showToast("⭐ Отзыв опубликован!");
-
  });
 
 document.getElementById("cancelReview")
  .addEventListener("click",() => {
-
   selectedPlaceId = null;
-
-  document.getElementById("reviewPanel")
-   .classList.add("hidden");
-
+  document.getElementById("reviewPanel").classList.add("hidden");
  });
 
 // FILTER EVENTS
