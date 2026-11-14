@@ -1,822 +1,291 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 7.0</title>
+<title>Tolchok NP — BETA 8.1</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 
 <style>
-:root {
- --bg:#0b1020;
- --panel:#17243a;
- --panel2:#111e32;
- --green:#55edb0;
- --text:#f4f6ff;
- --muted:#aab9cb;
- --border:#30425b;
- --yellow:#ffd45c;
-}
-* {box-sizing:border-box}
-html {scroll-behavior:smooth}
-body {
- margin:0;
- background:var(--bg);
- color:var(--text);
- font-family:Arial,sans-serif;
- overflow-x:hidden;
-}
-button,input,textarea,select {font:inherit}
-button {cursor:pointer}
-
-header {
- position:relative;
- overflow:hidden;
- text-align:center;
- padding:38px 15px;
- min-height:195px;
- background:
-  radial-gradient(circle at 15% 20%,#1d765b 0,transparent 40%),
-  radial-gradient(circle at 90% 10%,#47337a 0,transparent 35%),
-  linear-gradient(135deg,#142c42,#102d2c);
- border-bottom:1px solid #315a50;
-}
-.logo {
- font-size:clamp(30px,8vw,44px);
- font-weight:1000;
- color:var(--green);
- text-shadow:0 0 25px #55edb055;
-}
-header p {color:#c5d7e6;margin:10px 0}
-.beta {
- display:inline-flex;
- align-items:center;
- gap:7px;
- padding:8px 16px;
- margin-top:12px;
- border:1px solid #55edb077;
- border-radius:30px;
- background:#55edb018;
- color:var(--green);
- font-size:12px;
- font-weight:bold;
- letter-spacing:1px;
-}
-.beta-dot {
- width:7px;
- height:7px;
- border-radius:50%;
- background:var(--green);
- box-shadow:0 0 10px var(--green);
-}
-.floating {
- position:absolute;
- z-index:5;
- font-size:29px;
- opacity:.9;
- cursor:grab;
- touch-action:none;
- user-select:none;
- -webkit-user-select:none;
- will-change:transform,left,top;
- filter:drop-shadow(0 3px 5px #0007);
-}
-.floating:active {cursor:grabbing}
-.f1 {top:12px;left:8%}
-.f2 {top:62px;right:9%}
-.f3 {bottom:12px;left:20%}
-.f4 {bottom:15px;right:20%}
-
-@keyframes fadeIn {
- from {opacity:0;transform:translateY(-10px)}
- to {opacity:1;transform:translateY(0)}
-}
-.container {max-width:950px;margin:auto;padding:16px}
-h2 {font-size:21px;margin:28px 0 15px}
-.muted {color:var(--muted);font-size:13px}
-
-.stats {
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:9px;
- margin:20px 0;
-}
-.stat {
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:16px;
- padding:17px 5px;
- text-align:center;
-}
-.stat strong {
- display:block;
- font-size:24px;
- color:var(--green);
- margin-bottom:5px;
-}
-.stat span {font-size:11px;color:var(--muted)}
-
-input,textarea,select {
- width:100%;
- padding:15px;
- margin:7px 0;
- color:white;
- background:var(--panel2);
- border:1px solid var(--border);
- border-radius:13px;
- outline:none;
-}
-input:focus,textarea:focus,select:focus {
- border-color:var(--green);
- box-shadow:0 0 0 4px #55edb019;
-}
-select option {background:#17243a}
-textarea {min-height:100px;resize:vertical}
-
-.panel {
- padding:19px;
- margin:23px 0;
- background:var(--panel);
- border:1px solid var(--border);
- border-radius:18px;
-}
-.account-tabs {
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:9px;
- margin:12px 0;
-}
-.account-tabs button {
- padding:13px;
- border:1px solid var(--border);
- border-radius:11px;
- background:var(--panel2);
- color:white;
-}
-.account-tabs button.active {
- background:#164438;
- border-color:var(--green);
- color:var(--green);
-}
-.account-profile {
- padding:16px;
- background:var(--panel2);
- border:1px solid #365b50;
- border-radius:14px;
- margin-top:12px;
-}
-.account-profile strong {
- display:block;
- color:var(--green);
- font-size:20px;
- margin:8px 0 15px;
- overflow-wrap:anywhere;
-}
-.account-status {
- font-size:12px;
- line-height:1.6;
- margin-top:12px;
- color:var(--muted);
-}
-.account-status.error {color:#ff9292}
-.account-status.success {color:var(--green)}
-.auth-note {
- font-size:12px;
- color:var(--muted);
- line-height:1.55;
- margin:8px 0;
-}
-.auth-extra-actions {display:grid;gap:9px;margin-top:10px}
-.auth-extra-actions button {width:100%}
-
-.search-wrap {position:relative;margin-bottom:10px}
-.search-wrap input {
- height:62px;
- padding:15px 52px;
- margin:0;
- border-radius:17px;
- font-size:16px;
-}
-.search-icon {
- position:absolute;
- left:17px;
- top:50%;
- transform:translateY(-50%);
- font-size:23px;
- pointer-events:none;
-}
-.clear-search {
- display:none;
- position:absolute;
- right:10px;
- top:50%;
- transform:translateY(-50%);
- width:35px;
- height:35px;
- border:0;
- border-radius:50%;
- background:#263750;
- color:white;
- font-size:20px;
-}
-.clear-search.show {display:block}
-.search-help {
- padding:9px 3px;
- color:var(--muted);
- font-size:12px;
- line-height:1.6;
-}
-.suggestions {
- position:absolute;
- z-index:30;
- top:calc(100% + 7px);
- left:0;
- right:0;
- padding:10px;
- background:#192840;
- border:1px solid #435b75;
- border-radius:15px;
- box-shadow:0 15px 40px #0008;
-}
-.suggestions.hidden {display:none}
-.suggestion-title {
- color:var(--green);
- font-size:12px;
- font-weight:bold;
- padding:8px;
-}
-.suggestion {
- width:100%;
- padding:12px;
- display:flex;
- align-items:center;
- gap:12px;
- color:white;
- background:transparent;
- border:0;
- border-radius:10px;
- text-align:left;
-}
-.suggestion:hover {background:#263c53}
-.suggestion-icon {font-size:23px}
-.suggestion-info {min-width:0;flex:1}
-.suggestion-info strong {display:block;font-size:14px}
-.suggestion-info small {
- display:block;
- margin-top:4px;
- color:var(--muted);
- font-size:11px;
-}
-.suggestion-empty {
- padding:14px;
- color:var(--muted);
- font-size:13px;
- line-height:1.6;
-}
-
-.category-heading {
- display:flex;
- justify-content:space-between;
- align-items:center;
- gap:10px;
- margin-top:23px;
-}
-.category-heading h2 {margin:0 0 15px}
-.filter-status {color:var(--green);font-size:11px;margin-bottom:15px}
-.filter-grid {
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:10px;
-}
-.filter-card {
- min-width:0;
- position:relative;
- overflow:hidden;
- padding:15px 5px;
- border:1px solid var(--border);
- border-radius:15px;
- background:var(--panel2);
- color:white;
- text-align:center;
-}
-.filter-card.active {
- background:#164438;
- border:2px solid var(--green);
-}
-.filter-icon {
- display:block;
- font-size:29px;
- margin-bottom:9px;
- transform:none!important;
- animation:none!important;
-}
-.filter-name {display:block;font-size:12px;font-weight:bold;line-height:1.35}
-.filter-count {
- display:inline-block;
- margin-top:8px;
- padding:4px 9px;
- border-radius:20px;
- background:#293a50;
- color:#c6d5e5;
- font-size:10px;
-}
-.filter-card.active .filter-count {background:#55edb027;color:var(--green)}
-
-.filters {
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:10px;
- margin-top:15px;
-}
-.filters select {margin:0;min-width:0}
-.quick-chips {display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
-.chip {
- border:1px solid var(--border);
- background:#1b2c43;
- color:white;
- border-radius:25px;
- padding:9px 13px;
- font-size:12px;
-}
-
-.city-grid,.category-grid {
- display:grid;
- grid-template-columns:1fr 1fr;
- gap:12px;
-}
-.city-button {
- padding:16px 8px;
- background:var(--panel2);
- color:white;
- border:1px solid var(--border);
- border-radius:15px;
-}
-.city-button .emoji {
- display:block;
- font-size:30px;
- margin-bottom:8px;
-}
-.city-button.active,.category-button.active {
- background:#164438;
- border:2px solid var(--green);
-}
-.category-button {
- padding:15px 11px;
- text-align:left;
- color:white;
- background:var(--panel2);
- border:1px solid var(--border);
- border-radius:15px;
-}
-.category-button .emoji {
- display:block;
- font-size:29px;
- margin-bottom:10px;
-}
-.category-button strong {display:block;font-size:13px}
-.category-button small {
- display:block;
- color:var(--muted);
- margin-top:7px;
- font-size:11px;
-}
-
-.primary {
- width:100%;
- padding:15px;
- color:#10251d;
- background:linear-gradient(120deg,#55edb0,#39c9a0);
- border:0;
- border-radius:12px;
- font-weight:bold;
-}
-.secondary {
- padding:11px 14px;
- color:white;
- background:#263750;
- border:1px solid #405571;
- border-radius:10px;
- font-size:13px;
-}
-button:disabled {opacity:.6;cursor:not-allowed}
-
-.place {
- position:relative;
- overflow:hidden;
- padding:19px;
- margin:14px 0;
- background:linear-gradient(145deg,#1a2941,#142137);
- border:1px solid var(--border);
- border-radius:18px;
-}
-.place:before {
- content:"";
- position:absolute;
- top:0;
- left:0;
- width:4px;
- height:100%;
- background:var(--green);
- opacity:.6;
-}
-.place-title {
- font-size:19px;
- font-weight:bold;
- margin-bottom:12px;
- overflow-wrap:anywhere;
-}
-.place-meta {
- color:var(--muted);
- font-size:13px;
- line-height:1.8;
-}
-.place-rating {
- color:var(--yellow);
- font-size:20px;
- font-weight:bold;
- margin:14px 0 7px;
-}
-.place-actions {display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
-.map-link {text-decoration:none;display:inline-flex;align-items:center}
-.review {
- padding:13px;
- margin-top:11px;
- background:#0d192b;
- border:1px solid #273a51;
- border-radius:12px;
- overflow-wrap:anywhere;
-}
-.review-name {color:var(--green);font-weight:bold}
-.review-stars {color:var(--yellow);margin:7px 0}
-.review-date {font-size:11px;color:var(--muted);margin-top:9px}
-
-.comment-section {
- margin-top:14px;
- padding-top:12px;
- border-top:1px solid #30425b;
-}
-.comment-heading {
- font-size:13px;
- color:#c5d7e6;
- font-weight:bold;
- margin-bottom:10px;
-}
-.comment-item {
- padding:11px;
- margin:8px 0;
- background:#17263b;
- border:1px solid #30425b;
- border-radius:10px;
-}
-.comment-author {
- color:var(--green);
- font-size:12px;
- font-weight:bold;
-}
-.comment-body {
- margin-top:7px;
- font-size:13px;
- line-height:1.5;
- white-space:pre-wrap;
- overflow-wrap:anywhere;
-}
-.comment-date {
- color:var(--muted);
- font-size:10px;
- margin-top:7px;
-}
-.comment-form {
- display:flex;
- gap:8px;
- align-items:flex-start;
- margin-top:10px;
-}
-.comment-form textarea {
- min-height:45px;
- height:45px;
- margin:0;
- padding:12px;
- flex:1;
- font-size:13px;
-}
-.comment-form button {
- width:auto;
- min-width:90px;
- padding:13px 10px;
-}
-.comment-login {
- color:var(--muted);
- font-size:12px;
- margin-top:10px;
-}
-.delete-comment {
- margin-top:8px;
- padding:6px 9px;
- font-size:11px;
-}
-
-#placeMap {
- height:330px;
- width:100%;
- margin:12px 0 8px;
- border:1px solid var(--border);
- border-radius:14px;
- overflow:hidden;
- background:#e8eef5;
- z-index:1;
-}
-.map-status {
- min-height:34px;
- color:var(--muted);
- font-size:12px;
- line-height:1.5;
- margin:7px 0 12px;
-}
-.map-status.success {color:var(--green)}
-.map-status.error {color:#ff9292}
-.map-hint {
- padding:11px 13px;
- border-radius:12px;
- background:#13263a;
- color:#bfd0e2;
- font-size:12px;
- line-height:1.6;
- margin:10px 0;
-}
-
-.rating-buttons {display:flex;justify-content:center;gap:7px;margin:12px 0}
-.star-button {
- width:47px;
- height:47px;
- font-size:27px;
- color:#718096;
- background:#263750;
- border:1px solid #405571;
- border-radius:10px;
-}
-.star-button.active {
- color:var(--yellow);
- background:#3d351f;
- border-color:var(--yellow);
-}
-.notice {
- padding:14px;
- background:#142c2b;
- border:1px solid #28624f;
- border-radius:13px;
- color:#a8ebd1;
- font-size:12px;
- line-height:1.7;
-}
-.empty {
- padding:30px 15px;
- text-align:center;
- color:var(--muted);
- background:var(--panel);
- border:1px dashed #40536e;
- border-radius:16px;
- line-height:1.7;
-}
-.toast {
- position:fixed;
- bottom:25px;
- left:50%;
- z-index:100;
- width:max-content;
- max-width:90%;
- padding:14px 19px;
- border:1px solid #55edb077;
- border-radius:13px;
- background:#173b32;
- color:white;
- box-shadow:0 8px 30px #0008;
- opacity:0;
- transform:translate(-50%,20px);
- pointer-events:none;
- transition:.3s;
- font-size:14px;
-}
-.toast.show {opacity:1;transform:translate(-50%,0)}
-.hidden {display:none!important}
-
-footer {
- text-align:center;
- padding:35px 15px;
- color:#8292a8;
- font-size:13px;
- border-top:1px solid #24334a;
- margin-top:35px;
-}
-footer strong {color:var(--green)}
-
-@media(max-width:430px) {
- .container {padding:12px}
- .filter-grid {gap:7px}
- .filter-card {padding:13px 3px}
- .filter-name {font-size:11px}
- .filter-icon {font-size:26px}
- .stats {gap:6px}
- .stat strong {font-size:21px}
- .star-button {width:43px;height:45px}
- .comment-form {flex-direction:column}
- .comment-form button {width:100%}
-}
-@media(prefers-reduced-motion:reduce) {
- *,*::before,*::after {scroll-behavior:auto!important}
-}
+:root{
+ --bg:#0b1020;--panel:#17243a;--panel2:#111e32;
+ --green:#55edb0;--text:#f4f6ff;--muted:#aab9cb;
+ --border:#30425b;--yellow:#ffd45c;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:20px}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;padding-bottom:85px}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+header{
+ text-align:center;padding:38px 15px;min-height:185px;
+ background:radial-gradient(circle at 15% 20%,#1d765b 0,transparent 40%),
+ radial-gradient(circle at 90% 10%,#47337a 0,transparent 35%),
+ linear-gradient(135deg,#142c42,#102d2c);
+ border-bottom:1px solid #315a50
+}
+.logo{font-size:clamp(30px,8vw,44px);font-weight:1000;color:var(--green);text-shadow:0 0 25px #55edb055}
+header p{color:#c5d7e6;margin:10px 0}
+.beta{display:inline-flex;align-items:center;padding:8px 16px;margin-top:12px;border:1px solid #55edb077;border-radius:30px;background:#55edb018;color:var(--green);font-size:12px;font-weight:bold;letter-spacing:1px}
+.beta-dot{width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:8px}
+.container{max-width:950px;margin:auto;padding:16px}
+h2{font-size:21px;margin:22px 0 15px}
+h3{font-size:17px}
+.muted{color:var(--muted);font-size:13px}
+.hidden{display:none!important}
+.panel{padding:19px;margin:20px 0;background:var(--panel);border:1px solid var(--border);border-radius:18px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:20px 0}
+.stat{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:17px 5px;text-align:center}
+.stat strong{display:block;font-size:24px;color:var(--green);margin-bottom:5px}
+.stat span{font-size:11px;color:var(--muted)}
+input,textarea,select{width:100%;padding:15px;margin:7px 0;color:white;background:var(--panel2);border:1px solid var(--border);border-radius:13px;outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--green);box-shadow:0 0 0 4px #55edb019}
+select option{background:#17243a}
+textarea{min-height:100px;resize:vertical}
+.primary{width:100%;padding:15px;color:#10251d;background:linear-gradient(120deg,#55edb0,#39c9a0);border:0;border-radius:12px;font-weight:bold}
+.secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;color:white;background:#263750;border:1px solid #405571;border-radius:10px;font-size:13px}
+button:disabled{opacity:.6;cursor:not-allowed}
+.account-tabs{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
+.account-tabs button{padding:13px;border:1px solid var(--border);border-radius:11px;background:var(--panel2);color:white}
+.account-tabs button.active{background:#164438;border-color:var(--green);color:var(--green)}
+.account-profile{padding:16px;background:var(--panel2);border:1px solid #365b50;border-radius:14px;margin-top:12px}
+.account-profile strong{display:block;color:var(--green);font-size:20px;margin:8px 0 15px;overflow-wrap:anywhere}
+.account-status{font-size:12px;line-height:1.6;margin-top:12px;color:var(--muted)}
+.account-status.error{color:#ff9292}
+.account-status.success{color:var(--green)}
+.auth-note{font-size:12px;color:var(--muted);line-height:1.55;margin:8px 0}
+.search-wrap{position:relative;margin-bottom:10px}
+.search-wrap input{height:58px;padding:15px;margin:0;border-radius:15px;font-size:16px}
+.suggestions{position:absolute;z-index:30;top:calc(100% + 7px);left:0;right:0;padding:10px;background:#192840;border:1px solid #435b75;border-radius:15px;box-shadow:0 15px 40px #0008}
+.suggestions.hidden{display:none}
+.suggestion-title{color:var(--green);font-size:12px;font-weight:bold;padding:8px}
+.suggestion{width:100%;padding:12px;color:white;background:transparent;border:0;border-radius:10px;text-align:left}
+.suggestion:hover{background:#263c53}
+.suggestion strong{display:block;font-size:14px}
+.suggestion small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+.quick-chips{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:#1b2c43;color:white;border-radius:25px;padding:9px 13px;font-size:12px}
+.category-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:23px}
+.category-heading h2{margin:0 0 15px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.filters select{margin:0;min-width:0}
+.place{position:relative;overflow:hidden;padding:19px;margin:14px 0;background:linear-gradient(145deg,#1a2941,#142137);border:1px solid var(--border);border-radius:18px}
+.place:before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--green);opacity:.6}
+.place-title{font-size:19px;font-weight:bold;margin-bottom:12px;overflow-wrap:anywhere}
+.place-meta{color:var(--muted);font-size:13px;line-height:1.8}
+.place-rating{color:var(--yellow);font-size:20px;font-weight:bold;margin:14px 0 7px}
+.place-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+.map-link{text-decoration:none;display:inline-flex;align-items:center}
+.review{padding:13px;margin-top:11px;background:#0d192b;border:1px solid #273a51;border-radius:12px;overflow-wrap:anywhere}
+.review-name{color:var(--green);font-weight:bold}
+.review-stars{color:var(--yellow);margin:7px 0}
+.review-date{font-size:11px;color:var(--muted);margin-top:9px}
+.comment-section{margin-top:14px;padding-top:12px;border-top:1px solid #30425b}
+.comment-heading{font-size:13px;color:#c5d7e6;font-weight:bold;margin-bottom:10px}
+.comment-item{padding:11px;margin:8px 0;background:#17263b;border:1px solid #30425b;border-radius:10px}
+.comment-author{color:var(--green);font-size:12px;font-weight:bold}
+.comment-body{margin-top:7px;font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.comment-date{color:var(--muted);font-size:10px;margin-top:7px}
+.comment-form{display:flex;gap:8px;align-items:flex-start;margin-top:10px}
+.comment-form textarea{min-height:45px;height:45px;margin:0;padding:12px;flex:1;font-size:13px}
+.comment-form button{width:auto;min-width:90px;padding:13px 10px}
+.comment-login{color:var(--muted);font-size:12px;margin-top:10px}
+.delete-comment{margin-top:8px;padding:6px 9px;font-size:11px}
+#placeMap{height:330px;width:100%;margin:12px 0 8px;border:1px solid var(--border);border-radius:14px;overflow:hidden;background:#e8eef5;z-index:1}
+.map-status{min-height:34px;color:var(--muted);font-size:12px;line-height:1.5;margin:7px 0 12px}
+.map-status.success{color:var(--green)}
+.map-status.error{color:#ff9292}
+.map-hint{padding:11px 13px;border-radius:12px;background:#13263a;color:#bfd0e2;font-size:12px;line-height:1.6;margin:10px 0}
+.city-grid,.category-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.city-button{padding:16px 8px;background:var(--panel2);color:white;border:1px solid var(--border);border-radius:15px}
+.city-button.active,.category-button.active{background:#164438;border:2px solid var(--green)}
+.category-button{display:flex;align-items:center;gap:12px;padding:15px 11px;text-align:left;color:white;background:var(--panel2);border:1px solid var(--border);border-radius:15px}
+.category-button strong{display:block;font-size:13px}
+.category-button small{display:block;color:var(--muted);margin-top:7px;font-size:11px}
+.rating-buttons{display:flex;justify-content:center;gap:7px;margin:12px 0}
+.star-button{width:47px;height:47px;font-size:27px;color:#718096;background:#263750;border:1px solid #405571;border-radius:10px}
+.star-button.active{color:var(--yellow);background:#3d351f;border-color:var(--yellow)}
+.notice{padding:14px;background:#142c2b;border:1px solid #28624f;border-radius:13px;color:#a8ebd1;font-size:12px;line-height:1.7}
+.empty{padding:30px 15px;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed #40536e;border-radius:16px;line-height:1.7}
+.toast{position:fixed;bottom:90px;left:50%;z-index:100;width:max-content;max-width:90%;padding:14px 19px;border:1px solid #55edb077;border-radius:13px;background:#173b32;color:white;box-shadow:0 8px 30px #0008;opacity:0;transform:translate(-50%,20px);pointer-events:none;transition:.3s;font-size:14px}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+footer{text-align:center;padding:35px 15px;color:#8292a8;font-size:13px;border-top:1px solid #24334a;margin-top:35px}
+footer strong{color:var(--green)}
+.icon{width:19px;height:19px;stroke-width:2;flex-shrink:0}
+.icon-lg{width:27px;height:27px}
+.category-page-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+.category-page-card{display:flex;align-items:center;gap:14px;padding:19px 14px;min-height:100px;text-align:left;color:white;background:linear-gradient(145deg,#1a2941,#142137);border:1px solid var(--border);border-radius:16px;transition:.2s}
+.category-page-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.category-page-card .category-page-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex-shrink:0;border-radius:14px;background:#55edb018;color:var(--green)}
+.category-page-card strong{display:block;font-size:14px}
+.category-page-card small{display:block;margin-top:7px;color:var(--muted);font-size:11px}
+.page-back{display:inline-flex;align-items:center;gap:8px;margin:10px 0 15px;padding:10px 13px;color:var(--green);background:#55edb014;border:1px solid #55edb044;border-radius:10px}
+.bottom-nav{position:fixed;z-index:80;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#101b2d;border-top:1px solid #30425b;box-shadow:0 -8px 25px #0004}
+.nav-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:7px 2px;border:0;border-radius:10px;background:transparent;color:#9aabc0;font-size:11px}
+.nav-button.active{color:var(--green);background:#55edb014}
+.nav-button.active .icon{color:var(--green)}
+@media(max-width:430px){
+ .container{padding:12px}.stats{gap:6px}.stat strong{font-size:21px}
+ .star-button{width:43px;height:45px}.comment-form{flex-direction:column}
+ .comment-form button{width:100%}.category-page-grid{gap:8px}
+ .category-page-card{padding:14px 10px;gap:9px}
+ .category-page-card .category-page-icon{width:40px;height:40px}
+ .category-page-card strong{font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important}}
 </style>
 </head>
 
 <body>
-
-<header id="siteHeader">
- <div class="floating f1">🚽</div>
- <div class="floating f2">⭐</div>
- <div class="floating f3">✨</div>
- <div class="floating f4">🏆</div>
-
- <div class="logo">🚽 TOLCHOK NP</div>
+<header>
+ <div class="logo">TOLCHOK NP</div>
  <p>Городской рейтинг туалетов</p>
  <p>Новополоцк · Полоцк</p>
- <div class="beta"><span class="beta-dot"></span>BETA VERSION 7.0</div>
+ <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.1</div>
 </header>
 
 <main class="container">
-
  <div class="stats">
-  <div class="stat"><strong id="totalPlaces">0</strong><span>🚽 Мест</span></div>
-  <div class="stat"><strong id="totalReviews">0</strong><span>💬 Отзывов</span></div>
-  <div class="stat"><strong id="average">—</strong><span>⭐ Средняя оценка</span></div>
+  <div class="stat"><strong id="totalPlaces">0</strong><span>Мест</span></div>
+  <div class="stat"><strong id="totalReviews">0</strong><span>Отзывов</span></div>
+  <div class="stat"><strong id="average">—</strong><span>Средняя оценка</span></div>
  </div>
 
- <section class="panel" id="accountPanel">
-  <h2>👤 Аккаунт Tolchok NP</h2>
-
+ <section class="panel" id="profileSection">
+  <h2><i data-lucide="user-round" class="icon"></i> Профиль</h2>
   <div id="authForms">
    <div class="account-tabs">
-    <button type="button" id="loginTab" class="active">🔑 Вход</button>
-    <button type="button" id="registerTab">✨ Регистрация</button>
+    <button type="button" id="loginTab" class="active">Вход</button>
+    <button type="button" id="registerTab">Регистрация</button>
    </div>
-
    <p class="muted" id="accountHint">Войди в аккаунт или создай новый.</p>
-
    <form id="loginForm">
-    <input id="loginIdentity" placeholder="📧 Почта или никнейм" autocomplete="username" required>
-    <input id="loginPassword" type="password" placeholder="🔒 Пароль" autocomplete="current-password" required>
-    <button type="submit" class="primary">🚀 Войти в аккаунт</button>
-    <div class="auth-extra-actions">
-     <button type="button" id="forgotPasswordButton" class="secondary">🔑 Забыл пароль? Восстановить по почте</button>
-    </div>
-    <p class="auth-note">Для восстановления введи адрес электронной почты.</p>
+    <input id="loginIdentity" placeholder="Никнейм" autocomplete="username" required>
+    <input id="loginPassword" type="password" placeholder="Пароль" autocomplete="current-password" required>
+    <button type="submit" class="primary">Войти</button>
    </form>
-
    <form id="registerForm" class="hidden">
-    <input id="registerNickname" placeholder="👤 Придумай никнейм" minlength="3" maxlength="24"
-     pattern="[A-Za-zА-Яа-яЁё0-9_]{3,24}" autocomplete="username" required>
-    <input id="registerEmail" type="email" placeholder="📧 Твоя почта" autocomplete="email" required>
-    <input id="registerPassword" type="password" placeholder="🔒 Пароль (минимум 8 символов)" minlength="8" autocomplete="new-password" required>
-    <button type="submit" class="primary">✨ Создать аккаунт</button>
-    <div class="auth-extra-actions">
-     <button type="button" id="resendConfirmation" class="secondary">📨 Отправить письмо подтверждения повторно</button>
-    </div>
-    <p class="auth-note">Если письмо не пришло, укажи ту же почту и нажми повторную отправку.</p>
+    <input id="registerNickname" placeholder="Придумай никнейм" minlength="3" maxlength="24" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,24}" autocomplete="username" required>
+    <input id="registerPassword" type="password" placeholder="Пароль (минимум 8 символов)" minlength="8" autocomplete="new-password" required>
+    <button type="submit" class="primary">Создать аккаунт</button>
+    <p class="auth-note">Никнейм от 3 до 24 символов: буквы, цифры и нижнее подчёркивание. Почта не нужна.</p>
    </form>
   </div>
-
   <div id="profileBox" class="account-profile hidden">
    <span class="muted">Ты вошёл как:</span>
    <strong id="profileNickname">Пользователь</strong>
-   <p class="muted" id="profileEmail"></p>
-   <button type="button" id="logoutButton" class="secondary">🚪 Выйти из аккаунта</button>
+   <button type="button" id="logoutButton" class="secondary"><i data-lucide="log-out" class="icon"></i> Выйти из аккаунта</button>
   </div>
-
-  <div id="recoveryPanel" class="account-profile hidden">
-   <h3>🔐 Создать новый пароль</h3>
-   <p class="muted">Перейди по ссылке из письма и придумай новый пароль.</p>
-   <form id="recoveryForm">
-    <input id="newPassword" type="password" placeholder="Новый пароль (минимум 8 символов)" minlength="8" required>
-    <input id="confirmNewPassword" type="password" placeholder="Повтори новый пароль" minlength="8" required>
-    <button type="submit" class="primary">🔒 Сохранить новый пароль</button>
-   </form>
-  </div>
-
   <div id="accountStatus" class="account-status" aria-live="polite"></div>
  </section>
 
- <h2>🔍 Найти место</h2>
- <div class="search-wrap">
-  <span class="search-icon">🔎</span>
-  <input id="search" type="search" autocomplete="off" placeholder="Название, адрес или улица...">
-  <button id="clearSearch" class="clear-search" type="button">×</button>
-  <div id="suggestions" class="suggestions hidden"></div>
- </div>
- <div class="search-help">💡 Начни вводить название, улицу или город.</div>
+ <section id="catalogSection">
+  <h2><i data-lucide="layout-grid" class="icon"></i> Каталог мест</h2>
+  <div class="search-wrap">
+   <input id="search" type="search" autocomplete="off" placeholder="Название, адрес или улица...">
+   <div id="suggestions" class="suggestions hidden"></div>
+  </div>
+  <div class="quick-chips">
+   <button class="chip" data-city="Новополоцк"><i data-lucide="map-pin" class="icon"></i> Новополоцк</button>
+   <button class="chip" data-city="Полоцк"><i data-lucide="map-pin" class="icon"></i> Полоцк</button>
+   <button class="chip" data-open-categories><i data-lucide="shapes" class="icon"></i> Категории</button>
+  </div>
 
- <div class="quick-chips">
-  <button class="chip" data-city="Новополоцк">🏙️ Новополоцк</button>
-  <button class="chip" data-city="Полоцк">🏛️ Полоцк</button>
-  <button class="chip" data-category="Торговый центр">🏬 ТЦ</button>
- </div>
+  <div class="category-heading">
+   <h2>Категории</h2>
+   <button type="button" class="secondary" id="openCategories"><i data-lucide="arrow-right" class="icon"></i> Все категории</button>
+  </div>
+  <p class="muted">Открой отдельную страницу, чтобы выбрать нужную категорию.</p>
 
- <div class="category-heading"><h2>📂 Категории</h2></div>
- <div class="filter-status" id="filterStatus">✨ Выбери категорию для поиска</div>
+  <div class="filters">
+   <select id="cityFilter">
+    <option value="all">Все города</option>
+    <option value="Новополоцк">Новополоцк</option>
+    <option value="Полоцк">Полоцк</option>
+   </select>
+   <select id="sort">
+    <option value="rating">Лучший рейтинг</option>
+    <option value="reviews">Больше отзывов</option>
+    <option value="new">Сначала новые</option>
+   </select>
+  </div>
+  <h2>Рейтинг мест</h2>
+  <div id="places"></div>
+ </section>
 
- <div class="filter-grid">
-  <button class="filter-card active" data-filter="all">
-   <span class="filter-icon">🗂️</span><span class="filter-name">Все места</span><span class="filter-count" id="count-all">0</span>
-  </button>
-  <button class="filter-card" data-filter="Общественный туалет">
-   <span class="filter-icon">🚻</span><span class="filter-name">Общественные</span><span class="filter-count" id="count-public">0</span>
-  </button>
-  <button class="filter-card" data-filter="Торговый центр">
-   <span class="filter-icon">🏬</span><span class="filter-name">Торговые центры</span><span class="filter-count" id="count-mall">0</span>
-  </button>
-  <button class="filter-card" data-filter="Кафе или заведение">
-   <span class="filter-icon">🍔</span><span class="filter-name">Кафе</span><span class="filter-count" id="count-cafe">0</span>
-  </button>
-  <button class="filter-card" data-filter="Другое">
-   <span class="filter-icon">📍</span><span class="filter-name">Другое</span><span class="filter-count" id="count-other">0</span>
-  </button>
- </div>
+ <!-- ОТДЕЛЬНАЯ СТРАНИЦА КАТЕГОРИЙ -->
+ <section id="categoriesSection" class="hidden">
+  <button class="page-back" id="backToCatalog"><i data-lucide="arrow-left" class="icon"></i> Назад в каталог</button>
+  <h2><i data-lucide="shapes" class="icon"></i> Категории мест</h2>
+  <p class="muted">Выбери категорию, чтобы посмотреть подходящие места.</p>
+  <div class="category-page-grid">
+   <button class="category-page-card" data-filter="all">
+    <span class="category-page-icon"><i data-lucide="grid-2x2" class="icon-lg"></i></span>
+    <span><strong>Все места</strong><small id="catCountAll">0 мест</small></span>
+   </button>
+   <button class="category-page-card" data-filter="Общественный туалет">
+    <span class="category-page-icon"><i data-lucide="door-open" class="icon-lg"></i></span>
+    <span><strong>Общественные</strong><small id="catCountPublic">0 мест</small></span>
+   </button>
+   <button class="category-page-card" data-filter="Торговый центр">
+    <span class="category-page-icon"><i data-lucide="shopping-bag" class="icon-lg"></i></span>
+    <span><strong>Торговые центры</strong><small id="catCountMall">0 мест</small></span>
+   </button>
+   <button class="category-page-card" data-filter="Кафе или заведение">
+    <span class="category-page-icon"><i data-lucide="utensils" class="icon-lg"></i></span>
+    <span><strong>Кафе и заведения</strong><small id="catCountCafe">0 мест</small></span>
+   </button>
+   <button class="category-page-card" data-filter="Другое">
+    <span class="category-page-icon"><i data-lucide="map-pinned" class="icon-lg"></i></span>
+    <span><strong>Другие места</strong><small id="catCountOther">0 мест</small></span>
+   </button>
+  </div>
+ </section>
 
- <div class="filters">
-  <select id="cityFilter">
-   <option value="all">🌍 Все города</option>
-   <option value="Новополоцк">🏙️ Новополоцк</option>
-   <option value="Полоцк">🏛️ Полоцк</option>
-  </select>
-  <select id="sort">
-   <option value="rating">🏆 Лучший рейтинг</option>
-   <option value="reviews">💬 Больше отзывов</option>
-   <option value="new">🆕 Сначала новые</option>
-  </select>
- </div>
-
- <h2>🏆 Рейтинг мест</h2>
- <div id="places"></div>
-
- <section class="panel">
-  <h2>➕ Добавить туалет</h2>
+ <section class="panel" id="addSection">
+  <h2><i data-lucide="plus-circle" class="icon"></i> Добавить место</h2>
   <p class="muted">Добавлять места могут пользователи с аккаунтом.</p>
-
   <form id="placeForm">
-   <p class="muted">📍 Выбери город</p>
+   <p class="muted">Выбери город</p>
    <div class="city-grid">
-    <button type="button" class="city-button active" data-city="Новополоцк">
-     <span class="emoji">🏙️</span><strong>Новополоцк</strong>
-    </button>
-    <button type="button" class="city-button" data-city="Полоцк">
-     <span class="emoji">🏛️</span><strong>Полоцк</strong>
-    </button>
+    <button type="button" class="city-button active" data-city="Новополоцк">Новополоцк</button>
+    <button type="button" class="city-button" data-city="Полоцк">Полоцк</button>
    </div>
-
-   <p class="muted" style="margin-top:20px">🚻 Выбери категорию</p>
+   <p class="muted" style="margin-top:20px">Выбери категорию</p>
    <div class="category-grid">
-    <button type="button" class="category-button active" data-category="Общественный туалет">
-     <span class="emoji">🚻</span><strong>Общественный туалет</strong><small>Городские уборные</small>
-    </button>
-    <button type="button" class="category-button" data-category="Торговый центр">
-     <span class="emoji">🏬</span><strong>Торговый центр</strong><small>Туалеты в ТЦ</small>
-    </button>
-    <button type="button" class="category-button" data-category="Кафе или заведение">
-     <span class="emoji">🍔</span><strong>Кафе или заведение</strong><small>Кафе и рестораны</small>
-    </button>
-    <button type="button" class="category-button" data-category="Другое">
-     <span class="emoji">📍</span><strong>Другое</strong><small>Другие места</small>
-    </button>
+    <button type="button" class="category-button active" data-category="Общественный туалет"><i data-lucide="door-open" class="icon"></i><span><strong>Общественный туалет</strong><small>Городские уборные</small></span></button>
+    <button type="button" class="category-button" data-category="Торговый центр"><i data-lucide="shopping-bag" class="icon"></i><span><strong>Торговый центр</strong><small>Туалеты в ТЦ</small></span></button>
+    <button type="button" class="category-button" data-category="Кафе или заведение"><i data-lucide="utensils" class="icon"></i><span><strong>Кафе или заведение</strong><small>Кафе и рестораны</small></span></button>
+    <button type="button" class="category-button" data-category="Другое"><i data-lucide="map-pinned" class="icon"></i><span><strong>Другое</strong><small>Другие места</small></span></button>
    </div>
-
    <input type="hidden" id="selectedCity" value="Новополоцк">
    <input type="hidden" id="selectedCategory" value="Общественный туалет">
-
-   <p class="muted" style="margin-top:20px">🗺️ Выбери точку на карте</p>
-   <div class="map-hint">Нажми на карте на здание или место. Появится метка, а адрес попробуем определить автоматически.</div>
+   <p class="muted" style="margin-top:20px">Выбери точку на карте</p>
+   <div class="map-hint">Нажми на карте, чтобы поставить метку. Адрес попробуем определить автоматически.</div>
    <div id="placeMap"></div>
-   <div id="mapStatus" class="map-status">Загружаем карту…</div>
-
+   <div id="mapStatus" class="map-status">Загружаем карту...</div>
    <input type="hidden" id="placeLatitude">
    <input type="hidden" id="placeLongitude">
-
-   <p class="muted">📝 Информация о месте</p>
-   <input id="placeName" placeholder="🏷️ Название места" maxlength="70" required>
-   <input id="placeAddress" placeholder="📍 Улица, дом или адрес" maxlength="150" required>
-   <button type="submit" class="primary">🚀 Добавить в каталог</button>
+   <p class="muted">Информация о месте</p>
+   <input id="placeName" placeholder="Название места" maxlength="70" required>
+   <input id="placeAddress" placeholder="Улица, дом или адрес" maxlength="150" required>
+   <button type="submit" class="primary">Добавить в каталог</button>
   </form>
  </section>
 
  <section class="panel hidden" id="reviewPanel">
-  <h2>⭐ Отзыв о месте</h2>
+  <h2>Отзыв о месте</h2>
   <p id="reviewPlace" class="muted"></p>
-  <p class="notice">Один аккаунт может оставить только один отзыв на место. Его можно будет изменить позже.</p>
-
+  <p class="notice">Один аккаунт может оставить один отзыв на место. Его можно изменить позже.</p>
   <form id="reviewForm">
    <input id="nickname" placeholder="Твой никнейм" readonly>
-   <p class="muted">Как тебе это место?</p>
+   <p class="muted">Твоя оценка</p>
    <div class="rating-buttons">
     <button type="button" class="star-button active" data-stars="1">★</button>
     <button type="button" class="star-button active" data-stars="2">★</button>
@@ -824,1254 +293,597 @@ footer strong {color:var(--green)}
     <button type="button" class="star-button active" data-stars="4">★</button>
     <button type="button" class="star-button active" data-stars="5">★</button>
    </div>
-   <p id="ratingLabel" style="text-align:center;color:#ffd45c">⭐ 5 из 5 — Отлично!</p>
+   <p id="ratingLabel" style="text-align:center;color:#ffd45c">5 из 5 — Отлично</p>
    <input type="hidden" id="stars" value="5">
-   <textarea id="comment" maxlength="500" placeholder="💬 Напиши свой отзыв..." required></textarea>
-   <button type="submit" id="reviewSubmit" class="primary">✨ Опубликовать отзыв</button>
+   <textarea id="comment" maxlength="500" placeholder="Напиши свой отзыв..." required></textarea>
+   <button type="submit" id="reviewSubmit" class="primary">Опубликовать отзыв</button>
    <button type="button" id="cancelReview" class="secondary" style="width:100%;margin-top:10px">Отмена</button>
   </form>
  </section>
 
- <div class="notice">
-  🛡️ TOLCHOK NP BETA — публикуй честные отзывы, не размещай личные данные и оскорбления.
- </div>
+ <section class="panel hidden" id="reviewsSection">
+  <h2><i data-lucide="message-square" class="icon"></i> Все отзывы</h2>
+  <div id="allReviews"></div>
+ </section>
+
+ <div class="notice">Публикуй честные отзывы, не размещай личные данные и оскорбления.</div>
 </main>
 
 <footer>
- 🚽 <strong>TOLCHOK NP</strong> © 2026<br><br>
- 🏙️ Новополоцк · 🏛️ Полоцк<br><br>
- <span style="color:#55edb0">BETA VERSION 7.0</span><br><br>
- Сделано для городского сообщества ✨
+ <strong>TOLCHOK NP</strong> © 2026<br><br>
+ Новополоцк · Полоцк<br><br>
+ BETA VERSION 8.1<br><br>
+ Сделано для городского сообщества
 </footer>
 
+<nav class="bottom-nav">
+ <button class="nav-button active" data-tab="profileSection"><i data-lucide="user-round" class="icon"></i><span>Профиль</span></button>
+ <button class="nav-button" data-tab="addSection"><i data-lucide="plus-circle" class="icon"></i><span>Добавить</span></button>
+ <button class="nav-button" data-tab="catalogSection"><i data-lucide="layout-grid" class="icon"></i><span>Каталог</span></button>
+ <button class="nav-button" data-tab="reviewsSection"><i data-lucide="message-square" class="icon"></i><span>Отзывы</span></button>
+</nav>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ======================================
-   SUPABASE
-   ====================================== */
-
-if(!window.APP_CONFIG?.SUPABASE_URL||!window.APP_CONFIG?.SUPABASE_KEY) {
- alert("Не найден config.js. Проверь, что файл создан рядом с index.html.");
- throw new Error("Supabase config missing");
-}
-
-const SUPABASE_URL=window.APP_CONFIG.SUPABASE_URL;
-const SUPABASE_KEY=window.APP_CONFIG.SUPABASE_KEY;
+const SUPABASE_URL="https://ddlbvswesbqyghmtmlxv.supabase.co";
+const SUPABASE_KEY="sb_publishable_RHcQvREUKdBGXpYI851FVQ_JI-lIq0X";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let currentAccountNickname="";
-let currentUserId="";
-let isPasswordRecovery=new URLSearchParams(location.hash.slice(1)).get("type")==="recovery";
+let currentAccountNickname="",currentUserId="";
+let places=[],cloudReady=false,cloudLoading=false;
+let selectedPlaceId=null,selectedStars=5,selectedFilter="all";
+let placeMap=null,placeMarker=null,selectedCoordinates=null;
+let reverseBusy=false,lastReverseTime=0;
+const cityCenters={"Новополоцк":[55.5311,28.6467],"Полоцк":[55.4854,28.7786]};
+const $=id=>document.getElementById(id);
 
-const authForms=document.getElementById("authForms");
-const profileBox=document.getElementById("profileBox");
-const recoveryPanel=document.getElementById("recoveryPanel");
-const accountStatus=document.getElementById("accountStatus");
-const loginForm=document.getElementById("loginForm");
-const registerForm=document.getElementById("registerForm");
-const loginTab=document.getElementById("loginTab");
-const registerTab=document.getElementById("registerTab");
-
-function setAccountStatus(message,type="") {
- accountStatus.textContent=message;
- accountStatus.className="account-status "+type;
+function el(tag,cls,text){
+ const node=document.createElement(tag);
+ if(cls)node.className=cls;
+ if(text!==undefined)node.textContent=text;
+ return node;
+}
+function refreshIcons(){
+ if(window.lucide)lucide.createIcons();
 }
 let toastTimer;
-function showToast(message) {
- const toast=document.getElementById("toast");
- toast.textContent=message;
- toast.classList.add("show");
+function showToast(message){
+ $("toast").textContent=message;
+ $("toast").classList.add("show");
  clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
+ toastTimer=setTimeout(()=>$("toast").classList.remove("show"),2600);
 }
-
-function showAuthTab(tab) {
- const isLogin=tab==="login";
- loginForm.classList.toggle("hidden",!isLogin);
- registerForm.classList.toggle("hidden",isLogin);
- loginTab.classList.toggle("active",isLogin);
- registerTab.classList.toggle("active",!isLogin);
- document.getElementById("accountHint").textContent=isLogin
-  ?"Введи почту или никнейм и пароль."
-  :"Придумай никнейм, укажи почту и создай пароль.";
+function setAccountStatus(message,type=""){
+ $("accountStatus").textContent=message;
+ $("accountStatus").className="account-status "+type;
 }
-loginTab.addEventListener("click",()=>showAuthTab("login"));
-registerTab.addEventListener("click",()=>showAuthTab("register"));
+function showAuthTab(tab){
+ const login=tab==="login";
+ $("loginForm").classList.toggle("hidden",!login);
+ $("registerForm").classList.toggle("hidden",login);
+ $("loginTab").classList.toggle("active",login);
+ $("registerTab").classList.toggle("active",!login);
+ $("accountHint").textContent=login?"Введи никнейм и пароль.":"Создай аккаунт по никнейму и паролю.";
+}
+$("loginTab").onclick=()=>showAuthTab("login");
+$("registerTab").onclick=()=>showAuthTab("register");
 
-/* Регистрация */
-registerForm.addEventListener("submit",async e=>{
+/* Регистрация по никнейму */
+$("registerForm").addEventListener("submit",async e=>{
  e.preventDefault();
- const nickname=document.getElementById("registerNickname").value.trim();
- const email=document.getElementById("registerEmail").value.trim().toLowerCase();
- const password=document.getElementById("registerPassword").value;
- if(nickname.length<3||nickname.length>24) {
-  setAccountStatus("Никнейм должен содержать от 3 до 24 символов.","error");return;
+ const nickname=$("registerNickname").value.trim();
+ const password=$("registerPassword").value;
+ if(!/^[A-Za-zА-Яа-яЁё0-9_]{3,24}$/.test(nickname)){
+  setAccountStatus("Никнейм: от 3 до 24 символов, только буквы, цифры и _.","error");return;
  }
- if(password.length<8) {
+ if(password.length<8){
   setAccountStatus("Пароль должен содержать минимум 8 символов.","error");return;
  }
- const button=registerForm.querySelector('[type="submit"]');
- button.disabled=true;
- button.textContent="Создаём аккаунт...";
- try {
-  const {data,error}=await supabaseClient.auth.signUp({
-   email,password,options:{data:{nickname}}
-  });
-  if(error) throw error;
-  if(data.session) {
-   setAccountStatus("Аккаунт создан! Ты успешно вошёл.","success");
-   showToast("🎉 Аккаунт создан!");
-   registerForm.reset();
-  } else {
-   setAccountStatus("Аккаунт создан! Проверь почту и подтверди регистрацию.","success");
-  }
- } catch(error) {
+ const button=$("registerForm").querySelector('[type="submit"]');
+ button.disabled=true;button.textContent="Создаём аккаунт...";
+ try{
+  const {data,error}=await supabaseClient.functions.invoke("register-with-nickname",{body:{nickname,password}});
+  if(error)throw error;
+  const accessToken=data?.access_token||data?.session?.access_token;
+  const refreshToken=data?.refresh_token||data?.session?.refresh_token;
+  if(!accessToken||!refreshToken)throw new Error(data?.error||"Сервер не вернул сессию.");
+  const {error:sessionError}=await supabaseClient.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
+  if(sessionError)throw sessionError;
+  $("registerForm").reset();
+  setAccountStatus("Аккаунт создан. Ты вошёл!","success");
+  showToast("Аккаунт создан");
+ }catch(error){
   console.error(error);
   setAccountStatus(error.message||"Не удалось создать аккаунт.","error");
- } finally {
-  button.disabled=false;
-  button.textContent="✨ Создать аккаунт";
+ }finally{
+  button.disabled=false;button.textContent="Создать аккаунт";
  }
 });
 
-/* Повторная отправка письма */
-document.getElementById("resendConfirmation").addEventListener("click",async()=>{
- const email=document.getElementById("registerEmail").value.trim().toLowerCase();
- const button=document.getElementById("resendConfirmation");
- if(!email||!email.includes("@")) {
-  setAccountStatus("Сначала введи адрес почты в поле регистрации.","error");return;
- }
- button.disabled=true;
- try {
-  const {error}=await supabaseClient.auth.resend({type:"signup",email});
-  if(error) throw error;
-  setAccountStatus("Если подтверждение требуется, письмо отправлено. Проверь почту и папку «Спам».","success");
- } catch(error) {
-  setAccountStatus(error.message||"Не удалось отправить письмо.","error");
- } finally {
-  button.disabled=false;
- }
-});
-
-/* Вход */
-loginForm.addEventListener("submit",async e=>{
+/* Вход по никнейму */
+$("loginForm").addEventListener("submit",async e=>{
  e.preventDefault();
- const identity=document.getElementById("loginIdentity").value.trim();
- const password=document.getElementById("loginPassword").value;
- const button=loginForm.querySelector('[type="submit"]');
- button.disabled=true;
- button.textContent="Входим...";
- try {
-  if(identity.includes("@")) {
-   const {error}=await supabaseClient.auth.signInWithPassword({
-    email:identity.toLowerCase(),password
-   });
-   if(error) throw error;
-  } else {
-   const {data,error}=await supabaseClient.functions.invoke("login-with-nickname",{
-    body:{nickname:identity,password}
-   });
-   if(error) throw error;
-   const accessToken=data?.access_token||data?.session?.access_token;
-   const refreshToken=data?.refresh_token||data?.session?.refresh_token;
-   if(!accessToken||!refreshToken) throw new Error("Не удалось войти. Проверь никнейм и пароль.");
-   const {error:sessionError}=await supabaseClient.auth.setSession({
-    access_token:accessToken,refresh_token:refreshToken
-   });
-   if(sessionError) throw sessionError;
-  }
-  loginForm.reset();
-  setAccountStatus("Ты успешно вошёл!","success");
-  showToast("👋 С возвращением!");
- } catch(error) {
+ const nickname=$("loginIdentity").value.trim();
+ const password=$("loginPassword").value;
+ const button=$("loginForm").querySelector('[type="submit"]');
+ button.disabled=true;button.textContent="Входим...";
+ try{
+  const {data,error}=await supabaseClient.functions.invoke("login-with-nickname",{body:{nickname,password}});
+  if(error)throw error;
+  const accessToken=data?.access_token||data?.session?.access_token;
+  const refreshToken=data?.refresh_token||data?.session?.refresh_token;
+  if(!accessToken||!refreshToken)throw new Error("Проверь никнейм и пароль.");
+  const {error:sessionError}=await supabaseClient.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
+  if(sessionError)throw sessionError;
+  $("loginForm").reset();
+  setAccountStatus("Ты успешно вошёл.","success");
+  showToast("Вход выполнен");
+ }catch(error){
   console.error(error);
-  setAccountStatus("Не удалось войти. Проверь никнейм/почту и пароль.","error");
- } finally {
-  button.disabled=false;
-  button.textContent="🚀 Войти в аккаунт";
+  setAccountStatus("Не удалось войти. Проверь никнейм и пароль.","error");
+ }finally{
+  button.disabled=false;button.textContent="Войти";
  }
 });
 
-/* Восстановление пароля */
-document.getElementById("forgotPasswordButton").addEventListener("click",async()=>{
- const email=document.getElementById("loginIdentity").value.trim().toLowerCase();
- const button=document.getElementById("forgotPasswordButton");
- if(!email||!email.includes("@")) {
-  setAccountStatus("Введи почту в поле входа.","error");return;
- }
- button.disabled=true;
- try {
-  const redirectTo=location.origin+location.pathname;
-  const {error}=await supabaseClient.auth.resetPasswordForEmail(email,{redirectTo});
-  if(error) throw error;
-  setAccountStatus("Если аккаунт существует, письмо отправлено. Проверь почту.","success");
- } catch(error) {
-  setAccountStatus(error.message||"Не удалось отправить письмо.","error");
- } finally {
-  button.disabled=false;
- }
-});
-
-document.getElementById("recoveryForm").addEventListener("submit",async function(e) {
- e.preventDefault();
- const password=document.getElementById("newPassword").value;
- const confirmPassword=document.getElementById("confirmNewPassword").value;
- const button=this.querySelector('[type="submit"]');
- if(password.length<8) {setAccountStatus("Пароль должен быть не короче 8 символов.","error");return;}
- if(password!==confirmPassword) {setAccountStatus("Пароли не совпадают.","error");return;}
- button.disabled=true;
- try {
-  const {error}=await supabaseClient.auth.updateUser({password});
-  if(error) throw error;
-  isPasswordRecovery=false;
-  history.replaceState({},document.title,location.pathname);
-  this.reset();
-  recoveryPanel.classList.add("hidden");
-  await supabaseClient.auth.signOut();
-  authForms.classList.remove("hidden");
-  profileBox.classList.add("hidden");
-  showAuthTab("login");
-  setAccountStatus("Пароль изменён. Теперь войди с новым паролем.","success");
- } catch(error) {
-  setAccountStatus(error.message||"Не удалось изменить пароль.","error");
- } finally {
-  button.disabled=false;
- }
-});
-
-/* Профиль */
-async function updateAccountUI(session) {
- if(isPasswordRecovery) {
-  authForms.classList.add("hidden");
-  profileBox.classList.add("hidden");
-  recoveryPanel.classList.remove("hidden");
-  setAccountStatus(session?"Введи новый пароль ниже.":"Ссылка восстановления устарела.","success");
-  return;
- }
- recoveryPanel.classList.add("hidden");
- if(!session) {
-  currentUserId="";
-  currentAccountNickname="";
-  authForms.classList.remove("hidden");
-  profileBox.classList.add("hidden");
-  document.getElementById("nickname").value="";
+async function updateAccountUI(session){
+ if(!session){
+  currentUserId="";currentAccountNickname="";
+  $("authForms").classList.remove("hidden");
+  $("profileBox").classList.add("hidden");
+  $("nickname").value="";
   return;
  }
  currentUserId=session.user.id;
  let nickname=session.user.user_metadata?.nickname||"";
- try {
-  const {data}=await supabaseClient.from("profiles")
-   .select("nickname").eq("id",session.user.id).maybeSingle();
-  if(data?.nickname) nickname=data.nickname;
- } catch(e) {}
- if(!nickname) nickname=session.user.email?.split("@")[0]||"Пользователь";
- currentAccountNickname=nickname;
- document.getElementById("profileNickname").textContent=nickname;
- document.getElementById("profileEmail").textContent=session.user.email||"";
- document.getElementById("nickname").value=nickname;
- authForms.classList.add("hidden");
- profileBox.classList.remove("hidden");
+ try{
+  const {data}=await supabaseClient.from("profiles").select("nickname").eq("id",session.user.id).maybeSingle();
+  if(data?.nickname)nickname=data.nickname;
+ }catch(e){}
+ currentAccountNickname=nickname||"Пользователь";
+ $("profileNickname").textContent=currentAccountNickname;
+ $("nickname").value=currentAccountNickname;
+ $("authForms").classList.add("hidden");
+ $("profileBox").classList.remove("hidden");
  setAccountStatus("Аккаунт активен.","success");
+ render();
+ refreshIcons();
 }
-
-document.getElementById("logoutButton").addEventListener("click",async()=>{
+$("logoutButton").addEventListener("click",async()=>{
  const {error}=await supabaseClient.auth.signOut();
- if(error) setAccountStatus(error.message,"error");
- else {
-  showToast("Ты вышел из аккаунта.");
-  setAccountStatus("Ты вышел из аккаунта.");
- }
+ if(error)setAccountStatus(error.message,"error");
+ else{showToast("Ты вышел из аккаунта");setAccountStatus("Ты вышел из аккаунта.");}
 });
 
-/* ======================================
-   ОБЩАЯ БАЗА: PLACES + REVIEWS + COMMENTS
-   ====================================== */
-
-const STORAGE_KEY="tolchokNP_v3";
-let places=[];
-let cloudReady=false;
-let cloudLoading=false;
-let selectedPlaceId=null;
-let selectedStars=5;
-let selectedFilter="all";
-let selectedReviewId=null;
-
-function readOldPlaces() {
- try {
-  const old=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
-  return Array.isArray(old)?old:[];
- } catch(e) {return [];}
+/* Навигация по нижнему меню */
+function showMainTab(tabId){
+ const target=$(tabId);
+ if(!target)return;
+ document.querySelectorAll(".nav-button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tabId));
+ target.scrollIntoView({behavior:"smooth",block:"start"});
+ if(tabId==="reviewsSection")renderAllReviews();
+ if(tabId==="addSection"&&placeMap)setTimeout(()=>placeMap.invalidateSize(),250);
 }
+document.querySelectorAll(".nav-button").forEach(button=>{
+ button.addEventListener("click",()=>showMainTab(button.dataset.tab));
+});
 
-async function migrateOldPlaces(userId) {
- const old=readOldPlaces();
- if(!old.length) return;
+/* Отдельная страница категорий */
+function openCategoriesPage(){
+ $("catalogSection").classList.add("hidden");
+ $("categoriesSection").classList.remove("hidden");
+ $("categoriesSection").scrollIntoView({behavior:"smooth",block:"start"});
+ updateCategoryCounts();
+}
+function closeCategoriesPage(){
+ $("categoriesSection").classList.add("hidden");
+ $("catalogSection").classList.remove("hidden");
+ $("catalogSection").scrollIntoView({behavior:"smooth",block:"start"});
+}
+$("openCategories").onclick=openCategoriesPage;
+document.querySelectorAll("[data-open-categories]").forEach(b=>b.addEventListener("click",openCategoriesPage));
+$("backToCatalog").onclick=closeCategoriesPage;
+
+document.querySelectorAll(".category-page-card").forEach(button=>{
+ button.addEventListener("click",()=>{
+  selectedFilter=button.dataset.filter;
+  $("filterStatus")?.textContent;
+  $("search").value="";
+  closeSuggestions();
+  closeCategoriesPage();
+  render();
+  showMainTab("catalogSection");
+  showToast("Категория: "+categoryLabels[selectedFilter]);
+ });
+});
+
+/* База данных */
+const STORAGE_KEY="tolchokNP_v3";
+function readOldPlaces(){
+ try{const old=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");return Array.isArray(old)?old:[];}
+ catch(e){return [];}
+}
+async function migrateOldPlaces(userId){
+ const old=readOldPlaces();if(!old.length)return;
  const payload=old.filter(p=>p&&p.id&&p.name&&p.address).map(p=>({
-  id:String(p.id),
-  name:String(p.name),
-  address:String(p.address),
+  id:String(p.id),name:String(p.name),address:String(p.address),
   city:p.city==="Полоцк"?"Полоцк":"Новополоцк",
   category:p.category||"Общественный туалет",
   lat:Number.isFinite(Number(p.lat))?Number(p.lat):null,
   lon:Number.isFinite(Number(p.lon))?Number(p.lon):null,
-  created_at:new Date(Number(p.createdAt)||Date.now()).toISOString(),
-  created_by:userId
+  created_at:new Date(Number(p.createdAt)||Date.now()).toISOString(),created_by:userId
  }));
- if(payload.length) {
-  const {error}=await supabaseClient.from("places")
-   .upsert(payload,{onConflict:"id",ignoreDuplicates:true});
-  if(error) throw error;
+ if(payload.length){
+  const {error}=await supabaseClient.from("places").upsert(payload,{onConflict:"id",ignoreDuplicates:true});
+  if(error)throw error;
  }
 }
-
-function loadLocalFallback() {
- places=readOldPlaces().map(p=>({
-  ...p,
-  city:p.city==="Полоцк"?"Полоцк":"Новополоцк",
-  category:p.category||"Общественный туалет",
-  reviews:Array.isArray(p.reviews)?p.reviews:[],
-  comments:[]
- }));
+function loadLocalFallback(){
+ places=readOldPlaces().map(p=>({...p,city:p.city==="Полоцк"?"Полоцк":"Новополоцк",category:p.category||"Общественный туалет",reviews:Array.isArray(p.reviews)?p.reviews:[]}));
  render();
 }
-
-async function loadCloudData() {
- if(cloudLoading) return;
+async function loadCloudData(){
+ if(cloudLoading)return;
  cloudLoading=true;
- try {
+ try{
   const {data:{session}}=await supabaseClient.auth.getSession();
-  if(session) {
-   try {await migrateOldPlaces(session.user.id);}
-   catch(error) {console.warn("Перенос старых мест:",error);}
-  }
-
-  const [placeResult,reviewResult,commentResult]=await Promise.all([
+  if(session){try{await migrateOldPlaces(session.user.id);}catch(e){console.warn(e);}}
+  const [pr,rr,cr]=await Promise.all([
    supabaseClient.from("places").select("*").order("created_at",{ascending:false}),
    supabaseClient.from("reviews").select("*").order("created_at",{ascending:false}),
    supabaseClient.from("review_comments").select("*").order("created_at",{ascending:true})
   ]);
-
-  if(placeResult.error) throw placeResult.error;
-  if(reviewResult.error) throw reviewResult.error;
-  if(commentResult.error) throw commentResult.error;
-
+  if(pr.error)throw pr.error;
+  if(rr.error)throw rr.error;
   const commentsByReview={};
-  (commentResult.data||[]).forEach(c=>{
-   if(!commentsByReview[c.review_id]) commentsByReview[c.review_id]=[];
-   commentsByReview[c.review_id].push({
-    id:c.id,
-    review_id:c.review_id,
-    user_id:c.user_id,
-    nickname:c.nickname,
-    body:c.body,
-    created_at:c.created_at
-   });
+  if(!cr.error)(cr.data||[]).forEach(c=>{
+   (commentsByReview[c.review_id]??=[]).push({...c});
   });
-
   const reviewsByPlace={};
-  (reviewResult.data||[]).forEach(r=>{
-   if(!reviewsByPlace[r.place_id]) reviewsByPlace[r.place_id]=[];
-   reviewsByPlace[r.place_id].push({
-    id:r.id,
-    user_id:r.user_id,
-    nickname:r.nickname,
-    comment:r.comment,
-    stars:Number(r.stars),
-    date:r.created_at,
-    created_at:r.created_at,
-    updated_at:r.updated_at,
-    comments:commentsByReview[r.id]||[]
-   });
+  (rr.data||[]).forEach(r=>{
+   (reviewsByPlace[r.place_id]??=[]).push({...r,stars:Number(r.stars),date:r.created_at,comments:commentsByReview[r.id]||[]});
   });
-
-  places=(placeResult.data||[]).map(p=>({
-   id:String(p.id),
-   name:p.name,
-   address:p.address,
-   city:p.city,
-   category:p.category,
-   lat:p.lat===null?null:Number(p.lat),
-   lon:p.lon===null?null:Number(p.lon),
-   createdAt:new Date(p.created_at).getTime(),
-   reviews:reviewsByPlace[p.id]||[]
+  places=(pr.data||[]).map(p=>({
+   id:String(p.id),name:p.name,address:p.address,city:p.city,category:p.category,
+   lat:p.lat===null?null:Number(p.lat),lon:p.lon===null?null:Number(p.lon),
+   createdAt:new Date(p.created_at).getTime(),reviews:reviewsByPlace[p.id]||[]
   }));
-
-  cloudReady=true;
-  render();
- } catch(error) {
+  cloudReady=true;render();
+  if(cr.error)setAccountStatus("Места и отзывы загружены, но комментарии недоступны. Проверь таблицу review_comments.","error");
+ }catch(error){
   console.error("Cloud loading error:",error);
-  cloudReady=false;
-  loadLocalFallback();
-  setAccountStatus("Не удалось подключиться к общей базе. Проверь SQL в Supabase и наличие таблицы review_comments.","error");
- } finally {
-  cloudLoading=false;
- }
+  cloudReady=false;loadLocalFallback();
+  setAccountStatus("Не удалось подключиться к общей базе. Проверь таблицы Supabase.","error");
+ }finally{cloudLoading=false;}
 }
-
 supabaseClient.auth.onAuthStateChange((event,session)=>{
- setTimeout(async()=>{
-  if(event==="PASSWORD_RECOVERY") isPasswordRecovery=true;
-  await updateAccountUI(session);
-  if(event!=="TOKEN_REFRESHED") await loadCloudData();
- },0);
+ setTimeout(async()=>{await updateAccountUI(session);if(event!=="TOKEN_REFRESHED")await loadCloudData();},0);
 });
-
 supabaseClient.auth.getSession().then(async({data,error})=>{
- if(error) setAccountStatus("Не удалось проверить сессию.","error");
- await updateAccountUI(data?.session||null);
- await loadCloudData();
+ if(error)setAccountStatus("Не удалось проверить сессию.","error");
+ await updateAccountUI(data?.session||null);await loadCloudData();
 });
 
-/* ======================================
-   ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-   ====================================== */
-
-function el(tag,cls,text) {
- const node=document.createElement(tag);
- if(cls) node.className=cls;
- if(text!==undefined) node.textContent=text;
- return node;
-}
-function average(place) {
- if(!place.reviews.length) return 0;
+/* Статистика и категории */
+function average(place){
+ if(!place.reviews.length)return 0;
  return place.reviews.reduce((sum,r)=>sum+Number(r.stars),0)/place.reviews.length;
 }
-
-function updateStats() {
- const totalReviews=places.reduce((sum,p)=>sum+p.reviews.length,0);
+function updateStats(){
+ const total=places.reduce((s,p)=>s+p.reviews.length,0);
  const ratings=places.flatMap(p=>p.reviews.map(r=>Number(r.stars)));
- const avg=ratings.length?ratings.reduce((a,b)=>a+b,0)/ratings.length:null;
- document.getElementById("totalPlaces").textContent=places.length;
- document.getElementById("totalReviews").textContent=totalReviews;
- document.getElementById("average").textContent=avg===null?"—":avg.toFixed(1);
+ $("totalPlaces").textContent=places.length;
+ $("totalReviews").textContent=total;
+ $("average").textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"—";
 }
-function updateCategoryCounts() {
+const categoryLabels={all:"Все места","Общественный туалет":"Общественные туалеты","Торговый центр":"Торговые центры","Кафе или заведение":"Кафе и заведения","Другое":"Другие места"};
+function updateCategoryCounts(){
  const counts={all:places.length,public:0,mall:0,cafe:0,other:0};
  places.forEach(p=>{
-  if(p.category==="Общественный туалет") counts.public++;
-  if(p.category==="Торговый центр") counts.mall++;
-  if(p.category==="Кафе или заведение") counts.cafe++;
-  if(p.category==="Другое") counts.other++;
+  if(p.category==="Общественный туалет")counts.public++;
+  if(p.category==="Торговый центр")counts.mall++;
+  if(p.category==="Кафе или заведение")counts.cafe++;
+  if(p.category==="Другое")counts.other++;
  });
- document.getElementById("count-all").textContent=counts.all;
- document.getElementById("count-public").textContent=counts.public;
- document.getElementById("count-mall").textContent=counts.mall;
- document.getElementById("count-cafe").textContent=counts.cafe;
- document.getElementById("count-other").textContent=counts.other;
+ $("catCountAll").textContent=counts.all+" мест";
+ $("catCountPublic").textContent=counts.public+" мест";
+ $("catCountMall").textContent=counts.mall+" мест";
+ $("catCountCafe").textContent=counts.cafe+" мест";
+ $("catCountOther").textContent=counts.other+" мест";
 }
 
-const categoryLabels={
- all:"Все места",
- "Общественный туалет":"Общественные туалеты",
- "Торговый центр":"Торговые центры",
- "Кафе или заведение":"Кафе и заведения",
- "Другое":"Другие места"
-};
-
-document.querySelectorAll(".filter-card").forEach(button=>{
- button.addEventListener("click",()=>{
-  selectedFilter=button.dataset.filter;
-  document.querySelectorAll(".filter-card").forEach(b=>
-   b.classList.toggle("active",b===button)
-  );
-  document.getElementById("filterStatus").textContent="✨ Выбрано: "+categoryLabels[selectedFilter];
-  render();
- });
-});
-
 /* Поиск */
-const searchInput=document.getElementById("search");
-const suggestions=document.getElementById("suggestions");
-const clearSearch=document.getElementById("clearSearch");
-
-function closeSuggestions(){suggestions.classList.add("hidden")}
-function updateClear(){clearSearch.classList.toggle("show",searchInput.value.length>0)}
-
-function showSuggestions() {
- const query=searchInput.value.trim().toLowerCase();
+const searchInput=$("search"),suggestions=$("suggestions");
+function closeSuggestions(){suggestions.classList.add("hidden");}
+function showSuggestions(){
+ const q=searchInput.value.trim().toLowerCase();
  suggestions.replaceChildren();
- suggestions.appendChild(el("div","suggestion-title",query?"🔍 Результаты поиска":"✨ Популярные места"));
- let matches=places.filter(p=>
-  (p.name+" "+p.address+" "+p.city+" "+p.category).toLowerCase().includes(query)
- );
- if(!query) matches=[...places].sort((a,b)=>b.reviews.length-a.reviews.length);
- matches=matches.slice(0,6);
- if(!matches.length) {
-  suggestions.appendChild(el("div","suggestion-empty","🤔 Ничего не найдено. Можно добавить это место в каталог."));
- } else {
-  matches.forEach(place=>{
-   const button=el("button","suggestion");
-   button.type="button";
-   const icon=el("span","suggestion-icon",
-    place.category==="Торговый центр"?"🏬":
-    place.category==="Кафе или заведение"?"🍔":
-    place.category==="Другое"?"📍":"🚻"
-   );
-   const info=el("div","suggestion-info");
-   info.appendChild(el("strong","",place.name));
-   info.appendChild(el("small","","📍 "+place.city+" · "+place.address));
-   button.append(icon,info);
-   button.addEventListener("click",()=>{
-    searchInput.value=place.name;
-    updateClear();
-    closeSuggestions();
-    render();
-   });
-   suggestions.appendChild(button);
-  });
- }
+ suggestions.appendChild(el("div","suggestion-title",q?"Результаты поиска":"Популярные места"));
+ let matches=places.filter(p=>(p.name+" "+p.address+" "+p.city+" "+p.category).toLowerCase().includes(q));
+ if(!q)matches=[...places].sort((a,b)=>b.reviews.length-a.reviews.length);
+ matches.slice(0,6).forEach(place=>{
+  const button=el("button","suggestion");
+  button.type="button";button.appendChild(el("strong","",place.name));
+  button.appendChild(el("small","",place.city+" · "+place.address));
+  button.onclick=()=>{searchInput.value=place.name;closeSuggestions();render();};
+  suggestions.appendChild(button);
+ });
+ if(!matches.length)suggestions.appendChild(el("div","suggestion","Ничего не найдено."));
  suggestions.classList.remove("hidden");
 }
 searchInput.addEventListener("focus",showSuggestions);
-searchInput.addEventListener("input",()=>{updateClear();showSuggestions();render()});
-clearSearch.addEventListener("click",()=>{
- searchInput.value="";
- updateClear();
- render();
- showSuggestions();
- searchInput.focus();
-});
-searchInput.addEventListener("keydown",e=>{
- if(e.key==="Escape") closeSuggestions();
- if(e.key==="Enter"){closeSuggestions();render();searchInput.blur()}
-});
-document.addEventListener("click",e=>{
- if(!e.target.closest(".search-wrap")) closeSuggestions();
-});
-
+searchInput.addEventListener("input",()=>{showSuggestions();render();});
+searchInput.addEventListener("keydown",e=>{if(e.key==="Escape")closeSuggestions();if(e.key==="Enter")closeSuggestions();});
+document.addEventListener("click",e=>{if(!e.target.closest(".search-wrap"))closeSuggestions();});
 document.querySelectorAll(".chip").forEach(button=>{
  button.addEventListener("click",()=>{
-  if(button.dataset.city) document.getElementById("cityFilter").value=button.dataset.city;
-  if(button.dataset.category) {
-   selectedFilter=button.dataset.category;
-   document.querySelectorAll(".filter-card").forEach(b=>
-    b.classList.toggle("active",b.dataset.filter===selectedFilter)
-   );
-   document.getElementById("filterStatus").textContent="✨ Выбрано: "+categoryLabels[selectedFilter];
-  }
-  searchInput.value="";
-  updateClear();
-  closeSuggestions();
-  render();
-  document.getElementById("places").scrollIntoView({behavior:"smooth"});
+  if(button.dataset.city)$("cityFilter").value=button.dataset.city;
+  searchInput.value="";closeSuggestions();render();
+  $("places").scrollIntoView({behavior:"smooth"});
  });
 });
 
-/* ======================================
-   ОТЗЫВЫ
-   ====================================== */
-
-const ratingNames={
- 1:"Ужасно 😖",
- 2:"Плохо 😕",
- 3:"Нормально 🙂",
- 4:"Хорошо 😎",
- 5:"Отлично 🤩"
-};
-
-function setStars(value) {
- selectedStars=value;
- document.getElementById("stars").value=value;
- document.querySelectorAll(".star-button").forEach(button=>
-  button.classList.toggle("active",Number(button.dataset.stars)<=value)
- );
- document.getElementById("ratingLabel").textContent="⭐ "+value+" из 5 — "+ratingNames[value];
+/* Отзывы */
+const ratingNames={1:"Ужасно",2:"Плохо",3:"Нормально",4:"Хорошо",5:"Отлично"};
+function setStars(value){
+ selectedStars=value;$("stars").value=value;
+ document.querySelectorAll(".star-button").forEach(b=>b.classList.toggle("active",Number(b.dataset.stars)<=value));
+ $("ratingLabel").textContent=value+" из 5 — "+ratingNames[value];
 }
+document.querySelectorAll(".star-button").forEach(b=>b.onclick=()=>setStars(Number(b.dataset.stars)));
 
-document.querySelectorAll(".star-button").forEach(button=>
- button.addEventListener("click",()=>setStars(Number(button.dataset.stars)))
-);
-
-async function openReview(place) {
+async function openReview(place){
  const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session) {
-  showToast("🔐 Сначала войди в аккаунт!");
-  document.getElementById("accountPanel").scrollIntoView({behavior:"smooth"});
-  return;
- }
-
- currentUserId=session.user.id;
- selectedPlaceId=place.id;
- const ownReview=place.reviews.find(r=>r.user_id===currentUserId);
- selectedReviewId=ownReview?.id||null;
-
- document.getElementById("reviewPlace").textContent="🚽 "+place.name+" · "+place.city;
- document.getElementById("nickname").value=currentAccountNickname||"Пользователь";
- document.getElementById("comment").value=ownReview?.comment||"";
- setStars(ownReview?.stars||5);
-
- document.getElementById("reviewSubmit").textContent=ownReview
-  ?"💾 Сохранить изменения"
-  :"✨ Опубликовать отзыв";
-
- const panel=document.getElementById("reviewPanel");
- panel.classList.remove("hidden");
- panel.scrollIntoView({behavior:"smooth",block:"center"});
+ if(!session){showToast("Сначала войди в аккаунт");showMainTab("profileSection");return;}
+ currentUserId=session.user.id;selectedPlaceId=place.id;
+ const own=place.reviews.find(r=>r.user_id===currentUserId);
+ $("reviewPlace").textContent=place.name+" · "+place.city;
+ $("nickname").value=currentAccountNickname;
+ $("comment").value=own?.comment||"";
+ setStars(own?.stars||5);
+ $("reviewSubmit").textContent=own?"Сохранить изменения":"Опубликовать отзыв";
+ $("reviewPanel").classList.remove("hidden");
+ $("reviewPanel").scrollIntoView({behavior:"smooth",block:"center"});
 }
-
-document.getElementById("reviewForm").addEventListener("submit",async function(e) {
+$("reviewForm").addEventListener("submit",async e=>{
  e.preventDefault();
  const place=places.find(p=>p.id===selectedPlaceId);
- if(!place) {showToast("⚠️ Место не найдено");return;}
-
+ if(!place){showToast("Место не найдено");return;}
  const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session) {
-  showToast("Сначала войди в аккаунт.");
-  return;
- }
-
- const comment=document.getElementById("comment").value.trim();
- if(!comment) {showToast("Напиши отзыв 💬");return;}
-
- const button=document.getElementById("reviewSubmit");
- button.disabled=true;
- button.textContent="Сохраняем...";
-
- try {
-  const payload={
-   place_id:place.id,
-   user_id:session.user.id,
-   nickname:currentAccountNickname||session.user.email?.split("@")[0]||"Пользователь",
-   comment,
-   stars:selectedStars
-  };
-
-  const {error}=await supabaseClient.from("reviews")
-   .upsert(payload,{onConflict:"place_id,user_id"});
-
-  if(error) throw error;
-
-  document.getElementById("reviewForm").reset();
-  selectedPlaceId=null;
-  selectedReviewId=null;
-  document.getElementById("reviewPanel").classList.add("hidden");
-
-  await loadCloudData();
-  showToast("⭐ Отзыв сохранён!");
- } catch(error) {
-  console.error("Review error:",error);
-  showToast("⚠️ Не удалось сохранить отзыв. Проверь подключение к базе.");
- } finally {
-  button.disabled=false;
-  button.textContent="✨ Опубликовать отзыв";
- }
+ if(!session){showToast("Сначала войди в аккаунт");return;}
+ const comment=$("comment").value.trim();
+ if(!comment){showToast("Напиши отзыв");return;}
+ const button=$("reviewSubmit");button.disabled=true;button.textContent="Сохраняем...";
+ try{
+  const {error}=await supabaseClient.from("reviews").upsert({
+   place_id:place.id,user_id:session.user.id,
+   nickname:currentAccountNickname,comment,stars:selectedStars
+  },{onConflict:"place_id,user_id"});
+  if(error)throw error;
+  $("reviewForm").reset();selectedPlaceId=null;
+  $("reviewPanel").classList.add("hidden");
+  await loadCloudData();showToast("Отзыв сохранён");
+ }catch(error){console.error(error);showToast("Не удалось сохранить отзыв");}
+ finally{button.disabled=false;button.textContent="Опубликовать отзыв";}
 });
+$("cancelReview").onclick=()=>{$("reviewPanel").classList.add("hidden");selectedPlaceId=null;};
 
-document.getElementById("cancelReview").addEventListener("click",()=>{
- selectedPlaceId=null;
- selectedReviewId=null;
- document.getElementById("reviewPanel").classList.add("hidden");
-});
-
-/* ======================================
-   КОММЕНТАРИИ ПОД ОТЗЫВАМИ
-   ====================================== */
-
-async function submitReviewComment(reviewId,textarea,button) {
+/* Комментарии */
+async function submitReviewComment(reviewId,textarea,button){
  const body=textarea.value.trim();
- if(!body) {
-  showToast("Напиши комментарий.");
-  return;
- }
- if(body.length>500) {
-  showToast("Максимум 500 символов.");
-  return;
- }
-
+ if(!body||body.length>500){showToast("Комментарий должен содержать от 1 до 500 символов");return;}
  const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session) {
-  showToast("🔐 Войди в аккаунт, чтобы комментировать.");
-  return;
- }
-
- button.disabled=true;
- button.textContent="Отправка...";
-
- try {
-  const nickname=currentAccountNickname||session.user.email?.split("@")[0]||"Пользователь";
+ if(!session){showToast("Войди в аккаунт, чтобы комментировать");return;}
+ button.disabled=true;button.textContent="Отправка...";
+ try{
   const {error}=await supabaseClient.from("review_comments").insert({
-   review_id:reviewId,
-   user_id:session.user.id,
-   nickname,
-   body
+   review_id:reviewId,user_id:session.user.id,nickname:currentAccountNickname,body
   });
-  if(error) throw error;
-
-  textarea.value="";
-  await loadCloudData();
-  showToast("💬 Комментарий опубликован!");
- } catch(error) {
-  console.error("Comment error:",error);
-  showToast("Не удалось отправить комментарий.");
- } finally {
-  button.disabled=false;
-  button.textContent="Ответить";
- }
+  if(error)throw error;
+  textarea.value="";await loadCloudData();showToast("Комментарий опубликован");
+ }catch(error){console.error(error);showToast("Не удалось отправить комментарий");}
+ finally{button.disabled=false;button.textContent="Ответить";}
 }
-
-async function deleteReviewComment(commentId) {
+async function deleteReviewComment(commentId){
  const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session) return;
-
- if(!confirm("Удалить свой комментарий?")) return;
-
- try {
-  const {error}=await supabaseClient.from("review_comments")
-   .delete()
-   .eq("id",commentId)
-   .eq("user_id",session.user.id);
-
-  if(error) throw error;
-  await loadCloudData();
-  showToast("Комментарий удалён.");
- } catch(error) {
-  console.error(error);
-  showToast("Не удалось удалить комментарий.");
- }
+ if(!session||!confirm("Удалить свой комментарий?"))return;
+ try{
+  const {error}=await supabaseClient.from("review_comments").delete().eq("id",commentId).eq("user_id",session.user.id);
+  if(error)throw error;
+  await loadCloudData();showToast("Комментарий удалён");
+ }catch(error){console.error(error);showToast("Не удалось удалить комментарий");}
 }
-
-/* ======================================
-   ОТОБРАЖЕНИЕ МЕСТ И КОММЕНТАРИЕВ
-   ====================================== */
-
-function renderComments(review,item) {
+function renderComments(review,item){
  const section=el("div","comment-section");
- section.appendChild(el("div","comment-heading","💬 Комментарии ("+(review.comments?.length||0)+")"));
-
- (review.comments||[]).forEach(comment=>{
-  const commentItem=el("div","comment-item");
-  commentItem.appendChild(el("div","comment-author","👤 "+(comment.nickname||"Пользователь")));
-  commentItem.appendChild(el("div","comment-body",comment.body));
-  commentItem.appendChild(el("div","comment-date",new Date(comment.created_at).toLocaleString("ru-RU")));
-
-  if(currentUserId&&comment.user_id===currentUserId) {
-   const remove=el("button","secondary delete-comment","🗑️ Удалить");
-   remove.type="button";
-   remove.addEventListener("click",()=>deleteReviewComment(comment.id));
-   commentItem.appendChild(remove);
+ section.appendChild(el("div","comment-heading","Комментарии ("+(review.comments?.length||0)+")"));
+ (review.comments||[]).forEach(c=>{
+  const block=el("div","comment-item");
+  block.appendChild(el("div","comment-author",c.nickname||"Пользователь"));
+  block.appendChild(el("div","comment-body",c.body));
+  block.appendChild(el("div","comment-date",new Date(c.created_at).toLocaleString("ru-RU")));
+  if(currentUserId&&c.user_id===currentUserId){
+   const del=el("button","secondary delete-comment","Удалить");
+   del.type="button";del.onclick=()=>deleteReviewComment(c.id);block.appendChild(del);
   }
-  section.appendChild(commentItem);
+  section.appendChild(block);
  });
-
- if(currentUserId) {
-  const form=el("form","comment-form");
-  const textarea=el("textarea","");
-  textarea.maxLength=500;
-  textarea.placeholder="Написать комментарий...";
-  textarea.required=true;
-
-  const button=el("button","primary","Ответить");
-  button.type="submit";
-
-  form.append(textarea,button);
-  form.addEventListener("submit",e=>{
-   e.preventDefault();
-   submitReviewComment(review.id,textarea,button);
-  });
+ if(currentUserId){
+  const form=el("form","comment-form"),area=el("textarea","");
+  area.maxLength=500;area.placeholder="Написать комментарий...";area.required=true;
+  const button=el("button","primary","Ответить");button.type="submit";
+  form.append(area,button);
+  form.onsubmit=e=>{e.preventDefault();submitReviewComment(review.id,area,button);};
   section.appendChild(form);
- } else {
-  section.appendChild(el("div","comment-login","🔐 Войди в аккаунт, чтобы оставить комментарий."));
- }
+ }else section.appendChild(el("div","comment-login","Войди в аккаунт, чтобы комментировать."));
  item.appendChild(section);
 }
 
-/* ======================================
-   ОТОБРАЖЕНИЕ МЕСТ
-   ====================================== */
-
-function render() {
- const container=document.getElementById("places");
- container.replaceChildren();
-
- const query=searchInput.value.trim().toLowerCase();
- const city=document.getElementById("cityFilter").value;
- const sort=document.getElementById("sort").value;
-
+/* Отображение каталога */
+function render(){
+ const container=$("places");container.replaceChildren();
+ const q=searchInput.value.trim().toLowerCase(),city=$("cityFilter").value,sort=$("sort").value;
  let filtered=places.filter(p=>{
-  const textMatch=(p.name+" "+p.address+" "+p.city+" "+p.category).toLowerCase().includes(query);
-  const cityMatch=city==="all"||p.city===city;
-  const categoryMatch=selectedFilter==="all"||p.category===selectedFilter;
-  return textMatch&&cityMatch&&categoryMatch;
+  const text=(p.name+" "+p.address+" "+p.city+" "+p.category).toLowerCase().includes(q);
+  return text&&(city==="all"||p.city===city)&&(selectedFilter==="all"||p.category===selectedFilter);
  });
-
- if(sort==="rating") filtered.sort((a,b)=>{
-  if(!a.reviews.length&&!b.reviews.length) return 0;
-  if(!a.reviews.length) return 1;
-  if(!b.reviews.length) return -1;
-  return average(b)-average(a);
- });
- if(sort==="reviews") filtered.sort((a,b)=>b.reviews.length-a.reviews.length);
- if(sort==="new") filtered.sort((a,b)=>b.createdAt-a.createdAt);
-
- if(!filtered.length) {
-  const empty=el("div","empty");
-  empty.appendChild(el("div","","🔎"));
-  empty.appendChild(el("h3","",places.length?"Ничего не найдено":"Каталог пока пустой"));
-  empty.appendChild(el("p","",places.length?"Измени поиск или выбери другую категорию.":"Добавь первое место в Tolchok NP!"));
-  container.appendChild(empty);
+ if(sort==="rating")filtered.sort((a,b)=>average(b)-average(a));
+ if(sort==="reviews")filtered.sort((a,b)=>b.reviews.length-a.reviews.length);
+ if(sort==="new")filtered.sort((a,b)=>b.createdAt-a.createdAt);
+ if(!filtered.length){
+  container.appendChild(el("div","empty",places.length?"Ничего не найдено. Измени поиск или фильтры.":"Каталог пока пустой. Добавь первое место."));
  }
-
  filtered.forEach(place=>{
   const card=el("article","place");
-  const icon=place.category==="Торговый центр"?"🏬":
-   place.category==="Кафе или заведение"?"🍔":
-   place.category==="Другое"?"📍":"🚻";
-
-  card.appendChild(el("div","place-title",icon+" "+place.name));
-  card.appendChild(el("div","place-meta","📍 "+place.city+", "+place.address));
-  card.appendChild(el("div","place-meta","📂 "+place.category));
-  card.appendChild(el("div","place-rating",place.reviews.length
-   ?"⭐ "+average(place).toFixed(1)+" / 5"
-   :"⭐ Пока нет оценок"));
-  card.appendChild(el("div","muted","💬 "+place.reviews.length+" отзывов"));
-
+  card.appendChild(el("div","place-title",place.name));
+  card.appendChild(el("div","place-meta",place.city+", "+place.address));
+  card.appendChild(el("div","place-meta",place.category));
+  card.appendChild(el("div","place-rating",place.reviews.length?average(place).toFixed(1)+" / 5":"Пока нет оценок"));
+  card.appendChild(el("div","muted",place.reviews.length+" отзывов"));
   place.reviews.forEach(review=>{
    const item=el("div","review");
-   item.appendChild(el("div","review-name","👤 "+(review.nickname||"Аноним")));
-   item.appendChild(el("div","review-stars","⭐".repeat(review.stars)));
+   item.appendChild(el("div","review-name",review.nickname||"Аноним"));
+   item.appendChild(el("div","review-stars","★".repeat(review.stars)));
    item.appendChild(el("div","",review.comment));
-
-   const date=review.updated_at&&review.created_at!==review.updated_at
-    ?"🕒 Изменено: "+new Date(review.updated_at).toLocaleDateString("ru-RU")
-    :"🕒 "+new Date(review.date).toLocaleDateString("ru-RU");
-
-   item.appendChild(el("div","review-date",date));
-
-   if(currentUserId&&review.user_id===currentUserId) {
-    const edit=el("button","secondary","✏️ Редактировать мой отзыв");
-    edit.type="button";
-    edit.style.marginTop="10px";
-    edit.addEventListener("click",()=>openReview(place));
-    item.appendChild(edit);
+   item.appendChild(el("div","review-date",new Date(review.updated_at||review.created_at||review.date).toLocaleDateString("ru-RU")));
+   if(currentUserId&&review.user_id===currentUserId){
+    const edit=el("button","secondary","Редактировать мой отзыв");
+    edit.type="button";edit.style.marginTop="10px";edit.onclick=()=>openReview(place);item.appendChild(edit);
    }
-
-   renderComments(review,item);
-   card.appendChild(item);
+   renderComments(review,item);card.appendChild(item);
   });
-
   const actions=el("div","place-actions");
-  const ownReview=place.reviews.find(r=>r.user_id===currentUserId);
-  const reviewButton=el("button","secondary",ownReview?"✏️ Изменить отзыв":"✍️ Написать отзыв");
-  reviewButton.type="button";
-  reviewButton.addEventListener("click",()=>openReview(place));
-  actions.appendChild(reviewButton);
-
-  const mapButton=el("a","secondary map-link","🗺️ Карта");
-  if(place.lat!==null&&place.lon!==null&&Number.isFinite(Number(place.lat))&&Number.isFinite(Number(place.lon))) {
-   mapButton.href="https://www.openstreetmap.org/?mlat="+encodeURIComponent(place.lat)+"&mlon="+encodeURIComponent(place.lon)+"#map=18/"+encodeURIComponent(place.lat)+"/"+encodeURIComponent(place.lon);
-  } else {
-   mapButton.href="https://www.openstreetmap.org/search?query="+encodeURIComponent(place.city+", "+place.address);
-  }
-  mapButton.target="_blank";
-  mapButton.rel="noopener noreferrer";
-  actions.appendChild(mapButton);
-  card.appendChild(actions);
-  container.appendChild(card);
+  const own=place.reviews.find(r=>r.user_id===currentUserId);
+  const reviewButton=el("button","secondary",own?"Изменить отзыв":"Написать отзыв");
+  reviewButton.type="button";reviewButton.onclick=()=>openReview(place);actions.appendChild(reviewButton);
+  const mapButton=el("a","secondary map-link","Открыть карту");
+  mapButton.href=place.lat!==null&&place.lon!==null
+   ?"https://www.openstreetmap.org/?mlat="+place.lat+"&mlon="+place.lon+"#map=18/"+place.lat+"/"+place.lon
+   :"https://www.openstreetmap.org/search?query="+encodeURIComponent(place.city+", "+place.address);
+  mapButton.target="_blank";mapButton.rel="noopener noreferrer";actions.appendChild(mapButton);
+  card.appendChild(actions);container.appendChild(card);
  });
-
- updateStats();
- updateCategoryCounts();
+ updateStats();updateCategoryCounts();
+ renderAllReviews();
 }
-
-/* ======================================
-   ДОБАВЛЕНИЕ МЕСТ В ОБЩУЮ БАЗУ
-   ====================================== */
-
-const selectedCity=document.getElementById("selectedCity");
-const selectedCategory=document.getElementById("selectedCategory");
-const placeAddressInput=document.getElementById("placeAddress");
-const mapStatus=document.getElementById("mapStatus");
-const placeLatitudeInput=document.getElementById("placeLatitude");
-const placeLongitudeInput=document.getElementById("placeLongitude");
-
-const cityMapCenters={
- "Новополоцк":[55.5311,28.6467],
- "Полоцк":[55.4854,28.7786]
-};
-
-let placeMap=null;
-let placeMarker=null;
-let selectedCoordinates=null;
-let reverseLookupBusy=false;
-let pendingReverseLookup=null;
-let lastReverseLookupAt=0;
-const reverseAddressCache=new Map();
-
-function setMapStatus(message,type="") {
- mapStatus.textContent=message;
- mapStatus.className="map-status "+type;
-}
-function clearMapSelection(clearAddress=false) {
- selectedCoordinates=null;
- placeLatitudeInput.value="";
- placeLongitudeInput.value="";
- if(placeMarker&&placeMap) {
-  placeMap.removeLayer(placeMarker);
-  placeMarker=null;
- }
- if(clearAddress) {
-  placeAddressInput.value="";
-  placeAddressInput.dataset.manualEdit="false";
- }
-}
-function escapeMapText(value) {
- return String(value).replace(/[&<>"]/g,char=>({
-  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"
- }[char]));
-}
-
-function initPlaceMap() {
- if(!window.L) {
-  setMapStatus("Не удалось загрузить карту. Проверь интернет.","error");
-  return;
- }
- placeMap=L.map("placeMap",{scrollWheelZoom:false})
-  .setView(cityMapCenters[selectedCity.value],15);
-
- L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-  maxZoom:19,
-  attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
- }).addTo(placeMap);
-
- placeMap.on("click",event=>{
-  const lat=event.latlng.lat;
-  const lon=event.latlng.lng;
-  selectedCoordinates={lat,lon};
-  placeLatitudeInput.value=lat.toFixed(7);
-  placeLongitudeInput.value=lon.toFixed(7);
-  placeAddressInput.dataset.manualEdit="false";
-
-  if(placeMarker) placeMarker.setLatLng(event.latlng);
-  else placeMarker=L.marker(event.latlng).addTo(placeMap);
-
-  placeMarker.bindPopup("<b>📍 Выбранное место</b><br>Определяем адрес…").openPopup();
-  setMapStatus("📍 Точка выбрана. Определяем адрес…");
-  reverseGeocodeSelectedPoint(lat,lon);
+function renderAllReviews(){
+ const container=$("allReviews");if(!container)return;
+ container.replaceChildren();
+ const all=places.flatMap(p=>p.reviews.map(r=>({...r,placeName:p.name,placeCity:p.city})))
+  .sort((a,b)=>new Date(b.created_at||b.date)-new Date(a.created_at||a.date));
+ if(!all.length){container.appendChild(el("div","empty","Отзывов пока нет."));return;}
+ all.forEach(r=>{
+  const item=el("div","review");
+  item.appendChild(el("div","review-name",r.nickname||"Аноним"));
+  item.appendChild(el("div","muted",r.placeName+" · "+r.placeCity));
+  item.appendChild(el("div","review-stars","★".repeat(r.stars)));
+  item.appendChild(el("div","",r.comment));
+  item.appendChild(el("div","review-date",new Date(r.created_at||r.date).toLocaleDateString("ru-RU")));
+  container.appendChild(item);
  });
+}
 
+/* Карта и добавление мест */
+const selectedCity=$("selectedCity"),selectedCategory=$("selectedCategory");
+const addressInput=$("placeAddress");
+function setMapStatus(message,type=""){$("mapStatus").textContent=message;$("mapStatus").className="map-status "+type;}
+function clearMapSelection(clearAddress=false){
+ selectedCoordinates=null;$("placeLatitude").value="";$("placeLongitude").value="";
+ if(placeMarker&&placeMap){placeMap.removeLayer(placeMarker);placeMarker=null;}
+ if(clearAddress){addressInput.value="";addressInput.dataset.manualEdit="false";}
+}
+function escapeMapText(value){return String(value).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function initPlaceMap(){
+ if(!window.L){setMapStatus("Не удалось загрузить карту. Проверь интернет.","error");return;}
+ placeMap=L.map("placeMap",{scrollWheelZoom:false}).setView(cityCenters[selectedCity.value],15);
+ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(placeMap);
+ placeMap.on("click",async e=>{
+  const lat=e.latlng.lat,lon=e.latlng.lng;
+  selectedCoordinates={lat,lon};$("placeLatitude").value=lat.toFixed(7);$("placeLongitude").value=lon.toFixed(7);
+  addressInput.dataset.manualEdit="false";
+  if(placeMarker)placeMarker.setLatLng(e.latlng);else placeMarker=L.marker(e.latlng).addTo(placeMap);
+  placeMarker.bindPopup("Выбранная точка<br>Определяем адрес...").openPopup();
+  setMapStatus("Точка выбрана. Определяем адрес...");
+  await reverseGeocode(lat,lon);
+ });
  setMapStatus("Нажми на карте, чтобы поставить метку.");
  setTimeout(()=>placeMap.invalidateSize(),250);
 }
-
-async function reverseGeocodeSelectedPoint(lat,lon) {
- const key=lat.toFixed(5)+","+lon.toFixed(5);
- const applyAddress=address=>{
-  if(!selectedCoordinates||
-   Math.abs(selectedCoordinates.lat-lat)>0.000001||
-   Math.abs(selectedCoordinates.lon-lon)>0.000001) return;
-
-  if(placeAddressInput.dataset.manualEdit!=="true") {
-   placeAddressInput.value=address;
+async function reverseGeocode(lat,lon){
+ if(reverseBusy)return;
+ reverseBusy=true;
+ const wait=Math.max(0,1100-(Date.now()-lastReverseTime));
+ if(wait)await new Promise(r=>setTimeout(r,wait));
+ lastReverseTime=Date.now();
+ try{
+  const url="https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=ru&lat="+lat+"&lon="+lon;
+  const response=await fetch(url);if(!response.ok)throw new Error("HTTP "+response.status);
+  const data=await response.json(),a=data.address||{};
+  const street=a.road||a.pedestrian||a.residential||a.footway||a.path||a.square||"";
+  const house=a.house_number||"";
+  const address=[street,house].filter(Boolean).join(", ")||(data.display_name||"").split(", ").slice(0,3).join(", ");
+  if(!address)throw new Error("Адрес не найден");
+  if(selectedCoordinates&&Math.abs(selectedCoordinates.lat-lat)<0.000001){
+   if(addressInput.dataset.manualEdit!=="true")addressInput.value=address;
+   if(placeMarker)placeMarker.setPopupContent("Место выбрано<br>"+escapeMapText(address)).openPopup();
+   setMapStatus("Адрес определён. Проверь его и при необходимости исправь.","success");
   }
-  if(placeMarker) {
-   placeMarker.setPopupContent("<b>📍 Место выбрано</b><br>"+escapeMapText(address)).openPopup();
-  }
-  setMapStatus("✅ Адрес определён. Проверь его и при необходимости исправь.","success");
- };
-
- if(reverseAddressCache.has(key)) {
-  applyAddress(reverseAddressCache.get(key));
-  return;
- }
-
- pendingReverseLookup={lat,lon,key,applyAddress};
- if(reverseLookupBusy) return;
- reverseLookupBusy=true;
-
- while(pendingReverseLookup) {
-  const task=pendingReverseLookup;
-  pendingReverseLookup=null;
-  const wait=Math.max(0,1100-(Date.now()-lastReverseLookupAt));
-  if(wait) await new Promise(resolve=>setTimeout(resolve,wait));
-  lastReverseLookupAt=Date.now();
-
-  try {
-   const url="https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=ru&lat="+encodeURIComponent(task.lat)+"&lon="+encodeURIComponent(task.lon);
-   const response=await fetch(url);
-   if(!response.ok) throw new Error("HTTP "+response.status);
-   const data=await response.json();
-   const a=data.address||{};
-   const street=a.road||a.pedestrian||a.residential||a.footway||a.path||a.square||"";
-   const house=a.house_number||"";
-   let address=[street,house].filter(Boolean).join(", ");
-   if(!address) address=(data.display_name||data.name||"").split(", ").slice(0,3).join(", ");
-   if(!address) throw new Error("Адрес не найден");
-   reverseAddressCache.set(task.key,address);
-   task.applyAddress(address);
-  } catch(error) {
-   console.warn(error);
-   if(selectedCoordinates&&Math.abs(selectedCoordinates.lat-task.lat)<0.000001) {
-    setMapStatus("Адрес не определён. Введи его вручную.","error");
-   }
-  }
- }
- reverseLookupBusy=false;
+ }catch(error){console.warn(error);setMapStatus("Адрес не определён. Введи его вручную.","error");}
+ finally{reverseBusy=false;}
 }
-
-placeAddressInput.addEventListener("input",()=>{
- placeAddressInput.dataset.manualEdit="true";
-});
-
+addressInput.addEventListener("input",()=>addressInput.dataset.manualEdit="true");
 initPlaceMap();
 
 document.querySelectorAll(".city-button").forEach(button=>{
- button.addEventListener("click",()=>{
-  document.querySelectorAll(".city-button").forEach(b=>b.classList.remove("active"));
-  button.classList.add("active");
-  selectedCity.value=button.dataset.city;
-  clearMapSelection(true);
-  if(placeMap) placeMap.setView(cityMapCenters[selectedCity.value],15);
+ button.onclick=()=>{
+  document.querySelectorAll(".city-button").forEach(b=>b.classList.toggle("active",b===button));
+  selectedCity.value=button.dataset.city;clearMapSelection(true);
+  if(placeMap)placeMap.setView(cityCenters[selectedCity.value],15);
   setMapStatus("Карта перемещена в город: "+selectedCity.value+".");
- });
+ };
 });
-
 document.querySelectorAll(".category-button").forEach(button=>{
- button.addEventListener("click",()=>{
-  document.querySelectorAll(".category-button").forEach(b=>b.classList.remove("active"));
-  button.classList.add("active");
+ button.onclick=()=>{
+  document.querySelectorAll(".category-button").forEach(b=>b.classList.toggle("active",b===button));
   selectedCategory.value=button.dataset.category;
- });
+ };
 });
-
-document.getElementById("placeForm").addEventListener("submit",async function(e) {
+$("placeForm").addEventListener("submit",async function(e){
  e.preventDefault();
-
  const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session) {
-  showToast("🔐 Войди в аккаунт, чтобы добавить место.");
-  document.getElementById("accountPanel").scrollIntoView({behavior:"smooth"});
-  return;
+ if(!session){showToast("Войди в аккаунт, чтобы добавить место");showMainTab("profileSection");return;}
+ if(!cloudReady){showToast("Общая база пока недоступна");return;}
+ const name=$("placeName").value.trim(),address=addressInput.value.trim();
+ if(!name||!address){showToast("Заполни все поля");return;}
+ const city=selectedCity.value,category=selectedCategory.value;
+ if(places.some(p=>p.name.toLowerCase()===name.toLowerCase()&&p.address.toLowerCase()===address.toLowerCase()&&p.city===city)){
+  showToast("Такое место уже есть");return;
  }
- if(!cloudReady) {
-  showToast("⚠️ Общая база пока недоступна. Проверь SQL в Supabase.");
-  return;
- }
-
- const name=document.getElementById("placeName").value.trim();
- const address=placeAddressInput.value.trim();
- if(!name||!address) {showToast("⚠️ Заполни все поля.");return;}
-
- const city=selectedCity.value;
- const category=selectedCategory.value;
-
- const duplicate=places.some(p=>
-  p.name.toLowerCase()===name.toLowerCase()&&
-  p.address.toLowerCase()===address.toLowerCase()&&p.city===city
- );
- if(duplicate) {showToast("⚠️ Такое место уже есть!");return;}
-
- const button=this.querySelector('[type="submit"]');
- button.disabled=true;
- button.textContent="Добавляем...";
-
- try {
-  const payload={
+ const button=this.querySelector('[type="submit"]');button.disabled=true;button.textContent="Добавляем...";
+ try{
+  const {error}=await supabaseClient.from("places").insert({
    id:Date.now().toString()+Math.random().toString(36).slice(2,8),
    name,address,city,category,
    lat:selectedCoordinates?selectedCoordinates.lat:null,
    lon:selectedCoordinates?selectedCoordinates.lon:null,
    created_by:session.user.id
-  };
-  const {error}=await supabaseClient.from("places").insert(payload);
-  if(error) throw error;
-
-  this.reset();
-  clearMapSelection(true);
-  selectedCity.value="Новополоцк";
-  selectedCategory.value="Общественный туалет";
-  if(placeMap) placeMap.setView(cityMapCenters["Новополоцк"],15);
-  document.querySelectorAll(".city-button").forEach(b=>
-   b.classList.toggle("active",b.dataset.city==="Новополоцк")
-  );
-  document.querySelectorAll(".category-button").forEach(b=>
-   b.classList.toggle("active",b.dataset.category==="Общественный туалет")
-  );
-
-  await loadCloudData();
-  showToast("🎉 Место добавлено для всех пользователей!");
-  document.getElementById("places").scrollIntoView({behavior:"smooth"});
- } catch(error) {
-  console.error(error);
-  showToast("⚠️ Не удалось добавить место. Попробуй ещё раз.");
- } finally {
-  button.disabled=false;
-  button.textContent="🚀 Добавить в каталог";
- }
+  });
+  if(error)throw error;
+  this.reset();clearMapSelection(true);
+  selectedCity.value="Новополоцк";selectedCategory.value="Общественный туалет";
+  document.querySelectorAll(".city-button").forEach(b=>b.classList.toggle("active",b.dataset.city==="Новополоцк"));
+  document.querySelectorAll(".category-button").forEach(b=>b.classList.toggle("active",b.dataset.category==="Общественный туалет"));
+  if(placeMap)placeMap.setView(cityCenters["Новополоцк"],15);
+  await loadCloudData();showToast("Место добавлено для всех пользователей");
+  showMainTab("catalogSection");
+ }catch(error){console.error(error);showToast("Не удалось добавить место");}
+ finally{button.disabled=false;button.textContent="Добавить в каталог";}
 });
+$("cityFilter").addEventListener("change",render);
+$("sort").addEventListener("change",render);
 
-/* Фильтры */
-document.getElementById("cityFilter").addEventListener("change",render);
-document.getElementById("sort").addEventListener("change",render);
-
-/* ======================================
-   ФИЗИКА СМАЙЛИКОВ
-   ====================================== */
-
-function enableHeaderEmojiPhysics() {
- const header=document.getElementById("siteHeader");
- const nodes=[...header.querySelectorAll(".floating")];
-
- const bodies=nodes.map((node,index)=>{
-  const rect=node.getBoundingClientRect();
-  const positions=[
-   [header.clientWidth*.08,12],
-   [header.clientWidth*.91-rect.width,62],
-   [header.clientWidth*.20,header.clientHeight-rect.height-12],
-   [header.clientWidth*.80-rect.width,header.clientHeight-rect.height-15]
-  ];
-  const pos=positions[index]||[20,20];
-  node.style.left=Math.max(0,Math.min(header.clientWidth-rect.width,pos[0]))+"px";
-  node.style.top=Math.max(0,Math.min(header.clientHeight-rect.height,pos[1]))+"px";
-  node.style.right="auto";
-  node.style.bottom="auto";
-
-  return {
-   node,
-   x:parseFloat(node.style.left),
-   y:parseFloat(node.style.top),
-   vx:(Math.random()-.5)*2.8,
-   vy:(Math.random()-.5)*1.5,
-   w:rect.width||30,
-   h:rect.height||30,
-   dragging:false,
-   pointerId:null,
-   offsetX:0,
-   offsetY:0
-  };
- });
-
- const gravity=.52;
- const bounce=.84;
- const wallFriction=.96;
- let lastTime=0;
-
- function paint(b) {
-  b.node.style.left=b.x+"px";
-  b.node.style.top=b.y+"px";
- }
-
- function bounds() {
-  const width=header.clientWidth;
-  const height=header.clientHeight;
-  bodies.forEach(b=>{
-   const r=b.node.getBoundingClientRect();
-   b.w=r.width||30;
-   b.h=r.height||30;
-   b.x=Math.max(0,Math.min(width-b.w,b.x));
-   b.y=Math.max(0,Math.min(height-b.h,b.y));
-   paint(b);
-  });
- }
-
- function tick(time) {
-  const dt=Math.min(2.2,(time-lastTime)/16.67||1);
-  lastTime=time;
-  const width=header.clientWidth;
-  const height=header.clientHeight;
-
-  bodies.forEach(b=>{
-   if(b.dragging) return;
-
-   b.vy+=gravity*dt;
-   b.x+=b.vx*dt;
-   b.y+=b.vy*dt;
-
-   if(b.x<0) {b.x=0;b.vx=Math.abs(b.vx)*wallFriction}
-   if(b.x+b.w>width) {
-    b.x=Math.max(0,width-b.w);
-    b.vx=-Math.abs(b.vx)*wallFriction;
-   }
-   if(b.y<0) {b.y=0;b.vy=Math.abs(b.vy)*bounce}
-   if(b.y+b.h>=height) {
-    b.y=Math.max(0,height-b.h);
-    if(Math.abs(b.vy)>0.7) b.vy=-Math.abs(b.vy)*bounce;
-    else b.vy=0;
-    b.vx*=.99;
-   }
-  });
-
-  for(let i=0;i<bodies.length;i++) {
-   for(let j=i+1;j<bodies.length;j++) {
-    const a=bodies[i],b=bodies[j];
-    if(a.dragging||b.dragging) continue;
-
-    const ax=a.x+a.w/2,ay=a.y+a.h/2;
-    const bx=b.x+b.w/2,by=b.y+b.h/2;
-    const dx=bx-ax,dy=by-ay;
-    const distance=Math.hypot(dx,dy);
-    const minDistance=(Math.min(a.w,a.h)+Math.min(b.w,b.h))*.43;
-
-    if(distance>0&&distance<minDistance) {
-     const nx=dx/distance,ny=dy/distance;
-     const overlap=minDistance-distance;
-     a.x-=nx*overlap*.5;
-     a.y-=ny*overlap*.5;
-     b.x+=nx*overlap*.5;
-     b.y+=ny*overlap*.5;
-
-     const relative=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;
-     if(relative<0) {
-      const impulse=-1.65*relative*.5;
-      a.vx-=impulse*nx;
-      a.vy-=impulse*ny;
-      b.vx+=impulse*nx;
-      b.vy+=impulse*ny;
-     }
-    }
-   }
-  }
-
-  bodies.forEach(paint);
-  requestAnimationFrame(tick);
- }
-
- bodies.forEach(b=>{
-  b.node.addEventListener("pointerdown",e=>{
-   if(e.pointerType==="mouse"&&e.button!==0) return;
-   const rect=b.node.getBoundingClientRect();
-   b.dragging=true;
-   b.pointerId=e.pointerId;
-   b.offsetX=e.clientX-rect.left;
-   b.offsetY=e.clientY-rect.top;
-   b.vx=0;
-   b.vy=0;
-   b.node.setPointerCapture(e.pointerId);
-   e.preventDefault();
-  });
-
-  b.node.addEventListener("pointermove",e=>{
-   if(!b.dragging||b.pointerId!==e.pointerId) return;
-   const rect=header.getBoundingClientRect();
-   const oldX=b.x,oldY=b.y;
-   b.x=Math.max(0,Math.min(header.clientWidth-b.w,e.clientX-rect.left-b.offsetX));
-   b.y=Math.max(0,Math.min(header.clientHeight-b.h,e.clientY-rect.top-b.offsetY));
-   b.vx=(b.x-oldX)*.55;
-   b.vy=(b.y-oldY)*.55;
-   paint(b);
-  });
-
-  function release(e) {
-   if(!b.dragging||b.pointerId!==e.pointerId) return;
-   b.dragging=false;
-   b.pointerId=null;
-   b.vx*=1.25;
-   b.vy-=2.5;
-   b.node.style.cursor="grab";
-  }
-  b.node.addEventListener("pointerup",release);
-  b.node.addEventListener("pointercancel",release);
- });
-
- window.addEventListener("resize",bounds);
- bounds();
- requestAnimationFrame(tick);
-}
-
-/* Запуск */
-updateClear();
+updateStats();
 render();
-enableHeaderEmojiPhysics();
+refreshIcons();
 </script>
 </body>
 </html>
