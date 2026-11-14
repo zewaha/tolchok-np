@@ -4,11 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 6.0</title>
+<title>Tolchok NP — BETA 7.0</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
 
 <style>
 :root {
@@ -73,7 +74,6 @@ header p {color:#c5d7e6;margin:10px 0}
  background:var(--green);
  box-shadow:0 0 10px var(--green);
 }
-
 .floating {
  position:absolute;
  z-index:5;
@@ -91,79 +91,6 @@ header p {color:#c5d7e6;margin:10px 0}
 .f2 {top:62px;right:9%}
 .f3 {bottom:12px;left:20%}
 .f4 {bottom:15px;right:20%}
-.f5 {top:115px;left:70%;font-size:34px}
-
-.basket-hoop {
- position:absolute;
- z-index:2;
- width:76px;
- height:85px;
- right:18px;
- top:75px;
- pointer-events:none;
-}
-.hoop-board {
- position:absolute;
- top:0;
- right:8px;
- width:42px;
- height:30px;
- border:3px solid #e8f0fa;
- border-radius:3px;
- background:#dce9f5;
- box-shadow:0 2px 8px #0007;
-}
-.hoop-board:after {
- content:"";
- position:absolute;
- width:20px;
- height:13px;
- left:8px;
- bottom:0;
- border:2px solid #e56b42;
- border-bottom:0;
-}
-.hoop-rim {
- position:absolute;
- top:34px;
- left:7px;
- width:62px;
- height:10px;
- border:4px solid #ff7846;
- border-top:0;
- border-radius:0 0 50% 50%;
- filter:drop-shadow(0 2px 3px #0008);
-}
-.hoop-net {
- position:absolute;
- top:43px;
- left:16px;
- width:44px;
- height:29px;
- border-left:2px solid #dce7f5;
- border-right:2px solid #dce7f5;
- border-bottom:2px solid #dce7f5;
- clip-path:polygon(0 0,100% 0,80% 100%,20% 100%);
- background:repeating-linear-gradient(90deg,transparent 0 9px,#dce7f5 10px 11px);
-}
-.basket-score {
- position:absolute;
- z-index:8;
- top:9px;
- right:12px;
- display:flex;
- align-items:center;
- gap:6px;
- padding:7px 11px;
- border:1px solid #ffb26b88;
- border-radius:20px;
- background:#17243add;
- color:#fff;
- font-weight:bold;
- box-shadow:0 3px 12px #0005;
-}
-.basket-score strong {color:#ffb66c;font-size:18px}
-.basket-score small {font-size:9px;color:#d7e0ed}
 
 @keyframes fadeIn {
  from {opacity:0;transform:translateY(-10px)}
@@ -528,6 +455,71 @@ button:disabled {opacity:.6;cursor:not-allowed}
 .review-stars {color:var(--yellow);margin:7px 0}
 .review-date {font-size:11px;color:var(--muted);margin-top:9px}
 
+.comment-section {
+ margin-top:14px;
+ padding-top:12px;
+ border-top:1px solid #30425b;
+}
+.comment-heading {
+ font-size:13px;
+ color:#c5d7e6;
+ font-weight:bold;
+ margin-bottom:10px;
+}
+.comment-item {
+ padding:11px;
+ margin:8px 0;
+ background:#17263b;
+ border:1px solid #30425b;
+ border-radius:10px;
+}
+.comment-author {
+ color:var(--green);
+ font-size:12px;
+ font-weight:bold;
+}
+.comment-body {
+ margin-top:7px;
+ font-size:13px;
+ line-height:1.5;
+ white-space:pre-wrap;
+ overflow-wrap:anywhere;
+}
+.comment-date {
+ color:var(--muted);
+ font-size:10px;
+ margin-top:7px;
+}
+.comment-form {
+ display:flex;
+ gap:8px;
+ align-items:flex-start;
+ margin-top:10px;
+}
+.comment-form textarea {
+ min-height:45px;
+ height:45px;
+ margin:0;
+ padding:12px;
+ flex:1;
+ font-size:13px;
+}
+.comment-form button {
+ width:auto;
+ min-width:90px;
+ padding:13px 10px;
+}
+.comment-login {
+ color:var(--muted);
+ font-size:12px;
+ margin-top:10px;
+}
+.delete-comment {
+ margin-top:8px;
+ padding:6px 9px;
+ font-size:11px;
+}
+
 #placeMap {
  height:330px;
  width:100%;
@@ -612,31 +604,6 @@ button:disabled {opacity:.6;cursor:not-allowed}
 .toast.show {opacity:1;transform:translate(-50%,0)}
 .hidden {display:none!important}
 
-.easter-overlay {
- position:fixed;
- inset:0;
- z-index:200;
- display:flex;
- align-items:center;
- justify-content:center;
- padding:20px;
- background:#050914eF;
-}
-.easter-card {
- width:100%;
- max-width:380px;
- padding:28px 20px;
- text-align:center;
- background:linear-gradient(145deg,#263c5b,#142b35);
- border:2px solid #ffbd59;
- border-radius:22px;
- box-shadow:0 0 45px #ffbd5944;
-}
-.easter-card h2 {color:#ffcf73;font-size:25px}
-.easter-card .trophy {font-size:65px}
-.easter-card p {color:#d7e5f3;line-height:1.6}
-.easter-card button {margin-top:12px}
-
 footer {
  text-align:center;
  padding:35px 15px;
@@ -656,7 +623,8 @@ footer strong {color:var(--green)}
  .stats {gap:6px}
  .stat strong {font-size:21px}
  .star-button {width:43px;height:45px}
- .basket-hoop {right:5px;top:93px;transform:scale(.85);transform-origin:top right}
+ .comment-form {flex-direction:column}
+ .comment-form button {width:100%}
 }
 @media(prefers-reduced-motion:reduce) {
  *,*::before,*::after {scroll-behavior:auto!important}
@@ -671,23 +639,11 @@ footer strong {color:var(--green)}
  <div class="floating f2">⭐</div>
  <div class="floating f3">✨</div>
  <div class="floating f4">🏆</div>
- <div class="floating f5">🏀</div>
-
- <div class="basket-hoop" id="basketHoop">
-  <div class="hoop-board"></div>
-  <div class="hoop-rim"></div>
-  <div class="hoop-net"></div>
- </div>
-
- <div class="basket-score">
-  🏀 <strong id="basketScore">0</strong>
-  <small>ПОПАДАНИЙ</small>
- </div>
 
  <div class="logo">🚽 TOLCHOK NP</div>
  <p>Городской рейтинг туалетов</p>
  <p>Новополоцк · Полоцк</p>
- <div class="beta"><span class="beta-dot"></span>BETA VERSION 6.0</div>
+ <div class="beta"><span class="beta-dot"></span>BETA VERSION 7.0</div>
 </header>
 
 <main class="container">
@@ -884,33 +840,29 @@ footer strong {color:var(--green)}
 <footer>
  🚽 <strong>TOLCHOK NP</strong> © 2026<br><br>
  🏙️ Новополоцк · 🏛️ Полоцк<br><br>
- <span style="color:#55edb0">BETA VERSION 6.0</span><br><br>
+ <span style="color:#55edb0">BETA VERSION 7.0</span><br><br>
  Сделано для городского сообщества ✨
 </footer>
 
 <div class="toast" id="toast"></div>
 
-<div id="easterEgg" class="easter-overlay hidden">
- <div class="easter-card">
-  <div class="trophy">🏆</div>
-  <h2>ЛЕГЕНДА ПЛОЩАДКИ!</h2>
-  <p>100 попаданий! Ты настоящий баскетбольный чемпион Tolchok NP!</p>
-  <p>🏀 Секретная награда разблокирована.</p>
-  <button type="button" id="closeEaster" class="primary">Забрать награду</button>
- </div>
-</div>
-
 <script>
 /* ======================================
    SUPABASE
    ====================================== */
-const SUPABASE_URL = "https://ddlbvswesbqyghmtmlxv.supabase.co";
-const SUPABASE_KEY = "sb_publishable_RHcQvREUKdBGXpYI851FVQ_JI-lIq0X";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let currentAccountNickname = "";
-let currentUserId = "";
-let isPasswordRecovery = new URLSearchParams(location.hash.slice(1)).get("type")==="recovery";
+if(!window.APP_CONFIG?.SUPABASE_URL||!window.APP_CONFIG?.SUPABASE_KEY) {
+ alert("Не найден config.js. Проверь, что файл создан рядом с index.html.");
+ throw new Error("Supabase config missing");
+}
+
+const SUPABASE_URL=window.APP_CONFIG.SUPABASE_URL;
+const SUPABASE_KEY=window.APP_CONFIG.SUPABASE_KEY;
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+let currentAccountNickname="";
+let currentUserId="";
+let isPasswordRecovery=new URLSearchParams(location.hash.slice(1)).get("type")==="recovery";
 
 const authForms=document.getElementById("authForms");
 const profileBox=document.getElementById("profileBox");
@@ -925,6 +877,7 @@ function setAccountStatus(message,type="") {
  accountStatus.textContent=message;
  accountStatus.className="account-status "+type;
 }
+let toastTimer;
 function showToast(message) {
  const toast=document.getElementById("toast");
  toast.textContent=message;
@@ -932,7 +885,6 @@ function showToast(message) {
  clearTimeout(toastTimer);
  toastTimer=setTimeout(()=>toast.classList.remove("show"),2600);
 }
-let toastTimer;
 
 function showAuthTab(tab) {
  const isLogin=tab==="login";
@@ -1133,8 +1085,9 @@ document.getElementById("logoutButton").addEventListener("click",async()=>{
 });
 
 /* ======================================
-   ОБЩАЯ БАЗА: PLACES + REVIEWS
+   ОБЩАЯ БАЗА: PLACES + REVIEWS + COMMENTS
    ====================================== */
+
 const STORAGE_KEY="tolchokNP_v3";
 let places=[];
 let cloudReady=false;
@@ -1151,8 +1104,6 @@ function readOldPlaces() {
  } catch(e) {return [];}
 }
 
-/* Перенос старых мест в общую базу.
-   Старые отзывы не импортируются, так как неизвестно, каким аккаунтам они принадлежат. */
 async function migrateOldPlaces(userId) {
  const old=readOldPlaces();
  if(!old.length) return;
@@ -1179,7 +1130,8 @@ function loadLocalFallback() {
   ...p,
   city:p.city==="Полоцк"?"Полоцк":"Новополоцк",
   category:p.category||"Общественный туалет",
-  reviews:Array.isArray(p.reviews)?p.reviews:[]
+  reviews:Array.isArray(p.reviews)?p.reviews:[],
+  comments:[]
  }));
  render();
 }
@@ -1194,12 +1146,28 @@ async function loadCloudData() {
    catch(error) {console.warn("Перенос старых мест:",error);}
   }
 
-  const [placeResult,reviewResult]=await Promise.all([
+  const [placeResult,reviewResult,commentResult]=await Promise.all([
    supabaseClient.from("places").select("*").order("created_at",{ascending:false}),
-   supabaseClient.from("reviews").select("*").order("created_at",{ascending:false})
+   supabaseClient.from("reviews").select("*").order("created_at",{ascending:false}),
+   supabaseClient.from("review_comments").select("*").order("created_at",{ascending:true})
   ]);
+
   if(placeResult.error) throw placeResult.error;
   if(reviewResult.error) throw reviewResult.error;
+  if(commentResult.error) throw commentResult.error;
+
+  const commentsByReview={};
+  (commentResult.data||[]).forEach(c=>{
+   if(!commentsByReview[c.review_id]) commentsByReview[c.review_id]=[];
+   commentsByReview[c.review_id].push({
+    id:c.id,
+    review_id:c.review_id,
+    user_id:c.user_id,
+    nickname:c.nickname,
+    body:c.body,
+    created_at:c.created_at
+   });
+  });
 
   const reviewsByPlace={};
   (reviewResult.data||[]).forEach(r=>{
@@ -1211,7 +1179,9 @@ async function loadCloudData() {
     comment:r.comment,
     stars:Number(r.stars),
     date:r.created_at,
-    updated_at:r.updated_at
+    created_at:r.created_at,
+    updated_at:r.updated_at,
+    comments:commentsByReview[r.id]||[]
    });
   });
 
@@ -1233,13 +1203,12 @@ async function loadCloudData() {
   console.error("Cloud loading error:",error);
   cloudReady=false;
   loadLocalFallback();
-  setAccountStatus("Не удалось подключиться к общей базе. Проверь, выполнил ли ты SQL из инструкции.","error");
+  setAccountStatus("Не удалось подключиться к общей базе. Проверь SQL в Supabase и наличие таблицы review_comments.","error");
  } finally {
   cloudLoading=false;
  }
 }
 
-/* Обновляем профиль и базу после авторизации */
 supabaseClient.auth.onAuthStateChange((event,session)=>{
  setTimeout(async()=>{
   if(event==="PASSWORD_RECOVERY") isPasswordRecovery=true;
@@ -1257,6 +1226,7 @@ supabaseClient.auth.getSession().then(async({data,error})=>{
 /* ======================================
    ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
    ====================================== */
+
 function el(tag,cls,text) {
  const node=document.createElement(tag);
  if(cls) node.className=cls;
@@ -1268,7 +1238,6 @@ function average(place) {
  return place.reviews.reduce((sum,r)=>sum+Number(r.stars),0)/place.reviews.length;
 }
 
-/* Статистика */
 function updateStats() {
  const totalReviews=places.reduce((sum,p)=>sum+p.reviews.length,0);
  const ratings=places.flatMap(p=>p.reviews.map(r=>Number(r.stars)));
@@ -1390,8 +1359,9 @@ document.querySelectorAll(".chip").forEach(button=>{
 });
 
 /* ======================================
-   ОТЗЫВЫ: ОДИН НА АККАУНТ И МЕСТО
+   ОТЗЫВЫ
    ====================================== */
+
 const ratingNames={
  1:"Ужасно 😖",
  2:"Плохо 😕",
@@ -1467,8 +1437,6 @@ document.getElementById("reviewForm").addEventListener("submit",async function(e
    stars:selectedStars
   };
 
-  /* Уникальность place_id + user_id гарантирует сама база данных.
-     Поэтому второй отзыв создать нельзя — он обновит первый. */
   const {error}=await supabaseClient.from("reviews")
    .upsert(payload,{onConflict:"place_id,user_id"});
 
@@ -1497,8 +1465,121 @@ document.getElementById("cancelReview").addEventListener("click",()=>{
 });
 
 /* ======================================
+   КОММЕНТАРИИ ПОД ОТЗЫВАМИ
+   ====================================== */
+
+async function submitReviewComment(reviewId,textarea,button) {
+ const body=textarea.value.trim();
+ if(!body) {
+  showToast("Напиши комментарий.");
+  return;
+ }
+ if(body.length>500) {
+  showToast("Максимум 500 символов.");
+  return;
+ }
+
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session) {
+  showToast("🔐 Войди в аккаунт, чтобы комментировать.");
+  return;
+ }
+
+ button.disabled=true;
+ button.textContent="Отправка...";
+
+ try {
+  const nickname=currentAccountNickname||session.user.email?.split("@")[0]||"Пользователь";
+  const {error}=await supabaseClient.from("review_comments").insert({
+   review_id:reviewId,
+   user_id:session.user.id,
+   nickname,
+   body
+  });
+  if(error) throw error;
+
+  textarea.value="";
+  await loadCloudData();
+  showToast("💬 Комментарий опубликован!");
+ } catch(error) {
+  console.error("Comment error:",error);
+  showToast("Не удалось отправить комментарий.");
+ } finally {
+  button.disabled=false;
+  button.textContent="Ответить";
+ }
+}
+
+async function deleteReviewComment(commentId) {
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session) return;
+
+ if(!confirm("Удалить свой комментарий?")) return;
+
+ try {
+  const {error}=await supabaseClient.from("review_comments")
+   .delete()
+   .eq("id",commentId)
+   .eq("user_id",session.user.id);
+
+  if(error) throw error;
+  await loadCloudData();
+  showToast("Комментарий удалён.");
+ } catch(error) {
+  console.error(error);
+  showToast("Не удалось удалить комментарий.");
+ }
+}
+
+/* ======================================
+   ОТОБРАЖЕНИЕ МЕСТ И КОММЕНТАРИЕВ
+   ====================================== */
+
+function renderComments(review,item) {
+ const section=el("div","comment-section");
+ section.appendChild(el("div","comment-heading","💬 Комментарии ("+(review.comments?.length||0)+")"));
+
+ (review.comments||[]).forEach(comment=>{
+  const commentItem=el("div","comment-item");
+  commentItem.appendChild(el("div","comment-author","👤 "+(comment.nickname||"Пользователь")));
+  commentItem.appendChild(el("div","comment-body",comment.body));
+  commentItem.appendChild(el("div","comment-date",new Date(comment.created_at).toLocaleString("ru-RU")));
+
+  if(currentUserId&&comment.user_id===currentUserId) {
+   const remove=el("button","secondary delete-comment","🗑️ Удалить");
+   remove.type="button";
+   remove.addEventListener("click",()=>deleteReviewComment(comment.id));
+   commentItem.appendChild(remove);
+  }
+  section.appendChild(commentItem);
+ });
+
+ if(currentUserId) {
+  const form=el("form","comment-form");
+  const textarea=el("textarea","");
+  textarea.maxLength=500;
+  textarea.placeholder="Написать комментарий...";
+  textarea.required=true;
+
+  const button=el("button","primary","Ответить");
+  button.type="submit";
+
+  form.append(textarea,button);
+  form.addEventListener("submit",e=>{
+   e.preventDefault();
+   submitReviewComment(review.id,textarea,button);
+  });
+  section.appendChild(form);
+ } else {
+  section.appendChild(el("div","comment-login","🔐 Войди в аккаунт, чтобы оставить комментарий."));
+ }
+ item.appendChild(section);
+}
+
+/* ======================================
    ОТОБРАЖЕНИЕ МЕСТ
    ====================================== */
+
 function render() {
  const container=document.getElementById("places");
  container.replaceChildren();
@@ -1531,7 +1612,7 @@ function render() {
   container.appendChild(empty);
  }
 
- filtered.forEach((place,index)=>{
+ filtered.forEach(place=>{
   const card=el("article","place");
   const icon=place.category==="Торговый центр"?"🏬":
    place.category==="Кафе или заведение"?"🍔":
@@ -1564,6 +1645,8 @@ function render() {
     edit.addEventListener("click",()=>openReview(place));
     item.appendChild(edit);
    }
+
+   renderComments(review,item);
    card.appendChild(item);
   });
 
@@ -1594,6 +1677,7 @@ function render() {
 /* ======================================
    ДОБАВЛЕНИЕ МЕСТ В ОБЩУЮ БАЗУ
    ====================================== */
+
 const selectedCity=document.getElementById("selectedCity");
 const selectedCategory=document.getElementById("selectedCategory");
 const placeAddressInput=document.getElementById("placeAddress");
@@ -1821,12 +1905,12 @@ document.getElementById("cityFilter").addEventListener("change",render);
 document.getElementById("sort").addEventListener("change",render);
 
 /* ======================================
-   УСКОРЕННАЯ ФИЗИКА СМАЙЛИКОВ + БАСКЕТБОЛ
+   ФИЗИКА СМАЙЛИКОВ
    ====================================== */
+
 function enableHeaderEmojiPhysics() {
  const header=document.getElementById("siteHeader");
  const nodes=[...header.querySelectorAll(".floating")];
- const hoop=document.getElementById("basketHoop");
 
  const bodies=nodes.map((node,index)=>{
   const rect=node.getBoundingClientRect();
@@ -1834,8 +1918,7 @@ function enableHeaderEmojiPhysics() {
    [header.clientWidth*.08,12],
    [header.clientWidth*.91-rect.width,62],
    [header.clientWidth*.20,header.clientHeight-rect.height-12],
-   [header.clientWidth*.80-rect.width,header.clientHeight-rect.height-15],
-   [header.clientWidth*.70,115]
+   [header.clientWidth*.80-rect.width,header.clientHeight-rect.height-15]
   ];
   const pos=positions[index]||[20,20];
   node.style.left=Math.max(0,Math.min(header.clientWidth-rect.width,pos[0]))+"px";
@@ -1854,8 +1937,7 @@ function enableHeaderEmojiPhysics() {
    dragging:false,
    pointerId:null,
    offsetX:0,
-   offsetY:0,
-   isBall:node.classList.contains("f5")
+   offsetY:0
   };
  });
 
@@ -1882,16 +1964,6 @@ function enableHeaderEmojiPhysics() {
   });
  }
 
- function getHoop() {
-  const r=hoop.getBoundingClientRect();
-  const h=header.getBoundingClientRect();
-  return {
-   left:r.left-h.left+10,
-   right:r.right-h.left-10,
-   y:r.top-h.top+39
-  };
- }
-
  function tick(time) {
   const dt=Math.min(2.2,(time-lastTime)/16.67||1);
   lastTime=time;
@@ -1900,8 +1972,6 @@ function enableHeaderEmojiPhysics() {
 
   bodies.forEach(b=>{
    if(b.dragging) return;
-
-   const oldCenterY=b.y+b.h/2;
 
    b.vy+=gravity*dt;
    b.x+=b.vx*dt;
@@ -1919,21 +1989,8 @@ function enableHeaderEmojiPhysics() {
     else b.vy=0;
     b.vx*=.99;
    }
-
-   if(b.isBall&&b.vy>0) {
-    const hoopLine=getHoop();
-    const newCenterY=b.y+b.h/2;
-    const centerX=b.x+b.w/2;
-    if(oldCenterY<hoopLine.y&&newCenterY>=hoopLine.y&&
-       centerX>hoopLine.left&&centerX<hoopLine.right) {
-     scoreBasket();
-     b.vy=-Math.abs(b.vy)*.55;
-     b.vx+=(Math.random()-.5)*2;
-    }
-   }
   });
 
-  /* Столкновения смайликов */
   for(let i=0;i<bodies.length;i++) {
    for(let j=i+1;j<bodies.length;j++) {
     const a=bodies[i],b=bodies[j];
@@ -2010,37 +2067,6 @@ function enableHeaderEmojiPhysics() {
  bounds();
  requestAnimationFrame(tick);
 }
-
-/* ======================================
-   СЧЁТЧИК БАСКЕТБОЛА И ПАСХАЛКА
-   ====================================== */
-let basketScore=Number(localStorage.getItem("tolchokBasketScore_v1"))||0;
-let easterShown=localStorage.getItem("tolchokBasketEasterShown")==="yes";
-
-function updateBasketScore() {
- document.getElementById("basketScore").textContent=basketScore;
- localStorage.setItem("tolchokBasketScore_v1",String(basketScore));
-}
-
-function scoreBasket() {
- basketScore++;
- updateBasketScore();
- showToast("🏀 ПОПАДАНИЕ! +1 · Счёт: "+basketScore);
-
- if(basketScore>=100&&!easterShown) {
-  easterShown=true;
-  localStorage.setItem("tolchokBasketEasterShown","yes");
-  setTimeout(()=>{
-   document.getElementById("easterEgg").classList.remove("hidden");
-  },500);
- }
-}
-
-document.getElementById("closeEaster").addEventListener("click",()=>{
- document.getElementById("easterEgg").classList.add("hidden");
-});
-
-updateBasketScore();
 
 /* Запуск */
 updateClear();
