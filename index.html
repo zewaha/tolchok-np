@@ -165,8 +165,9 @@ footer strong{color:var(--green)}
 </section>
 <section id="catalogPage" class="page">
  <h2>Каталог мест</h2>
- <label for="catalogCity" class="muted">Выбери город</label>
- <select id="catalogCity"></select>
+ <label for="catalogCitySearch" class="muted">Найти город</label>
+ <input id="catalogCitySearch" type="search" placeholder="Начни вводить название города..." autocomplete="off">
+ <select id="catalogCity" aria-label="Выбери город"></select>
  <div class="filters">
   <select id="catalogCategory"><option value="">Все категории</option></select>
   <select id="sortSelect">
@@ -181,8 +182,9 @@ footer strong{color:var(--green)}
  <h2>Добавить отзыв</h2>
  <div class="panel">
   <div class="muted">Выбери город, в котором находится место</div>
-  <label for="addCitySelect" class="muted">Город</label>
-  <select id="addCitySelect"></select>
+  <label for="addCitySearch" class="muted">Найти город</label>
+  <input id="addCitySearch" type="search" placeholder="Начни вводить название города..." autocomplete="off">
+  <select id="addCitySelect" aria-label="Выбери город"></select>
   <h3>Категория</h3>
   <div id="addCategories" class="category-grid"></div>
   <h3>Название места</h3>
@@ -278,7 +280,7 @@ const CATEGORIES=[
  {id:"education",name:"Школы",icon:"🏫",description:"Школы и учебные заведения"},
  {id:"other",name:"Другое",icon:"📍",description:"Другие места"}
 ];
-const BELARUS_CITIES=["Минск", "Гомель", "Гродно", "Витебск", "Могилёв", "Брест", "Бобруйск", "Барановичи", "Борисов", "Пинск", "Мозырь", "Лида", "Орша", "Солигорск", "Новополоцк", "Молодечно", "Полоцк", "Жлобин", "Речица", "Жодино", "Светлогорск", "Слуцк", "Кобрин", "Слоним", "Волковыск", "Калинковичи", "Сморгонь", "Рогачёв", "Дзержинск", "Осиповичи", "Горки", "Берёза", "Новогрудок", "Вилейка", "Смолевичи", "Лунинец", "Кричев", "Ивацевичи", "Марьина Горка", "Фаниполь", "Пружаны", "Поставы", "Добруш", "Глубокое", "Столбцы", "Заславль", "Лепель", "Ошмяны", "Быхов", "Несвиж", "Иваново", "Житковичи", "Логойск", "Островец", "Щучин", "Климовичи", "Дрогичин", "Шклов", "Костюковичи", "Жабинка", "Мосты", "Столин", "Ганцевичи", "Хойники", "Малорита", "Микашевичи", "Новолукомль", "Городок", "Любань", "Березино", "Клецк", "Белоозёрск", "Старые Дороги", "Червень", "Узда", "Ляховичи", "Петриков", "Барань", "Воложин", "Копыль", "Мстиславль", "Чаусы", "Скидель", "Толочин", "Белыничи", "Браслав", "Березовка", "Чечерск", "Ельск", "Ветка", "Буда-Кошелево", "Наровля", "Крупки", "Каменец", "Миоры", "Чериков", "Кировск", "Славгород", "Дятлово", "Чашники", "Кличев", "Дубровно", "Круглое", "Сенно", "Мядель", "Ивье", "Верхнедвинск", "Докшицы", "Свислочь", "Давид-Городок", "Высокое", "Василевичи", "Туров", "Коссово", "Дисна"];
+const BELARUS_CITIES=["Барановичи", "Барань", "Белоозёрск", "Белыничи", "Березино", "Березовка", "Берёза", "Бобруйск", "Борисов", "Браслав", "Брест", "Буда-Кошелево", "Быхов", "Василевичи", "Верхнедвинск", "Ветка", "Вилейка", "Витебск", "Волковыск", "Воложин", "Высокое", "Ганцевичи", "Глубокое", "Гомель", "Горки", "Городок", "Гродно", "Давид-Городок", "Дзержинск", "Дисна", "Добруш", "Докшицы", "Дрогичин", "Дубровно", "Дятлово", "Ельск", "Жабинка", "Житковичи", "Жлобин", "Жодино", "Заславль", "Иваново", "Ивацевичи", "Ивье", "Калинковичи", "Каменец", "Кировск", "Клецк", "Климовичи", "Кличев", "Кобрин", "Копыль", "Коссово", "Костюковичи", "Кричев", "Круглое", "Крупки", "Лепель", "Лида", "Логойск", "Лунинец", "Любань", "Ляховичи", "Малорита", "Марьина Горка", "Микашевичи", "Минск", "Миоры", "Могилёв", "Мозырь", "Молодечно", "Мосты", "Мстиславль", "Мядель", "Наровля", "Несвиж", "Новогрудок", "Новолукомль", "Новополоцк", "Орша", "Осиповичи", "Островец", "Ошмяны", "Петриков", "Пинск", "Полоцк", "Поставы", "Пружаны", "Речица", "Рогачёв", "Светлогорск", "Свислочь", "Сенно", "Скидель", "Славгород", "Слоним", "Слуцк", "Смолевичи", "Сморгонь", "Солигорск", "Старые Дороги", "Столбцы", "Столин", "Толочин", "Туров", "Узда", "Фаниполь", "Хойники", "Чаусы", "Чашники", "Червень", "Чериков", "Чечерск", "Шклов", "Щучин"];
 const ROOT_ADMIN_ID="bfa898b9-dbd6-4f5e-b989-b1835ef1dbfc";
 
 let currentUser=null;
@@ -314,11 +316,38 @@ const setStatus=(id,message,type="")=>{
 const categoryName=id=>CATEGORIES.find(c=>c.id===id)?.name||"Другое";
 const categoryIcon=id=>CATEGORIES.find(c=>c.id===id)?.icon||"📍";
 function fillCitySelects(){
- const options=BELARUS_CITIES.map(city=>`<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("");
- $("catalogCity").innerHTML=options;
- $("addCitySelect").innerHTML=options;
- $("catalogCity").value=currentCity;
- $("addCitySelect").value=addCity;
+ updateCitySelect("catalogCity","",currentCity);
+ updateCitySelect("addCitySelect","",addCity);
+ $("catalogCitySearch").value="";
+ $("addCitySearch").value="";
+}
+
+function updateCitySelect(selectId,query,selectedCity){
+ const select=$(selectId);
+ const normalized=String(query||"").trim().toLocaleLowerCase("ru");
+ const matches=BELARUS_CITIES.filter(city=>city.toLocaleLowerCase("ru").includes(normalized));
+ select.innerHTML=matches.map(city=>`<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("");
+ if(matches.includes(selectedCity))select.value=selectedCity;
+ else if(matches.length)select.selectedIndex=0;
+ if(!matches.length)select.innerHTML='<option value="">Город не найден</option>';
+}
+
+function connectCitySearch(searchId,selectId,onSelect,getCurrent){
+ const search=$(searchId);
+ const select=$(selectId);
+ search.addEventListener("input",()=>{
+  const query=search.value.trim();
+  updateCitySelect(selectId,query,getCurrent());
+  const exact=BELARUS_CITIES.find(city=>city.toLocaleLowerCase("ru")===query.toLocaleLowerCase("ru"));
+  if(exact){
+   select.value=exact;
+   onSelect(exact);
+  }
+ });
+ select.addEventListener("change",()=>{
+  if(!select.value)return;
+  onSelect(select.value);
+ });
 }
 
 const formatDate=value=>{
@@ -381,11 +410,11 @@ async function setAddCity(city){
   }catch(error){setMapStatus("Не удалось загрузить центр города. Попробуй ещё раз.","error");}
  }
 }
-$("addCitySelect").addEventListener("change",()=>setAddCity($("addCitySelect").value));
-$("catalogCity").addEventListener("change",()=>{
- currentCity=$("catalogCity").value;
+connectCitySearch("addCitySearch","addCitySelect",city=>setAddCity(city),()=>addCity);
+connectCitySearch("catalogCitySearch","catalogCity",city=>{
+ currentCity=city;
  renderPlaces();
-});
+},()=>currentCity);
 
 function setMapStatus(message,type=""){
  $("mapStatus").textContent=message;
