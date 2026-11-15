@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 8.2</title>
+<title>Tolchok NP — BETA 8.3</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -146,7 +146,7 @@ footer strong{color:var(--green)}
  <div class="logo">TOLCHOK NP</div>
  <p>Городской рейтинг туалетов</p>
  <p>Новополоцк · Полоцк</p>
- <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.2</div>
+ <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.3</div>
 </header>
 
 <main class="container">
@@ -229,7 +229,6 @@ footer strong{color:var(--green)}
   <div id="places"></div>
  </section>
 
- <!-- ОТДЕЛЬНАЯ СТРАНИЦА КАТЕГОРИЙ -->
  <section id="categoriesSection" class="hidden">
   <button class="page-back" id="backToCatalog"><i data-lucide="arrow-left" class="icon"></i> Назад в каталог</button>
   <h2><i data-lucide="shapes" class="icon"></i> Категории мест</h2>
@@ -322,7 +321,7 @@ footer strong{color:var(--green)}
 <footer>
  <strong>TOLCHOK NP</strong> © 2026<br><br>
  Новополоцк · Полоцк<br><br>
- BETA VERSION 8.2<br><br>
+ BETA VERSION 8.3<br><br>
  Сделано для городского сообщества
 </footer>
 
@@ -338,7 +337,15 @@ footer strong{color:var(--green)}
 <script>
 const SUPABASE_URL="https://ddlbvswesbqyghmtmlxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_RHcQvREUKdBGXpYI851FVQ_JI-lIq0X";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// Сохраняем сессию в localStorage: вход останется после закрытия вкладки/браузера.
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+ auth:{
+  persistSession:true,
+  autoRefreshToken:true,
+  detectSessionInUrl:false
+ }
+});
 
 let currentAccountNickname="",currentUserId="";
 let places=[],cloudReady=false,cloudLoading=false;
@@ -466,7 +473,7 @@ $("logoutButton").addEventListener("click",async()=>{
  else{showToast("Ты вышел из аккаунта");setAccountStatus("Ты вышел из аккаунта.");}
 });
 
-/* Переключение полноценных страниц через нижнюю панель */
+/* Переключение страниц через нижнюю панель */
 function showMainTab(tabId){
  const target=$(tabId);
  if(!target)return;
@@ -507,7 +514,6 @@ $("backToCatalog").onclick=closeCategoriesPage;
 document.querySelectorAll(".category-page-card").forEach(button=>{
  button.addEventListener("click",()=>{
   selectedFilter=button.dataset.filter;
-  $("filterStatus")?.textContent;
   $("search").value="";
   closeSuggestions();
   closeCategoriesPage();
