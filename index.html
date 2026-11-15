@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 8.6</title>
+<title>Tolchok NP — BETA 9.0</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -112,6 +112,13 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .empty{padding:30px 15px;text-align:center;color:var(--muted);background:var(--panel);border:1px dashed #40536e;border-radius:16px;line-height:1.7}
 .toast{position:fixed;bottom:90px;left:50%;z-index:100;width:max-content;max-width:90%;padding:14px 19px;border:1px solid #55edb077;border-radius:13px;background:#173b32;color:white;box-shadow:0 8px 30px #0008;opacity:0;transform:translate(-50%,20px);pointer-events:none;transition:.3s;font-size:14px}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.admin-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}
+.admin-tabs button.active{border-color:var(--green);color:var(--green);background:#164438}
+.admin-row{padding:13px;margin:10px 0;background:#0d192b;border:1px solid #30425b;border-radius:12px;overflow-wrap:anywhere}
+.admin-row p{font-size:13px;line-height:1.5}
+.admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.admin-actions button{width:auto}
+.report-button{padding:6px 9px;font-size:11px;margin-top:8px}
 footer{text-align:center;padding:35px 15px;color:#8292a8;font-size:13px;border-top:1px solid #24334a;margin-top:35px}
 footer strong{color:var(--green)}
 .icon{width:19px;height:19px;stroke-width:2;flex-shrink:0}
@@ -136,8 +143,8 @@ footer strong{color:var(--green)}
 <body>
 <header>
  <div class="logo">Tolchok NP</div>
- <p>Честные отзывы о местах Новополоцка и Полоцка</p>
- <div class="beta"><span class="beta-dot"></span>BETA 8.6</div>
+ <p>Честные отзывы о местах городов Беларуси</p>
+ <div class="beta"><span class="beta-dot"></span>BETA 9.0</div>
 </header>
 <main class="container">
 <section id="homePage" class="page active">
@@ -158,10 +165,8 @@ footer strong{color:var(--green)}
 </section>
 <section id="catalogPage" class="page">
  <h2>Каталог мест</h2>
- <div class="city-grid">
-  <button class="city-button active" data-city="Новополоцк">Новополоцк</button>
-  <button class="city-button" data-city="Полоцк">Полоцк</button>
- </div>
+ <label for="catalogCity" class="muted">Выбери город</label>
+ <select id="catalogCity"></select>
  <div class="filters">
   <select id="catalogCategory"><option value="">Все категории</option></select>
   <select id="sortSelect">
@@ -176,10 +181,8 @@ footer strong{color:var(--green)}
  <h2>Добавить отзыв</h2>
  <div class="panel">
   <div class="muted">Выбери город, в котором находится место</div>
-  <div class="city-grid" id="addCityButtons">
-   <button class="city-button active" data-city="Новополоцк">Новополоцк</button>
-   <button class="city-button" data-city="Полоцк">Полоцк</button>
-  </div>
+  <label for="addCitySelect" class="muted">Город</label>
+  <select id="addCitySelect"></select>
   <h3>Категория</h3>
   <div id="addCategories" class="category-grid"></div>
   <h3>Название места</h3>
@@ -239,11 +242,21 @@ footer strong{color:var(--green)}
    <h3>Мои отзывы</h3>
    <div id="myReviews"></div>
    <button id="logoutButton" class="secondary">Выйти из аккаунта</button>
+   <section id="adminPanel" class="panel hidden">
+    <h2>Панель администратора</h2>
+    <div class="admin-tabs">
+     <button class="secondary active" data-admin-tab="reports">Жалобы</button>
+     <button class="secondary" data-admin-tab="reviews">Отзывы</button>
+     <button class="secondary" data-admin-tab="users">Пользователи</button>
+     <button class="secondary root-admin-only hidden" data-admin-tab="admins">Администраторы</button>
+    </div>
+    <div id="adminContent"><div class="empty">Выбери раздел.</div></div>
+   </section>
   </div>
  </div>
 </section>
 </main>
-<footer><strong>Tolchok NP</strong><br>Проект отзывов о местах Новополоцка и Полоцка</footer>
+<footer><strong>Tolchok NP</strong><br>Проект отзывов о местах городов Беларуси</footer>
 <nav class="bottom-nav">
  <button class="nav-button active" data-page="homePage"><i data-lucide="house" class="icon"></i>Главная</button>
  <button class="nav-button" data-page="catalogPage"><i data-lucide="map" class="icon"></i>Каталог</button>
@@ -265,8 +278,11 @@ const CATEGORIES=[
  {id:"education",name:"Школы",icon:"🏫",description:"Школы и учебные заведения"},
  {id:"other",name:"Другое",icon:"📍",description:"Другие места"}
 ];
+const BELARUS_CITIES=["Минск", "Гомель", "Гродно", "Витебск", "Могилёв", "Брест", "Бобруйск", "Барановичи", "Борисов", "Пинск", "Мозырь", "Лида", "Орша", "Солигорск", "Новополоцк", "Молодечно", "Полоцк", "Жлобин", "Речица", "Жодино", "Светлогорск", "Слуцк", "Кобрин", "Слоним", "Волковыск", "Калинковичи", "Сморгонь", "Рогачёв", "Дзержинск", "Осиповичи", "Горки", "Берёза", "Новогрудок", "Вилейка", "Смолевичи", "Лунинец", "Кричев", "Ивацевичи", "Марьина Горка", "Фаниполь", "Пружаны", "Поставы", "Добруш", "Глубокое", "Столбцы", "Заславль", "Лепель", "Ошмяны", "Быхов", "Несвиж", "Иваново", "Житковичи", "Логойск", "Островец", "Щучин", "Климовичи", "Дрогичин", "Шклов", "Костюковичи", "Жабинка", "Мосты", "Столин", "Ганцевичи", "Хойники", "Малорита", "Микашевичи", "Новолукомль", "Городок", "Любань", "Березино", "Клецк", "Белоозёрск", "Старые Дороги", "Червень", "Узда", "Ляховичи", "Петриков", "Барань", "Воложин", "Копыль", "Мстиславль", "Чаусы", "Скидель", "Толочин", "Белыничи", "Браслав", "Березовка", "Чечерск", "Ельск", "Ветка", "Буда-Кошелево", "Наровля", "Крупки", "Каменец", "Миоры", "Чериков", "Кировск", "Славгород", "Дятлово", "Чашники", "Кличев", "Дубровно", "Круглое", "Сенно", "Мядель", "Ивье", "Верхнедвинск", "Докшицы", "Свислочь", "Давид-Городок", "Высокое", "Василевичи", "Туров", "Коссово", "Дисна"];
+const ROOT_ADMIN_ID="bfa898b9-dbd6-4f5e-b989-b1835ef1dbfc";
 
 let currentUser=null;
+let currentNickname="";
 let currentCity="Новополоцк";
 let addCity="Новополоцк";
 let selectedCategory="toilet";
@@ -297,6 +313,14 @@ const setStatus=(id,message,type="")=>{
 };
 const categoryName=id=>CATEGORIES.find(c=>c.id===id)?.name||"Другое";
 const categoryIcon=id=>CATEGORIES.find(c=>c.id===id)?.icon||"📍";
+function fillCitySelects(){
+ const options=BELARUS_CITIES.map(city=>`<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("");
+ $("catalogCity").innerHTML=options;
+ $("addCitySelect").innerHTML=options;
+ $("catalogCity").value=currentCity;
+ $("addCitySelect").value=addCity;
+}
+
 const formatDate=value=>{
  if(!value)return "";
  return new Date(value).toLocaleDateString("ru-RU");
@@ -338,34 +362,29 @@ function renderCategoryOptions(){
  });
 }
 
-function setAddCity(city){
+async function setAddCity(city){
+ if(!BELARUS_CITIES.includes(city))return;
  addCity=city;
  selectedPoint=null;
  selectedPointVerified=false;
  verificationRequestId++;
  if(mapMarker&&map)map.removeLayer(mapMarker);
  mapMarker=null;
- document.querySelectorAll("#addCityButtons .city-button").forEach(button=>{
-  button.classList.toggle("active",button.dataset.city===city);
- });
- setMapStatus("Выбран город: "+city+". Поставь метку на карте.","");
+ $("addCitySelect").value=city;
+ setMapStatus("Выбран город: "+city+". Загружаем карту города...","");
  if(map){
-  const center=city==="Новополоцк"?[55.531,28.65]:[55.485,28.76];
-  map.setView(center,13);
+  try{
+   const response=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&country=Belarus&city="+encodeURIComponent(city),{headers:{"Accept-Language":"ru"}});
+   const results=await response.json();
+   if(results[0])map.setView([Number(results[0].lat),Number(results[0].lon)],13);
+   else setMapStatus("Не удалось найти город на карте. Попробуй позже.","error");
+  }catch(error){setMapStatus("Не удалось загрузить центр города. Попробуй ещё раз.","error");}
  }
 }
-document.querySelectorAll("#addCityButtons .city-button").forEach(button=>{
- button.addEventListener("click",()=>setAddCity(button.dataset.city));
-});
-document.querySelectorAll(".city-button[data-city]").forEach(button=>{
- if(button.closest("#addCityButtons"))return;
- button.addEventListener("click",()=>{
-  currentCity=button.dataset.city;
-  document.querySelectorAll(".city-button[data-city]").forEach(b=>{
-   if(!b.closest("#addCityButtons"))b.classList.toggle("active",b.dataset.city===currentCity);
-  });
-  renderPlaces();
- });
+$("addCitySelect").addEventListener("change",()=>setAddCity($("addCitySelect").value));
+$("catalogCity").addEventListener("change",()=>{
+ currentCity=$("catalogCity").value;
+ renderPlaces();
 });
 
 function setMapStatus(message,type=""){
@@ -439,7 +458,7 @@ function renderStats(){
 function averageRating(placeId){
  const reviews=allReviews.filter(review=>review.place_id===placeId);
  if(!reviews.length)return 0;
- return reviews.reduce((sum,review)=>sum+Number(review.rating||0),0)/reviews.length;
+ return reviews.reduce((sum,review)=>sum+Number(review.stars||0),0)/reviews.length;
 }
 
 function reviewsCount(placeId){
@@ -449,16 +468,18 @@ function reviewsCount(placeId){
 function renderReview(review){
  const place=allPlaces.find(item=>item.id===review.place_id);
  const author=allProfiles.find(item=>item.id===review.user_id);
+ const nickname=review.nickname||author?.nickname||"Пользователь";
+ const stars=Math.max(0,Math.min(5,Number(review.stars||0)));
  return `<div class="review">
-  <div class="review-name">${escapeHtml(author?.nickname||"Пользователь")}</div>
-  <div class="review-stars">${"★".repeat(Number(review.rating||0))}${"☆".repeat(5-Number(review.rating||0))}</div>
-  <div>${escapeHtml(review.text||"")}</div>
+  <div class="review-name">${escapeHtml(nickname)}</div>
+  <div class="review-stars">${"★".repeat(stars)}${"☆".repeat(5-stars)}</div>
+  <div>${escapeHtml(review.comment||"")}</div>
   <div class="review-date">${escapeHtml(place?.name||"Место")} · ${formatDate(review.created_at)}</div>
+  ${currentUser&&review.user_id!==currentUser.id?`<button class="secondary report-button" data-report-review="${escapeHtml(review.id)}">Пожаловаться на отзыв</button> <button class="secondary report-button" data-report-user="${escapeHtml(review.user_id)}">Пожаловаться на автора</button>`:""}
  </div>`;
 }
-
 function renderPopularReviews(){
- const sorted=[...allReviews].sort((a,b)=>Number(b.rating||0)-Number(a.rating||0)).slice(0,10);
+ const sorted=[...allReviews].sort((a,b)=>Number(b.stars||0)-Number(a.stars||0)).slice(0,10);
  $("popularReviews").innerHTML=sorted.length?sorted.map(renderReview).join(""):'<div class="empty">Пока нет отзывов. Стань первым!</div>';
 }
 
@@ -484,7 +505,7 @@ function renderPlaces(){
    <div class="place-rating">${rating?rating.toFixed(1)+" ★":"Нет оценок"}</div>
    <div class="place-meta">${reviews.length} отзыв(ов)</div>
    ${reviews.map(renderReview).join("")}
-   ${place.lat&&place.lng?`<div class="place-actions"><a class="secondary map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lng}#map=17/${place.lat}/${place.lng}">Открыть на карте</a></div>`:""}
+   ${place.lat&&place.lon?`<div class="place-actions"><a class="secondary map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lon}#map=17/${place.lat}/${place.lon}">Открыть на карте</a></div>`:""}
   </article>`;
  }).join(""):'<div class="empty">В этом городе пока нет мест в выбранной категории.</div>';
 }
@@ -539,8 +560,10 @@ async function loadProfileInfo(){
   console.error(error);
   return;
  }
- $("profileNickname").textContent=data?.nickname||currentUser.email||"Пользователь";
+ currentNickname=data?.nickname||currentUser.email||"Пользователь";
+ $("profileNickname").textContent=currentNickname;
  $("profileEmail").textContent=currentUser.email||"";
+ await refreshAdminPanel();
  $("authForms").classList.add("hidden");
  $("profileInfo").classList.remove("hidden");
  renderMyReviews();
@@ -688,13 +711,14 @@ async function submitReview(){
   let placeId=existing?.id;
   if(!placeId){
    const {data:newPlace,error:placeError}=await supabaseClient.from("places").insert({
+    id:crypto.randomUUID(),
     name,
-    address,
+    address:address||"Адрес не указан",
     city:addCity,
     category:selectedCategory,
     lat:selectedPoint.lat,
-    lng:selectedPoint.lng,
-    user_id:currentUser.id
+    lon:selectedPoint.lng,
+    created_by:currentUser.id
    }).select().single();
    if(placeError)throw placeError;
    placeId=newPlace.id;
@@ -702,8 +726,9 @@ async function submitReview(){
   const {error:reviewError}=await supabaseClient.from("reviews").insert({
    place_id:placeId,
    user_id:currentUser.id,
-   rating:selectedRating,
-   text
+   nickname:currentNickname||"Пользователь",
+   stars:selectedRating,
+   comment:text
   });
   if(reviewError)throw reviewError;
   setStatus("addStatus","Отзыв опубликован!","success");
@@ -762,10 +787,8 @@ $("suggestions").addEventListener("click",event=>{
  const place=allPlaces.find(item=>String(item.id)===button.dataset.searchPlace);
  if(!place)return;
  currentCity=place.city;
+ $("catalogCity").value=currentCity;
  $("catalogCategory").value=place.category;
- document.querySelectorAll(".city-button[data-city]").forEach(b=>{
-  if(!b.closest("#addCityButtons"))b.classList.toggle("active",b.dataset.city===currentCity);
- });
  $("suggestions").classList.add("hidden");
  $("searchInput").value="";
  switchPage("catalogPage");
@@ -775,7 +798,170 @@ document.addEventListener("click",event=>{
  if(!event.target.closest(".search-wrap"))$("suggestions").classList.add("hidden");
 });
 
+
+async function callAdmin(action,payload={}){
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(!session?.access_token)throw new Error("Сначала войди в аккаунт");
+ const response=await fetch(SUPABASE_URL+"/functions/v1/admin-actions",{
+  method:"POST",
+  headers:{
+   "Content-Type":"application/json",
+   "apikey":SUPABASE_KEY,
+   "Authorization":"Bearer "+session.access_token
+  },
+  body:JSON.stringify({action,...payload})
+ });
+ const result=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(result.error||"Ошибка администратора");
+ return result;
+}
+
+async function refreshAdminPanel(){
+ $("adminPanel").classList.add("hidden");
+ try{
+  await callAdmin("list_reviews");
+  $("adminPanel").classList.remove("hidden");
+  document.querySelectorAll(".root-admin-only").forEach(el=>el.classList.toggle("hidden",currentUser?.id!==ROOT_ADMIN_ID));
+  await loadAdminTab("reports");
+ }catch(error){
+  if(!String(error.message).includes("Forbidden"))console.warn("Admin panel:",error.message);
+ }
+}
+
+async function loadAdminTab(tab){
+ document.querySelectorAll("[data-admin-tab]").forEach(button=>button.classList.toggle("active",button.dataset.adminTab===tab));
+ const target=$("adminContent");
+ target.innerHTML='<div class="empty">Загружаем...</div>';
+ try{
+  if(tab==="reports"){
+   const result=await callAdmin("list_reports");
+   const reports=result.reports||[];
+   target.innerHTML=reports.length?reports.map(report=>`
+    <article class="admin-row">
+     <strong>${report.target_type==="review"?"Жалоба на отзыв":"Жалоба на пользователя"}</strong>
+     <p>Отправитель: <b>${escapeHtml(report.reporter_nickname)}</b><br>
+     Причина: ${escapeHtml(report.reason)}<br>
+     Подробности: ${escapeHtml(report.details||"—")}<br>
+     Статус: <b>${escapeHtml(report.status)}</b><br>
+     ${report.target_type==="user"?"Пользователь: "+escapeHtml(report.target_nickname||report.target_id):"Отзыв: "+escapeHtml(report.review_preview||"Отзыв уже удалён")}<br>
+     Дата: ${formatDate(report.created_at)}</p>
+     <div class="admin-actions">
+      <button class="secondary" data-report-status="reviewing" data-id="${escapeHtml(report.id)}">В работу</button>
+      <button class="secondary" data-report-status="resolved" data-id="${escapeHtml(report.id)}">Решено</button>
+      <button class="secondary" data-report-status="rejected" data-id="${escapeHtml(report.id)}">Отклонить</button>
+      ${report.target_user_id?`<button class="secondary" data-user-action="ban_user" data-user-id="${escapeHtml(report.target_user_id)}">Заблокировать пользователя</button>`:""}
+     </div>
+    </article>`).join(""):'<div class="empty">Жалоб пока нет.</div>';
+  }else if(tab==="reviews"){
+   const result=await callAdmin("list_reviews");
+   const reviews=result.reviews||[];
+   target.innerHTML=reviews.length?reviews.map(review=>`
+    <article class="admin-row">
+     <b>${escapeHtml(review.nickname||"Пользователь")}</b> · ${"★".repeat(Number(review.stars||0))}<br>
+     <p>${escapeHtml(review.comment||"")}</p>
+     <small class="muted">ID: ${escapeHtml(review.id)} · ${formatDate(review.created_at)}</small>
+     <div class="admin-actions">
+      <button class="secondary" data-review-edit="${escapeHtml(review.id)}">Изменить</button>
+      <button class="secondary" data-review-delete="${escapeHtml(review.id)}">Удалить</button>
+     </div>
+    </article>`).join(""):'<div class="empty">Отзывов пока нет.</div>';
+  }else if(tab==="users"){
+   const result=await callAdmin("list_users");
+   const users=result.users||[];
+   target.innerHTML=users.length?users.map(user=>`
+    <article class="admin-row">
+     <b>${escapeHtml(user.nickname)}</b> ${user.is_admin?'<span class="muted">· администратор</span>':""}
+     <p class="muted">ID: ${escapeHtml(user.id)}<br>Регистрация: ${formatDate(user.created_at)}<br>Статус: ${user.banned_until?"Заблокирован":"Активен"}</p>
+     <div class="admin-actions">
+      <button class="secondary" data-user-action="${user.banned_until?"unban_user":"ban_user"}" data-user-id="${escapeHtml(user.id)}">${user.banned_until?"Разблокировать":"Заблокировать"}</button>
+      ${currentUser?.id===ROOT_ADMIN_ID&&user.id!==ROOT_ADMIN_ID?`<button class="secondary" data-user-action="${user.is_admin?"remove_admin":"promote_admin"}" data-user-id="${escapeHtml(user.id)}">${user.is_admin?"Снять админа":"Назначить админом"}</button>`:""}
+     </div>
+    </article>`).join(""):'<div class="empty">Пользователей пока нет.</div>';
+  }else if(tab==="admins"){
+   if(currentUser?.id!==ROOT_ADMIN_ID)throw new Error("Нет доступа");
+   const result=await callAdmin("list_admins");
+   target.innerHTML=(result.admins||[]).map(admin=>`
+    <article class="admin-row">
+     <b>${escapeHtml(admin.nickname)}</b> ${admin.is_root?'<span class="muted">· главный администратор</span>':""}
+     <p class="muted">${escapeHtml(admin.user_id)}</p>
+     ${!admin.is_root?`<button class="secondary" data-user-action="remove_admin" data-user-id="${escapeHtml(admin.user_id)}">Снять права</button>`:""}
+    </article>`).join("")||'<div class="empty">Администраторов нет.</div>';
+  }
+ }catch(error){
+  target.innerHTML='<div class="empty">'+escapeHtml(error.message||"Не удалось загрузить раздел")+'</div>';
+ }
+}
+
+document.querySelectorAll("[data-admin-tab]").forEach(button=>{
+ button.addEventListener("click",()=>loadAdminTab(button.dataset.adminTab));
+});
+
+$("adminContent").addEventListener("click",async event=>{
+ const statusButton=event.target.closest("[data-report-status]");
+ const editButton=event.target.closest("[data-review-edit]");
+ const deleteButton=event.target.closest("[data-review-delete]");
+ const userButton=event.target.closest("[data-user-action]");
+ try{
+  if(statusButton){
+   await callAdmin("update_report_status",{id:statusButton.dataset.id,status:statusButton.dataset.reportStatus});
+   showToast("Статус жалобы обновлён");
+   await loadAdminTab("reports");
+  }else if(editButton){
+   const {reviews=[]}=await callAdmin("list_reviews");
+   const review=reviews.find(item=>item.id===editButton.dataset.reviewEdit);
+   if(!review)return;
+   const comment=prompt("Измени текст отзыва:",review.comment);
+   if(comment===null)return;
+   const starsRaw=prompt("Оценка от 1 до 5:",String(review.stars));
+   if(starsRaw===null)return;
+   await callAdmin("update_review",{id:review.id,comment,stars:Number(starsRaw)});
+   showToast("Отзыв изменён");
+   await loadData();
+   await loadAdminTab("reviews");
+  }else if(deleteButton){
+   if(!confirm("Точно удалить этот отзыв?"))return;
+   await callAdmin("delete_review",{id:deleteButton.dataset.reviewDelete});
+   showToast("Отзыв удалён");
+   await loadData();
+   await loadAdminTab("reviews");
+  }else if(userButton){
+   const action=userButton.dataset.userAction;
+   const userId=userButton.dataset.userId;
+   const prompts={
+    ban_user:"Заблокировать этого пользователя?",
+    unban_user:"Разблокировать этого пользователя?",
+    promote_admin:"Назначить этого пользователя администратором?",
+    remove_admin:"Снять с пользователя права администратора?"
+   };
+   if(!confirm(prompts[action]||"Подтвердить действие?"))return;
+   await callAdmin(action,{user_id:userId});
+   showToast("Действие выполнено");
+   await loadAdminTab(action.includes("admin")?"users":"users");
+  }
+ }catch(error){showToast(error.message||"Ошибка");}
+});
+
+async function submitUserReport(targetType,targetId){
+ if(!currentUser){showToast("Войди, чтобы отправить жалобу");switchPage("profilePage");return;}
+ const reason=prompt("Укажи причину жалобы (например: оскорбления, спам, ложная информация):");
+ if(reason===null)return;
+ if(reason.trim().length<3){showToast("Напиши причину жалобы");return;}
+ const details=prompt("Дополнительные подробности (необязательно):")||"";
+ try{
+  const result=await callAdmin("create_report",{target_type:targetType,target_id:targetId,reason:reason.trim(),details:details.trim()});
+  showToast(result.already_reported?"Такая жалоба уже отправлена":"Жалоба отправлена администраторам");
+ }catch(error){showToast(error.message||"Не удалось отправить жалобу");}
+}
+
+document.addEventListener("click",event=>{
+ const reviewButton=event.target.closest("[data-report-review]");
+ const userButton=event.target.closest("[data-report-user]");
+ if(reviewButton)submitUserReport("review",reviewButton.dataset.reportReview);
+ else if(userButton)submitUserReport("user",userButton.dataset.reportUser);
+});
+
 async function init(){
+ fillCitySelects();
  renderCategoryOptions();
  initMap();
  await checkSession();
