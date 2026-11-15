@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 9.0</title>
+<title>Tolchok NP — BETA 9.1</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -144,7 +145,7 @@ footer strong{color:var(--green)}
 <header>
  <div class="logo">Tolchok NP</div>
  <p>Честные отзывы о местах городов Беларуси</p>
- <div class="beta"><span class="beta-dot"></span>BETA 9.0</div>
+ <div class="beta"><span class="beta-dot"></span>BETA 9.1</div>
 </header>
 <main class="container">
 <section id="homePage" class="page active">
@@ -280,7 +281,11 @@ const CATEGORIES=[
  {id:"education",name:"Школы",icon:"🏫",description:"Школы и учебные заведения"},
  {id:"other",name:"Другое",icon:"📍",description:"Другие места"}
 ];
-const BELARUS_CITIES=["Барановичи", "Барань", "Белоозёрск", "Белыничи", "Березино", "Березовка", "Берёза", "Бобруйск", "Борисов", "Браслав", "Брест", "Буда-Кошелево", "Быхов", "Василевичи", "Верхнедвинск", "Ветка", "Вилейка", "Витебск", "Волковыск", "Воложин", "Высокое", "Ганцевичи", "Глубокое", "Гомель", "Горки", "Городок", "Гродно", "Давид-Городок", "Дзержинск", "Дисна", "Добруш", "Докшицы", "Дрогичин", "Дубровно", "Дятлово", "Ельск", "Жабинка", "Житковичи", "Жлобин", "Жодино", "Заславль", "Иваново", "Ивацевичи", "Ивье", "Калинковичи", "Каменец", "Кировск", "Клецк", "Климовичи", "Кличев", "Кобрин", "Копыль", "Коссово", "Костюковичи", "Кричев", "Круглое", "Крупки", "Лепель", "Лида", "Логойск", "Лунинец", "Любань", "Ляховичи", "Малорита", "Марьина Горка", "Микашевичи", "Минск", "Миоры", "Могилёв", "Мозырь", "Молодечно", "Мосты", "Мстиславль", "Мядель", "Наровля", "Несвиж", "Новогрудок", "Новолукомль", "Новополоцк", "Орша", "Осиповичи", "Островец", "Ошмяны", "Петриков", "Пинск", "Полоцк", "Поставы", "Пружаны", "Речица", "Рогачёв", "Светлогорск", "Свислочь", "Сенно", "Скидель", "Славгород", "Слоним", "Слуцк", "Смолевичи", "Сморгонь", "Солигорск", "Старые Дороги", "Столбцы", "Столин", "Толочин", "Туров", "Узда", "Фаниполь", "Хойники", "Чаусы", "Чашники", "Червень", "Чериков", "Чечерск", "Шклов", "Щучин"];
+
+const BELARUS_CITIES=[
+"Барановичи","Барань","Белоозёрск","Белыничи","Березино","Березовка","Берёза","Бобруйск","Борисов","Браслав","Брест","Буда-Кошелево","Быхов","Василевичи","Верхнедвинск","Ветка","Вилейка","Витебск","Волковыск","Воложин","Высокое","Ганцевичи","Глубокое","Гомель","Горки","Городок","Гродно","Давид-Городок","Дзержинск","Дисна","Добруш","Докшицы","Дрогичин","Дубровно","Дятлово","Ельск","Жабинка","Житковичи","Жлобин","Жодино","Заславль","Иваново","Ивацевичи","Ивье","Калинковичи","Каменец","Кировск","Клецк","Климовичи","Кличев","Кобрин","Копыль","Коссово","Костюковичи","Кричев","Круглое","Крупки","Лепель","Лида","Логойск","Лунинец","Любань","Ляховичи","Малорита","Марьина Горка","Микашевичи","Минск","Миоры","Могилёв","Мозырь","Молодечно","Мосты","Мстиславль","Мядель","Наровля","Несвиж","Новогрудок","Новолукомль","Новополоцк","Орша","Осиповичи","Островец","Ошмяны","Петриков","Пинск","Полоцк","Поставы","Пружаны","Речица","Рогачёв","Светлогорск","Свислочь","Сенно","Скидель","Славгород","Слоним","Слуцк","Смолевичи","Сморгонь","Солигорск","Старые Дороги","Столбцы","Столин","Толочин","Туров","Узда","Фаниполь","Хойники","Чаусы","Чашники","Червень","Чериков","Чечерск","Шклов","Щучин"
+].sort((a,b)=>a.localeCompare(b,"ru"));
+
 const ROOT_ADMIN_ID="bfa898b9-dbd6-4f5e-b989-b1835ef1dbfc";
 
 let currentUser=null;
@@ -315,6 +320,14 @@ const setStatus=(id,message,type="")=>{
 };
 const categoryName=id=>CATEGORIES.find(c=>c.id===id)?.name||"Другое";
 const categoryIcon=id=>CATEGORIES.find(c=>c.id===id)?.icon||"📍";
+
+function normalizeCityText(value){
+ return String(value||"")
+  .toLocaleLowerCase("ru")
+  .replace(/ё/g,"е")
+  .trim();
+}
+
 function fillCitySelects(){
  updateCitySelect("catalogCity","",currentCity);
  updateCitySelect("addCitySelect","",addCity);
@@ -322,28 +335,58 @@ function fillCitySelects(){
  $("addCitySearch").value="";
 }
 
+/* Новый поиск: сначала показывает совпадения с начала названия,
+   затем остальные совпадения. Например "ново" найдёт три города. */
 function updateCitySelect(selectId,query,selectedCity){
  const select=$(selectId);
- const normalized=String(query||"").trim().toLocaleLowerCase("ru");
- const matches=BELARUS_CITIES.filter(city=>city.toLocaleLowerCase("ru").includes(normalized));
- select.innerHTML=matches.map(city=>`<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`).join("");
- if(matches.includes(selectedCity))select.value=selectedCity;
- else if(matches.length)select.selectedIndex=0;
- if(!matches.length)select.innerHTML='<option value="">Город не найден</option>';
+ const normalized=normalizeCityText(query);
+
+ let matches=BELARUS_CITIES.filter(city=>{
+  const name=normalizeCityText(city);
+  return !normalized||name.startsWith(normalized);
+ });
+
+ if(normalized&&!matches.length){
+  matches=BELARUS_CITIES.filter(city=>
+   normalizeCityText(city).includes(normalized)
+  );
+ }
+
+ matches.sort((a,b)=>a.localeCompare(b,"ru"));
+
+ select.innerHTML=matches.map(city=>
+  `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`
+ ).join("");
+
+ if(matches.includes(selectedCity)){
+  select.value=selectedCity;
+ }else if(matches.length){
+  select.selectedIndex=0;
+ }
+
+ if(!matches.length){
+  select.innerHTML='<option value="">Город не найден</option>';
+ }
 }
 
 function connectCitySearch(searchId,selectId,onSelect,getCurrent){
  const search=$(searchId);
  const select=$(selectId);
+
  search.addEventListener("input",()=>{
-  const query=search.value.trim();
+  const query=search.value;
   updateCitySelect(selectId,query,getCurrent());
-  const exact=BELARUS_CITIES.find(city=>city.toLocaleLowerCase("ru")===query.toLocaleLowerCase("ru"));
+
+  const exact=BELARUS_CITIES.find(city=>
+   normalizeCityText(city)===normalizeCityText(query)
+  );
+
   if(exact){
    select.value=exact;
    onSelect(exact);
   }
  });
+
  select.addEventListener("change",()=>{
   if(!select.value)return;
   onSelect(select.value);
@@ -410,6 +453,7 @@ async function setAddCity(city){
   }catch(error){setMapStatus("Не удалось загрузить центр города. Попробуй ещё раз.","error");}
  }
 }
+
 connectCitySearch("addCitySearch","addCitySelect",city=>setAddCity(city),()=>addCity);
 connectCitySearch("catalogCitySearch","catalogCity",city=>{
  currentCity=city;
@@ -507,6 +551,7 @@ function renderReview(review){
   ${currentUser&&review.user_id!==currentUser.id?`<button class="secondary report-button" data-report-review="${escapeHtml(review.id)}">Пожаловаться на отзыв</button> <button class="secondary report-button" data-report-user="${escapeHtml(review.user_id)}">Пожаловаться на автора</button>`:""}
  </div>`;
 }
+
 function renderPopularReviews(){
  const sorted=[...allReviews].sort((a,b)=>Number(b.stars||0)-Number(a.stars||0)).slice(0,10);
  $("popularReviews").innerHTML=sorted.length?sorted.map(renderReview).join(""):'<div class="empty">Пока нет отзывов. Стань первым!</div>';
@@ -592,9 +637,11 @@ async function loadProfileInfo(){
  currentNickname=data?.nickname||currentUser.email||"Пользователь";
  $("profileNickname").textContent=currentNickname;
  $("profileEmail").textContent=currentUser.email||"";
- await refreshAdminPanel();
+
  $("authForms").classList.add("hidden");
  $("profileInfo").classList.remove("hidden");
+
+ await refreshAdminPanel();
  renderMyReviews();
 }
 
@@ -701,6 +748,7 @@ async function logout(){
  currentUser=null;
  $("authForms").classList.remove("hidden");
  $("profileInfo").classList.add("hidden");
+ $("adminPanel").classList.add("hidden");
  showToast("Ты вышел из аккаунта");
 }
 $("logoutButton").addEventListener("click",logout);
@@ -827,10 +875,11 @@ document.addEventListener("click",event=>{
  if(!event.target.closest(".search-wrap"))$("suggestions").classList.add("hidden");
 });
 
-
 async function callAdmin(action,payload={}){
- const {data:{session}}=await supabaseClient.auth.getSession();
+ const {data:{session},error:sessionError}=await supabaseClient.auth.getSession();
+ if(sessionError)throw sessionError;
  if(!session?.access_token)throw new Error("Сначала войди в аккаунт");
+
  const response=await fetch(SUPABASE_URL+"/functions/v1/admin-actions",{
   method:"POST",
   headers:{
@@ -840,20 +889,54 @@ async function callAdmin(action,payload={}){
   },
   body:JSON.stringify({action,...payload})
  });
+
  const result=await response.json().catch(()=>({}));
  if(!response.ok)throw new Error(result.error||"Ошибка администратора");
  return result;
 }
 
+/* Исправленная проверка и отображение админ-панели */
 async function refreshAdminPanel(){
- $("adminPanel").classList.add("hidden");
+ const panel=$("adminPanel");
+ const content=$("adminContent");
+
+ panel.classList.add("hidden");
+
+ const {data:{session},error:sessionError}=await supabaseClient.auth.getSession();
+
+ if(sessionError||!session){
+  return;
+ }
+
+ currentUser=session.user;
+
+ const isRoot=currentUser.id===ROOT_ADMIN_ID;
+
+ if(isRoot){
+  panel.classList.remove("hidden");
+
+  document.querySelectorAll(".root-admin-only").forEach(el=>{
+   el.classList.remove("hidden");
+  });
+
+  await loadAdminTab("reports");
+  return;
+ }
+
  try{
   await callAdmin("list_reviews");
-  $("adminPanel").classList.remove("hidden");
-  document.querySelectorAll(".root-admin-only").forEach(el=>el.classList.toggle("hidden",currentUser?.id!==ROOT_ADMIN_ID));
+
+  panel.classList.remove("hidden");
+
+  document.querySelectorAll(".root-admin-only").forEach(el=>{
+   el.classList.add("hidden");
+  });
+
   await loadAdminTab("reports");
+
  }catch(error){
-  if(!String(error.message).includes("Forbidden"))console.warn("Admin panel:",error.message);
+  console.warn("Проверка администратора:",error.message);
+  panel.classList.add("hidden");
  }
 }
 
@@ -861,6 +944,7 @@ async function loadAdminTab(tab){
  document.querySelectorAll("[data-admin-tab]").forEach(button=>button.classList.toggle("active",button.dataset.adminTab===tab));
  const target=$("adminContent");
  target.innerHTML='<div class="empty">Загружаем...</div>';
+
  try{
   if(tab==="reports"){
    const result=await callAdmin("list_reports");
@@ -881,6 +965,7 @@ async function loadAdminTab(tab){
       ${report.target_user_id?`<button class="secondary" data-user-action="ban_user" data-user-id="${escapeHtml(report.target_user_id)}">Заблокировать пользователя</button>`:""}
      </div>
     </article>`).join(""):'<div class="empty">Жалоб пока нет.</div>';
+
   }else if(tab==="reviews"){
    const result=await callAdmin("list_reviews");
    const reviews=result.reviews||[];
@@ -894,6 +979,7 @@ async function loadAdminTab(tab){
       <button class="secondary" data-review-delete="${escapeHtml(review.id)}">Удалить</button>
      </div>
     </article>`).join(""):'<div class="empty">Отзывов пока нет.</div>';
+
   }else if(tab==="users"){
    const result=await callAdmin("list_users");
    const users=result.users||[];
@@ -906,6 +992,7 @@ async function loadAdminTab(tab){
       ${currentUser?.id===ROOT_ADMIN_ID&&user.id!==ROOT_ADMIN_ID?`<button class="secondary" data-user-action="${user.is_admin?"remove_admin":"promote_admin"}" data-user-id="${escapeHtml(user.id)}">${user.is_admin?"Снять админа":"Назначить админом"}</button>`:""}
      </div>
     </article>`).join(""):'<div class="empty">Пользователей пока нет.</div>';
+
   }else if(tab==="admins"){
    if(currentUser?.id!==ROOT_ADMIN_ID)throw new Error("Нет доступа");
    const result=await callAdmin("list_admins");
@@ -916,8 +1003,9 @@ async function loadAdminTab(tab){
      ${!admin.is_root?`<button class="secondary" data-user-action="remove_admin" data-user-id="${escapeHtml(admin.user_id)}">Снять права</button>`:""}
     </article>`).join("")||'<div class="empty">Администраторов нет.</div>';
   }
+
  }catch(error){
-  target.innerHTML='<div class="empty">'+escapeHtml(error.message||"Не удалось загрузить раздел")+'</div>';
+  target.innerHTML='<div class="empty">Не удалось загрузить раздел: '+escapeHtml(error.message||"Ошибка")+'</div>';
  }
 }
 
@@ -930,11 +1018,13 @@ $("adminContent").addEventListener("click",async event=>{
  const editButton=event.target.closest("[data-review-edit]");
  const deleteButton=event.target.closest("[data-review-delete]");
  const userButton=event.target.closest("[data-user-action]");
+
  try{
   if(statusButton){
    await callAdmin("update_report_status",{id:statusButton.dataset.id,status:statusButton.dataset.reportStatus});
    showToast("Статус жалобы обновлён");
    await loadAdminTab("reports");
+
   }else if(editButton){
    const {reviews=[]}=await callAdmin("list_reviews");
    const review=reviews.find(item=>item.id===editButton.dataset.reviewEdit);
@@ -947,12 +1037,14 @@ $("adminContent").addEventListener("click",async event=>{
    showToast("Отзыв изменён");
    await loadData();
    await loadAdminTab("reviews");
+
   }else if(deleteButton){
    if(!confirm("Точно удалить этот отзыв?"))return;
    await callAdmin("delete_review",{id:deleteButton.dataset.reviewDelete});
    showToast("Отзыв удалён");
    await loadData();
    await loadAdminTab("reviews");
+
   }else if(userButton){
    const action=userButton.dataset.userAction;
    const userId=userButton.dataset.userId;
@@ -965,9 +1057,11 @@ $("adminContent").addEventListener("click",async event=>{
    if(!confirm(prompts[action]||"Подтвердить действие?"))return;
    await callAdmin(action,{user_id:userId});
    showToast("Действие выполнено");
-   await loadAdminTab(action.includes("admin")?"users":"users");
+   await loadAdminTab("users");
   }
- }catch(error){showToast(error.message||"Ошибка");}
+ }catch(error){
+  showToast(error.message||"Ошибка");
+ }
 });
 
 async function submitUserReport(targetType,targetId){
@@ -979,7 +1073,9 @@ async function submitUserReport(targetType,targetId){
  try{
   const result=await callAdmin("create_report",{target_type:targetType,target_id:targetId,reason:reason.trim(),details:details.trim()});
   showToast(result.already_reported?"Такая жалоба уже отправлена":"Жалоба отправлена администраторам");
- }catch(error){showToast(error.message||"Не удалось отправить жалобу");}
+ }catch(error){
+  showToast(error.message||"Не удалось отправить жалобу");
+ }
 }
 
 document.addEventListener("click",event=>{
@@ -995,20 +1091,25 @@ async function init(){
  initMap();
  await checkSession();
  await loadData();
+
  supabaseClient.auth.onAuthStateChange(async(event,session)=>{
   if(event==="SIGNED_IN"&&session){
    currentUser=session.user;
    await loadProfileInfo();
    await loadData();
   }
+
   if(event==="SIGNED_OUT"){
    currentUser=null;
    $("authForms").classList.remove("hidden");
    $("profileInfo").classList.add("hidden");
+   $("adminPanel").classList.add("hidden");
   }
  });
+
  if(window.lucide)lucide.createIcons();
 }
+
 init();
 </script>
 </body>
