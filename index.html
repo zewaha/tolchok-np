@@ -4,13 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 8.4</title>
-
+<title>Tolchok NP — BETA 8.6</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
-
 <style>
 :root{
  --bg:#0b1020;--panel:#17243a;--panel2:#111e32;
@@ -118,832 +116,685 @@ footer{text-align:center;padding:35px 15px;color:#8292a8;font-size:13px;border-t
 footer strong{color:var(--green)}
 .icon{width:19px;height:19px;stroke-width:2;flex-shrink:0}
 .icon-lg{width:27px;height:27px}
-.category-page-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
-.category-page-card{display:flex;align-items:center;gap:14px;padding:19px 14px;min-height:100px;text-align:left;color:white;background:linear-gradient(145deg,#1a2941,#142137);border:1px solid var(--border);border-radius:16px;transition:.2s}
-.category-page-card:hover{border-color:var(--green);transform:translateY(-2px)}
-.category-page-card .category-page-icon{display:flex;align-items:center;justify-content:center;width:48px;height:48px;flex-shrink:0;border-radius:14px;background:#55edb018;color:var(--green)}
-.category-page-card strong{display:block;font-size:14px}
-.category-page-card small{display:block;margin-top:7px;color:var(--muted);font-size:11px}
-.page-back{display:inline-flex;align-items:center;gap:8px;margin:10px 0 15px;padding:10px 13px;color:var(--green);background:#55edb014;border:1px solid #55edb044;border-radius:10px}
-.bottom-nav{position:fixed;z-index:80;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#101b2d;border-top:1px solid #30425b;box-shadow:0 -8px 25px #0004}
-.nav-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:7px 2px;border:0;border-radius:10px;background:transparent;color:#9aabc0;font-size:11px}
-.nav-button.active{color:var(--green);background:#55edb014}
-.nav-button.active .icon{color:var(--green)}
-@media(max-width:430px){
- .container{padding:12px}.stats{gap:6px}.stat strong{font-size:21px}
- .star-button{width:43px;height:45px}.comment-form{flex-direction:column}
- .comment-form button{width:100%}.category-page-grid{gap:8px}
- .category-page-card{padding:14px 10px;gap:9px}
- .category-page-card .category-page-icon{width:40px;height:40px}
- .category-page-card strong{font-size:12px}
+.category-page-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:90;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#101b2c;border-top:1px solid #30425b}
+.nav-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:7px 2px;color:#91a2b8;background:transparent;border:0;border-radius:10px;font-size:10px}
+.nav-button.active{color:var(--green);background:#17372f}
+.nav-button .icon{width:21px;height:21px}
+.page{display:none}
+.page.active{display:block}
+@media(max-width:520px){
+ .container{padding:12px}
+ .panel{padding:15px}
+ .place{padding:15px}
+ .filters{grid-template-columns:1fr}
+ .category-page-grid{grid-template-columns:1fr 1fr}
+ .nav-button{font-size:9px}
 }
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important}}
 </style>
 </head>
-
 <body>
 <header>
- <div class="logo">TOLCHOK NP</div>
- <p>Городской рейтинг туалетов</p>
- <p>Новополоцк · Полоцк</p>
- <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.4</div>
+ <div class="logo">Tolchok NP</div>
+ <p>Честные отзывы о местах Новополоцка и Полоцка</p>
+ <div class="beta"><span class="beta-dot"></span>BETA 8.6</div>
 </header>
-
 <main class="container">
- <section class="main-page" id="homeSection">
-  <div class="panel" style="text-align:center;padding:28px 20px">
-   <div style="color:var(--green);font-size:12px;font-weight:bold;letter-spacing:2px">ГОРОДСКОЙ СПРАВОЧНИК</div>
-   <h2 style="font-size:27px;margin:12px 0">Добро пожаловать в TOLCHOK NP!</h2>
-   <p class="muted" style="font-size:14px;line-height:1.7">Находи общественные туалеты, смотри оценки и отзывы, а также добавляй новые места для жителей Новополоцка и Полоцка.</p>
-   <button type="button" class="primary" id="homeCatalogButton" style="margin-top:14px">Открыть каталог</button>
-   <button type="button" class="secondary" id="homeProfileButton" style="width:100%;margin-top:10px">Мой профиль</button>
+<section id="homePage" class="page active">
+ <h2>Главная</h2>
+ <div class="search-wrap">
+  <input id="searchInput" placeholder="Поиск мест и отзывов..." autocomplete="off">
+  <div id="suggestions" class="suggestions hidden"></div>
+ </div>
+ <div class="stats">
+  <div class="stat"><strong id="statPlaces">0</strong><span>Мест</span></div>
+  <div class="stat"><strong id="statReviews">0</strong><span>Отзывов</span></div>
+  <div class="stat"><strong id="statUsers">0</strong><span>Участников</span></div>
+ </div>
+ <div class="category-heading"><h2>Популярные отзывы</h2></div>
+ <div id="popularReviews"></div>
+ <div class="category-heading"><h2>Категории</h2></div>
+ <div id="homeCategories" class="category-page-grid"></div>
+</section>
+<section id="catalogPage" class="page">
+ <h2>Каталог мест</h2>
+ <div class="city-grid">
+  <button class="city-button active" data-city="Новополоцк">Новополоцк</button>
+  <button class="city-button" data-city="Полоцк">Полоцк</button>
+ </div>
+ <div class="filters">
+  <select id="catalogCategory"><option value="">Все категории</option></select>
+  <select id="sortSelect">
+   <option value="rating">Сначала лучшие</option>
+   <option value="new">Сначала новые</option>
+   <option value="reviews">По количеству отзывов</option>
+  </select>
+ </div>
+ <div id="catalogPlaces"></div>
+</section>
+<section id="addPage" class="page">
+ <h2>Добавить отзыв</h2>
+ <div class="panel">
+  <div class="muted">Выбери город, в котором находится место</div>
+  <div class="city-grid" id="addCityButtons">
+   <button class="city-button active" data-city="Новополоцк">Новополоцк</button>
+   <button class="city-button" data-city="Полоцк">Полоцк</button>
   </div>
-  <h2>Статистика проекта</h2>
-  <div class="stats">
-   <div class="stat"><strong id="totalPlaces">0</strong><span>Мест</span></div>
-   <div class="stat"><strong id="totalReviews">0</strong><span>Отзывов</span></div>
-   <div class="stat"><strong id="average">—</strong><span>Средняя оценка</span></div>
+  <h3>Категория</h3>
+  <div id="addCategories" class="category-grid"></div>
+  <h3>Название места</h3>
+  <input id="placeName" placeholder="Например, общественный туалет">
+  <h3>Адрес</h3>
+  <input id="placeAddress" placeholder="Улица, дом">
+  <h3>Выбери место на карте</h3>
+  <div class="map-hint">Нажми на карту, чтобы поставить метку. Место должно находиться в выбранном городе.</div>
+  <div id="placeMap"></div>
+  <div id="mapStatus" class="map-status">Сначала выбери точку на карте.</div>
+  <h3>Оценка</h3>
+  <div class="rating-buttons" id="ratingButtons">
+   <button class="star-button" data-rating="1">★</button>
+   <button class="star-button" data-rating="2">★</button>
+   <button class="star-button" data-rating="3">★</button>
+   <button class="star-button" data-rating="4">★</button>
+   <button class="star-button" data-rating="5">★</button>
   </div>
-  <h2>Популярные отзывы</h2>
-  <p class="muted">Отзывы с высокими оценками и активным обсуждением</p>
-  <div id="popularReviews"></div>
-  <div class="notice">Выбирай разделы в нижней панели. В каталоге можно искать места, смотреть категории и читать отзывы.</div>
- </section>
-
- <section class="panel main-page hidden" id="profileSection">
-  <h2><i data-lucide="user-round" class="icon"></i> Профиль</h2>
+  <h3>Текст отзыва</h3>
+  <textarea id="reviewText" placeholder="Расскажи о своём опыте..."></textarea>
+  <button id="submitReview" class="primary">Опубликовать отзыв</button>
+  <div id="addStatus" class="account-status"></div>
+ </div>
+</section>
+<section id="reviewsPage" class="page">
+ <h2>Все отзывы</h2>
+ <div id="allReviews"></div>
+</section>
+<section id="profilePage" class="page">
+ <h2>Профиль</h2>
+ <div class="panel">
   <div id="authForms">
    <div class="account-tabs">
-    <button type="button" id="loginTab" class="active">Вход</button>
-    <button type="button" id="registerTab">Регистрация</button>
+    <button id="loginTab" class="active">Войти</button>
+    <button id="registerTab">Регистрация</button>
    </div>
-   <p class="muted" id="accountHint">Войди в аккаунт или создай новый.</p>
-   <form id="loginForm">
-    <input id="loginIdentity" placeholder="Никнейм" autocomplete="username" required>
-    <input id="loginPassword" type="password" placeholder="Пароль" autocomplete="current-password" required>
-    <button type="submit" class="primary">Войти</button>
-   </form>
-   <form id="registerForm" class="hidden">
-    <input id="registerNickname" placeholder="Придумай никнейм" title="3–24 символа: русские/английские буквы, цифры и _" minlength="3" maxlength="24" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,24}" autocomplete="username" required>
-    <input id="registerPassword" type="password" placeholder="Пароль (минимум 8 символов)" minlength="8" autocomplete="new-password" required>
-    <button type="submit" class="primary">Создать аккаунт</button>
-    <p class="auth-note">Никнейм от 3 до 24 символов: буквы, цифры и нижнее подчёркивание. Почта не нужна.</p>
-   </form>
-  </div>
-  <div id="profileBox" class="account-profile hidden">
-   <span class="muted">Ты вошёл как:</span>
-   <strong id="profileNickname">Пользователь</strong>
-   <button type="button" id="logoutButton" class="secondary"><i data-lucide="log-out" class="icon"></i> Выйти из аккаунта</button>
-  </div>
-  <div id="accountStatus" class="account-status" aria-live="polite"></div>
- </section>
-
- <section id="catalogSection" class="main-page hidden">
-  <h2><i data-lucide="layout-grid" class="icon"></i> Каталог мест</h2>
-  <div class="search-wrap">
-   <input id="search" type="search" autocomplete="off" placeholder="Название, адрес или улица...">
-   <div id="suggestions" class="suggestions hidden"></div>
-  </div>
-  <div class="quick-chips">
-   <button class="chip" data-city="Новополоцк"><i data-lucide="map-pin" class="icon"></i> Новополоцк</button>
-   <button class="chip" data-city="Полоцк"><i data-lucide="map-pin" class="icon"></i> Полоцк</button>
-   <button class="chip" data-open-categories><i data-lucide="shapes" class="icon"></i> Категории</button>
-  </div>
-
-  <div class="category-heading">
-   <h2>Категории</h2>
-   <button type="button" class="secondary" id="openCategories"><i data-lucide="arrow-right" class="icon"></i> Все категории</button>
-  </div>
-  <p class="muted">Открой отдельную страницу, чтобы выбрать нужную категорию.</p>
-
-  <div class="filters">
-   <select id="cityFilter">
-    <option value="all">Все города</option>
-    <option value="Новополоцк">Новополоцк</option>
-    <option value="Полоцк">Полоцк</option>
-   </select>
-   <select id="sort">
-    <option value="rating">Лучший рейтинг</option>
-    <option value="reviews">Больше отзывов</option>
-    <option value="new">Сначала новые</option>
-   </select>
-  </div>
-  <h2>Рейтинг мест</h2>
-  <div id="places"></div>
- </section>
-
- <!-- ОТДЕЛЬНАЯ СТРАНИЦА КАТЕГОРИЙ -->
- <section id="categoriesSection" class="hidden">
-  <button class="page-back" id="backToCatalog"><i data-lucide="arrow-left" class="icon"></i> Назад в каталог</button>
-  <h2><i data-lucide="shapes" class="icon"></i> Категории мест</h2>
-  <p class="muted">Выбери категорию, чтобы посмотреть подходящие места.</p>
-  <div class="category-page-grid">
-   <button class="category-page-card" data-filter="all">
-    <span class="category-page-icon"><i data-lucide="grid-2x2" class="icon-lg"></i></span>
-    <span><strong>Все места</strong><small id="catCountAll">0 мест</small></span>
-   </button>
-   <button class="category-page-card" data-filter="Общественный туалет">
-    <span class="category-page-icon"><i data-lucide="door-open" class="icon-lg"></i></span>
-    <span><strong>Общественные</strong><small id="catCountPublic">0 мест</small></span>
-   </button>
-   <button class="category-page-card" data-filter="Торговый центр">
-    <span class="category-page-icon"><i data-lucide="shopping-bag" class="icon-lg"></i></span>
-    <span><strong>Торговые центры</strong><small id="catCountMall">0 мест</small></span>
-   </button>
-   <button class="category-page-card" data-filter="Кафе или заведение">
-    <span class="category-page-icon"><i data-lucide="utensils" class="icon-lg"></i></span>
-    <span><strong>Кафе и заведения</strong><small id="catCountCafe">0 мест</small></span>
-   </button>
-   <button class="category-page-card" data-filter="Другое">
-    <span class="category-page-icon"><i data-lucide="map-pinned" class="icon-lg"></i></span>
-    <span><strong>Другие места</strong><small id="catCountOther">0 мест</small></span>
-   </button>
-  </div>
- </section>
-
- <section class="panel main-page hidden" id="addSection">
-  <h2><i data-lucide="plus-circle" class="icon"></i> Добавить место</h2>
-  <p class="muted">Добавлять места могут пользователи с аккаунтом.</p>
-  <form id="placeForm">
-   <p class="muted">Выбери город</p>
-   <div class="city-grid">
-    <button type="button" class="city-button active" data-city="Новополоцк">Новополоцк</button>
-    <button type="button" class="city-button" data-city="Полоцк">Полоцк</button>
+   <div id="loginForm">
+    <input id="loginNickname" placeholder="Никнейм" autocomplete="username">
+    <input id="loginPassword" type="password" placeholder="Пароль" autocomplete="current-password">
+    <button id="loginButton" class="primary">Войти</button>
    </div>
-   <p class="muted" style="margin-top:20px">Выбери категорию</p>
-   <div class="category-grid">
-    <button type="button" class="category-button active" data-category="Общественный туалет"><i data-lucide="door-open" class="icon"></i><span><strong>Общественный туалет</strong><small>Городские уборные</small></span></button>
-    <button type="button" class="category-button" data-category="Торговый центр"><i data-lucide="shopping-bag" class="icon"></i><span><strong>Торговый центр</strong><small>Туалеты в ТЦ</small></span></button>
-    <button type="button" class="category-button" data-category="Кафе или заведение"><i data-lucide="utensils" class="icon"></i><span><strong>Кафе или заведение</strong><small>Кафе и рестораны</small></span></button>
-    <button type="button" class="category-button" data-category="Другое"><i data-lucide="map-pinned" class="icon"></i><span><strong>Другое</strong><small>Другие места</small></span></button>
+   <div id="registerForm" class="hidden">
+    <input id="registerNickname" placeholder="Придумай никнейм" autocomplete="username">
+    <input id="registerEmail" type="email" placeholder="Электронная почта" autocomplete="email">
+    <input id="registerPassword" type="password" placeholder="Пароль (минимум 6 символов)" autocomplete="new-password">
+    <button id="registerButton" class="primary">Создать аккаунт</button>
    </div>
-   <input type="hidden" id="selectedCity" value="Новополоцк">
-   <input type="hidden" id="selectedCategory" value="Общественный туалет">
-   <p class="muted" style="margin-top:20px">Выбери точку на карте</p>
-   <div class="map-hint">Нажми на карте, чтобы поставить метку. Адрес попробуем определить автоматически.</div>
-   <div id="placeMap"></div>
-   <div id="mapStatus" class="map-status">Загружаем карту...</div>
-   <input type="hidden" id="placeLatitude">
-   <input type="hidden" id="placeLongitude">
-   <p class="muted">Информация о месте</p>
-   <input id="placeName" placeholder="Название места" maxlength="70" required>
-   <input id="placeAddress" placeholder="Улица, дом или адрес" maxlength="150" required>
-   <button type="submit" class="primary">Добавить в каталог</button>
-  </form>
- </section>
-
- <section class="panel hidden" id="reviewPanel">
-  <h2>Отзыв о месте</h2>
-  <p id="reviewPlace" class="muted"></p>
-  <p class="notice">Один аккаунт может оставить один отзыв на место. Его можно изменить позже.</p>
-  <form id="reviewForm">
-   <input id="nickname" placeholder="Твой никнейм" readonly>
-   <p class="muted">Твоя оценка</p>
-   <div class="rating-buttons">
-    <button type="button" class="star-button active" data-stars="1">★</button>
-    <button type="button" class="star-button active" data-stars="2">★</button>
-    <button type="button" class="star-button active" data-stars="3">★</button>
-    <button type="button" class="star-button active" data-stars="4">★</button>
-    <button type="button" class="star-button active" data-stars="5">★</button>
+   <div id="authStatus" class="account-status"></div>
+   <p class="auth-note">Для регистрации нужны никнейм, почта и пароль. Никнейм должен быть уникальным.</p>
+  </div>
+  <div id="profileInfo" class="hidden">
+   <div class="account-profile">
+    Вы вошли как:
+    <strong id="profileNickname"></strong>
+    <div id="profileEmail" class="muted"></div>
    </div>
-   <p id="ratingLabel" style="text-align:center;color:#ffd45c">5 из 5 — Отлично</p>
-   <input type="hidden" id="stars" value="5">
-   <textarea id="comment" maxlength="500" placeholder="Напиши свой отзыв..." required></textarea>
-   <button type="submit" id="reviewSubmit" class="primary">Опубликовать отзыв</button>
-   <button type="button" id="cancelReview" class="secondary" style="width:100%;margin-top:10px">Отмена</button>
-  </form>
- </section>
-
- <section class="panel main-page hidden" id="reviewsSection">
-  <h2><i data-lucide="message-square" class="icon"></i> Все отзывы</h2>
-  <div id="allReviews"></div>
- </section>
-
- <div class="notice">Публикуй честные отзывы, не размещай личные данные и оскорбления.</div>
+   <h3>Мои отзывы</h3>
+   <div id="myReviews"></div>
+   <button id="logoutButton" class="secondary">Выйти из аккаунта</button>
+  </div>
+ </div>
+</section>
 </main>
-
-<footer>
- <strong>TOLCHOK NP</strong> © 2026<br><br>
- Новополоцк · Полоцк<br><br>
- BETA VERSION 8.4<br><br>
- Сделано для городского сообщества
-</footer>
-
+<footer><strong>Tolchok NP</strong><br>Проект отзывов о местах Новополоцка и Полоцка</footer>
 <nav class="bottom-nav">
- <button class="nav-button active" data-tab="homeSection"><i data-lucide="house" class="icon"></i><span>Главная</span></button>
- <button class="nav-button" data-tab="catalogSection"><i data-lucide="layout-grid" class="icon"></i><span>Каталог</span></button>
- <button class="nav-button" data-tab="addSection"><i data-lucide="plus-circle" class="icon"></i><span>Добавить</span></button>
- <button class="nav-button" data-tab="reviewsSection"><i data-lucide="message-square" class="icon"></i><span>Отзывы</span></button>
- <button class="nav-button" data-tab="profileSection"><i data-lucide="user-round" class="icon"></i><span>Профиль</span></button>
+ <button class="nav-button active" data-page="homePage"><i data-lucide="house" class="icon"></i>Главная</button>
+ <button class="nav-button" data-page="catalogPage"><i data-lucide="map" class="icon"></i>Каталог</button>
+ <button class="nav-button" data-page="addPage"><i data-lucide="plus-circle" class="icon"></i>Добавить</button>
+ <button class="nav-button" data-page="reviewsPage"><i data-lucide="message-square" class="icon"></i>Отзывы</button>
+ <button class="nav-button" data-page="profilePage"><i data-lucide="user" class="icon"></i>Профиль</button>
 </nav>
-<div class="toast" id="toast"></div>
-
+<div id="toast" class="toast"></div>
 <script>
 const SUPABASE_URL="https://ddlbvswesbqyghmtmlxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_RHcQvREUKdBGXpYI851FVQ_JI-lIq0X";
-// Сохраняем сессию в localStorage: вход останется после закрытия вкладки/браузера.
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
- auth:{
-  persistSession:true,
-  autoRefreshToken:true,
-  detectSessionInUrl:false
- }
-});
+const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-let currentAccountNickname="",currentUserId="";
-let places=[],cloudReady=false,cloudLoading=false;
-let selectedPlaceId=null,selectedStars=5,selectedFilter="all";
-let placeMap=null,placeMarker=null,selectedCoordinates=null;
-let reverseBusy=false,lastReverseTime=0;
-const cityCenters={"Новополоцк":[55.5311,28.6467],"Полоцк":[55.4854,28.7786]};
+const CATEGORIES=[
+ {id:"toilet",name:"Туалеты",icon:"🚻",description:"Общественные туалеты"},
+ {id:"food",name:"Еда",icon:"🍔",description:"Кафе и рестораны"},
+ {id:"shops",name:"Магазины",icon:"🛒",description:"Магазины и торговые точки"},
+ {id:"transport",name:"Транспорт",icon:"🚌",description:"Остановки и транспорт"},
+ {id:"education",name:"Школы",icon:"🏫",description:"Школы и учебные заведения"},
+ {id:"other",name:"Другое",icon:"📍",description:"Другие места"}
+];
+
+let currentUser=null;
+let currentCity="Новополоцк";
+let addCity="Новополоцк";
+let selectedCategory="toilet";
+let selectedRating=0;
+let selectedPoint=null;
+let selectedPointVerified=false;
+let map=null;
+let mapMarker=null;
+let verificationRequestId=0;
+let allPlaces=[];
+let allReviews=[];
+let allProfiles=[];
+let currentPage="homePage";
+
 const $=id=>document.getElementById(id);
+const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
+const showToast=message=>{
+ const toast=$("toast");
+ toast.textContent=message;
+ toast.classList.add("show");
+ setTimeout(()=>toast.classList.remove("show"),3000);
+};
+const setStatus=(id,message,type="")=>{
+ const el=$(id);
+ if(!el)return;
+ el.textContent=message;
+ el.className="account-status "+type;
+};
+const categoryName=id=>CATEGORIES.find(c=>c.id===id)?.name||"Другое";
+const categoryIcon=id=>CATEGORIES.find(c=>c.id===id)?.icon||"📍";
+const formatDate=value=>{
+ if(!value)return "";
+ return new Date(value).toLocaleDateString("ru-RU");
+};
 
-function el(tag,cls,text){
- const node=document.createElement(tag);
- if(cls)node.className=cls;
- if(text!==undefined)node.textContent=text;
- return node;
-}
-function refreshIcons(){
- if(window.lucide)lucide.createIcons();
-}
-let toastTimer;
-function showToast(message){
- $("toast").textContent=message;
- $("toast").classList.add("show");
- clearTimeout(toastTimer);
- toastTimer=setTimeout(()=>$("toast").classList.remove("show"),2600);
-}
-function setAccountStatus(message,type=""){
- $("accountStatus").textContent=message;
- $("accountStatus").className="account-status "+type;
-}
-async function getFunctionErrorMessage(error){
- let message=error?.message||"Не удалось выполнить запрос.";
- try{
-  const response=error?.context;
-  if(response&&typeof response.clone==="function"){
-   const payload=await response.clone().json();
-   message=payload?.error||payload?.message||message;
-   if(response.status===409||/already exists|already taken|nickname.*(exists|taken)|никнейм.*(занят|существ)/i.test(message)){
-    return "Этот никнейм уже занят. Придумай другой.";
-   }
-  }
- }catch(_){ }
- if(/already exists|already taken|nickname.*(exists|taken)|никнейм.*(занят|существ)/i.test(message))return "Этот никнейм уже занят. Придумай другой.";
- return message;
-}
-function showAuthTab(tab){
- const login=tab==="login";
- $("loginForm").classList.toggle("hidden",!login);
- $("registerForm").classList.toggle("hidden",login);
- $("loginTab").classList.toggle("active",login);
- $("registerTab").classList.toggle("active",!login);
- $("accountHint").textContent=login?"Введи никнейм и пароль.":"Создай аккаунт по никнейму и паролю.";
-}
-$("loginTab").onclick=()=>showAuthTab("login");
-$("registerTab").onclick=()=>showAuthTab("register");
-
-/* Регистрация по никнейму */
-$("registerForm").addEventListener("submit",async e=>{
- e.preventDefault();
- const nickname=$("registerNickname").value.trim();
- const password=$("registerPassword").value;
- if(!/^[A-Za-zА-Яа-яЁё0-9_]{3,24}$/.test(nickname)){
-  setAccountStatus("Никнейм должен содержать 3–24 символа: только русские/английские буквы, цифры и _. Пробелы, +, точка и дефис запрещены.","error");return;
- }
- if(password.length<8){
-  setAccountStatus("Пароль должен содержать минимум 8 символов.","error");return;
- }
- const button=$("registerForm").querySelector('[type="submit"]');
- button.disabled=true;button.textContent="Создаём аккаунт...";
- try{
-  const {data,error}=await supabaseClient.functions.invoke("register-with-nickname",{body:{nickname,password}});
-  if(error)throw error;
-  const accessToken=data?.access_token||data?.session?.access_token;
-  const refreshToken=data?.refresh_token||data?.session?.refresh_token;
-  if(!accessToken||!refreshToken)throw new Error(data?.error||"Сервер не вернул сессию.");
-  const {error:sessionError}=await supabaseClient.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
-  if(sessionError)throw sessionError;
-  $("registerForm").reset();
-  setAccountStatus("Аккаунт создан. Ты вошёл!","success");
-  showToast("Аккаунт создан");
- }catch(error){
-  console.error(error);
-  setAccountStatus(await getFunctionErrorMessage(error),"error");
- }finally{
-  button.disabled=false;button.textContent="Создать аккаунт";
- }
-});
-
-/* Вход по никнейму */
-$("loginForm").addEventListener("submit",async e=>{
- e.preventDefault();
- const nickname=$("loginIdentity").value.trim();
- const password=$("loginPassword").value;
- const button=$("loginForm").querySelector('[type="submit"]');
- button.disabled=true;button.textContent="Входим...";
- try{
-  const {data,error}=await supabaseClient.functions.invoke("login-with-nickname",{body:{nickname,password}});
-  if(error)throw error;
-  const accessToken=data?.access_token||data?.session?.access_token;
-  const refreshToken=data?.refresh_token||data?.session?.refresh_token;
-  if(!accessToken||!refreshToken)throw new Error("Проверь никнейм и пароль.");
-  const {error:sessionError}=await supabaseClient.auth.setSession({access_token:accessToken,refresh_token:refreshToken});
-  if(sessionError)throw sessionError;
-  $("loginForm").reset();
-  setAccountStatus("Ты успешно вошёл.","success");
-  showToast("Вход выполнен");
- }catch(error){
-  console.error(error);
-  setAccountStatus("Не удалось войти. Проверь никнейм и пароль.","error");
- }finally{
-  button.disabled=false;button.textContent="Войти";
- }
-});
-
-async function updateAccountUI(session){
- if(!session){
-  currentUserId="";currentAccountNickname="";
-  $("authForms").classList.remove("hidden");
-  $("profileBox").classList.add("hidden");
-  $("nickname").value="";
-  return;
- }
- currentUserId=session.user.id;
- let nickname=session.user.user_metadata?.nickname||"";
- try{
-  const {data}=await supabaseClient.from("profiles").select("nickname").eq("id",session.user.id).maybeSingle();
-  if(data?.nickname)nickname=data.nickname;
- }catch(e){}
- currentAccountNickname=nickname||"Пользователь";
- $("profileNickname").textContent=currentAccountNickname;
- $("nickname").value=currentAccountNickname;
- $("authForms").classList.add("hidden");
- $("profileBox").classList.remove("hidden");
- setAccountStatus("Аккаунт активен.","success");
- render();
- refreshIcons();
-}
-$("logoutButton").addEventListener("click",async()=>{
- const {error}=await supabaseClient.auth.signOut();
- if(error)setAccountStatus(error.message,"error");
- else{showToast("Ты вышел из аккаунта");setAccountStatus("Ты вышел из аккаунта.");}
-});
-
-/* Переключение полноценных страниц через нижнюю панель */
-function showMainTab(tabId){
- const target=$(tabId);
- if(!target)return;
- document.querySelectorAll(".main-page").forEach(page=>page.classList.add("hidden"));
- $("categoriesSection").classList.add("hidden");
- $("reviewPanel").classList.add("hidden");
- target.classList.remove("hidden");
- document.querySelectorAll(".nav-button").forEach(button=>{
-  button.classList.toggle("active",button.dataset.tab===tabId);
- });
- if(tabId==="reviewsSection")renderAllReviews();
- if(tabId==="addSection"&&placeMap)setTimeout(()=>placeMap.invalidateSize(),250);
+function switchPage(page){
+ currentPage=page;
+ document.querySelectorAll(".page").forEach(el=>el.classList.toggle("active",el.id===page));
+ document.querySelectorAll(".nav-button").forEach(el=>el.classList.toggle("active",el.dataset.page===page));
+ if(page==="addPage")setTimeout(()=>{if(map)map.invalidateSize()},150);
  window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".nav-button").forEach(button=>{
- button.addEventListener("click",()=>showMainTab(button.dataset.tab));
+ button.addEventListener("click",()=>switchPage(button.dataset.page));
 });
-$("homeCatalogButton").onclick=()=>showMainTab("catalogSection");
-$("homeProfileButton").onclick=()=>showMainTab("profileSection");
 
-/* Отдельная страница категорий */
-function openCategoriesPage(){
- showMainTab("catalogSection");
- $("catalogSection").classList.add("hidden");
- $("categoriesSection").classList.remove("hidden");
- updateCategoryCounts();
- window.scrollTo({top:0,behavior:"smooth"});
+function renderCategoryOptions(){
+ $("catalogCategory").innerHTML='<option value="">Все категории</option>'+CATEGORIES.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join("");
+ $("addCategories").innerHTML=CATEGORIES.map(c=>`
+ <button class="category-button ${selectedCategory===c.id?"active":""}" data-category="${c.id}">
+  <span>${c.icon}</span><span><strong>${c.name}</strong><small>${c.description}</small></span>
+ </button>`).join("");
+ $("homeCategories").innerHTML=CATEGORIES.map(c=>`
+ <button class="category-button" data-home-category="${c.id}">
+  <span>${c.icon}</span><span><strong>${c.name}</strong><small>${c.description}</small></span>
+ </button>`).join("");
+ document.querySelectorAll("[data-category]").forEach(button=>{
+  button.addEventListener("click",()=>{
+   selectedCategory=button.dataset.category;
+   renderCategoryOptions();
+  });
+ });
+ document.querySelectorAll("[data-home-category]").forEach(button=>{
+  button.addEventListener("click",()=>{
+   $("catalogCategory").value=button.dataset.homeCategory;
+   switchPage("catalogPage");
+   renderPlaces();
+  });
+ });
 }
-function closeCategoriesPage(){
- $("categoriesSection").classList.add("hidden");
- $("catalogSection").classList.remove("hidden");
- window.scrollTo({top:0,behavior:"smooth"});
-}
-$("openCategories").onclick=openCategoriesPage;
-document.querySelectorAll("[data-open-categories]").forEach(b=>b.addEventListener("click",openCategoriesPage));
-$("backToCatalog").onclick=closeCategoriesPage;
 
-document.querySelectorAll(".category-page-card").forEach(button=>{
+function setAddCity(city){
+ addCity=city;
+ selectedPoint=null;
+ selectedPointVerified=false;
+ verificationRequestId++;
+ if(mapMarker&&map)map.removeLayer(mapMarker);
+ mapMarker=null;
+ document.querySelectorAll("#addCityButtons .city-button").forEach(button=>{
+  button.classList.toggle("active",button.dataset.city===city);
+ });
+ setMapStatus("Выбран город: "+city+". Поставь метку на карте.","");
+ if(map){
+  const center=city==="Новополоцк"?[55.531,28.65]:[55.485,28.76];
+  map.setView(center,13);
+ }
+}
+document.querySelectorAll("#addCityButtons .city-button").forEach(button=>{
+ button.addEventListener("click",()=>setAddCity(button.dataset.city));
+});
+document.querySelectorAll(".city-button[data-city]").forEach(button=>{
+ if(button.closest("#addCityButtons"))return;
  button.addEventListener("click",()=>{
-  selectedFilter=button.dataset.filter;
-  $("filterStatus")?.textContent;
-  $("search").value="";
-  closeSuggestions();
-  closeCategoriesPage();
-  render();
-  showMainTab("catalogSection");
-  showToast("Категория: "+categoryLabels[selectedFilter]);
+  currentCity=button.dataset.city;
+  document.querySelectorAll(".city-button[data-city]").forEach(b=>{
+   if(!b.closest("#addCityButtons"))b.classList.toggle("active",b.dataset.city===currentCity);
+  });
+  renderPlaces();
  });
 });
 
-/* База данных */
-const STORAGE_KEY="tolchokNP_v3";
-function readOldPlaces(){
- try{const old=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");return Array.isArray(old)?old:[];}
- catch(e){return [];}
+function setMapStatus(message,type=""){
+ $("mapStatus").textContent=message;
+ $("mapStatus").className="map-status "+type;
 }
-async function migrateOldPlaces(userId){
- const old=readOldPlaces();if(!old.length)return;
- const payload=old.filter(p=>p&&p.id&&p.name&&p.address).map(p=>({
-  id:String(p.id),name:String(p.name),address:String(p.address),
-  city:p.city==="Полоцк"?"Полоцк":"Новополоцк",
-  category:p.category||"Общественный туалет",
-  lat:Number.isFinite(Number(p.lat))?Number(p.lat):null,
-  lon:Number.isFinite(Number(p.lon))?Number(p.lon):null,
-  created_at:new Date(Number(p.createdAt)||Date.now()).toISOString(),created_by:userId
- }));
- if(payload.length){
-  const {error}=await supabaseClient.from("places").upsert(payload,{onConflict:"id",ignoreDuplicates:true});
-  if(error)throw error;
- }
+
+function cityMatchesAddress(address,city){
+ if(!address)return false;
+ const possible=[
+  address.city,address.town,address.municipality,address.village,
+  address.city_district,address.suburb,address.county
+ ].filter(Boolean).map(value=>String(value).toLowerCase());
+ const target=city.toLowerCase();
+ return possible.some(value=>value===target||value.includes(target)||target.includes(value));
 }
-function loadLocalFallback(){
- places=readOldPlaces().map(p=>({...p,city:p.city==="Полоцк"?"Полоцк":"Новополоцк",category:p.category||"Общественный туалет",reviews:Array.isArray(p.reviews)?p.reviews:[]}));
- render();
-}
-async function loadCloudData(){
- if(cloudLoading)return;
- cloudLoading=true;
+
+async function verifyPoint(lat,lng){
+ const requestId=++verificationRequestId;
+ selectedPoint={lat,lng};
+ selectedPointVerified=false;
+ setMapStatus("Проверяем, находится ли точка в городе "+addCity+"...","");
  try{
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  if(session){try{await migrateOldPlaces(session.user.id);}catch(e){console.warn(e);}}
-  const [pr,rr,cr]=await Promise.all([
-   supabaseClient.from("places").select("*").order("created_at",{ascending:false}),
-   supabaseClient.from("reviews").select("*").order("created_at",{ascending:false}),
-   supabaseClient.from("review_comments").select("*").order("created_at",{ascending:true})
-  ]);
-  if(pr.error)throw pr.error;
-  if(rr.error)throw rr.error;
-  const commentsByReview={};
-  if(!cr.error)(cr.data||[]).forEach(c=>{
-   (commentsByReview[c.review_id]??=[]).push({...c});
-  });
-  const reviewsByPlace={};
-  (rr.data||[]).forEach(r=>{
-   (reviewsByPlace[r.place_id]??=[]).push({...r,stars:Number(r.stars),date:r.created_at,comments:commentsByReview[r.id]||[]});
-  });
-  places=(pr.data||[]).map(p=>({
-   id:String(p.id),name:p.name,address:p.address,city:p.city,category:p.category,
-   lat:p.lat===null?null:Number(p.lat),lon:p.lon===null?null:Number(p.lon),
-   createdAt:new Date(p.created_at).getTime(),reviews:reviewsByPlace[p.id]||[]
-  }));
-  cloudReady=true;render();
-  if(cr.error)setAccountStatus("Места и отзывы загружены, но комментарии недоступны. Проверь таблицу review_comments.","error");
+  const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=14&addressdetails=1`;
+  const response=await fetch(url,{headers:{"Accept-Language":"ru"}});
+  if(!response.ok)throw new Error("Не удалось проверить адрес");
+  const data=await response.json();
+  if(requestId!==verificationRequestId)return;
+  const address=data.address||{};
+  if(cityMatchesAddress(address,addCity)){
+   selectedPointVerified=true;
+   setMapStatus("✓ Точка подтверждена: "+(data.display_name||addCity),"success");
+  }else{
+   selectedPointVerified=false;
+   selectedPoint=null;
+   if(mapMarker&&map)map.removeLayer(mapMarker);
+   mapMarker=null;
+   setMapStatus("✕ Не удалось подтвердить, что точка находится в городе "+addCity+". Выбери другую точку.","error");
+  }
  }catch(error){
-  console.error("Cloud loading error:",error);
-  cloudReady=false;loadLocalFallback();
-  setAccountStatus("Не удалось подключиться к общей базе. Проверь таблицы Supabase.","error");
- }finally{cloudLoading=false;}
-}
-supabaseClient.auth.onAuthStateChange((event,session)=>{
- setTimeout(async()=>{await updateAccountUI(session);if(event!=="TOKEN_REFRESHED")await loadCloudData();},0);
-});
-supabaseClient.auth.getSession().then(async({data,error})=>{
- if(error)setAccountStatus("Не удалось проверить сессию.","error");
- await updateAccountUI(data?.session||null);await loadCloudData();
-});
-
-/* Статистика и категории */
-function average(place){
- if(!place.reviews.length)return 0;
- return place.reviews.reduce((sum,r)=>sum+Number(r.stars),0)/place.reviews.length;
-}
-function updateStats(){
- const total=places.reduce((s,p)=>s+p.reviews.length,0);
- const ratings=places.flatMap(p=>p.reviews.map(r=>Number(r.stars)));
- $("totalPlaces").textContent=places.length;
- $("totalReviews").textContent=total;
- $("average").textContent=ratings.length?(ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1):"—";
-}
-const categoryLabels={all:"Все места","Общественный туалет":"Общественные туалеты","Торговый центр":"Торговые центры","Кафе или заведение":"Кафе и заведения","Другое":"Другие места"};
-function updateCategoryCounts(){
- const counts={all:places.length,public:0,mall:0,cafe:0,other:0};
- places.forEach(p=>{
-  if(p.category==="Общественный туалет")counts.public++;
-  if(p.category==="Торговый центр")counts.mall++;
-  if(p.category==="Кафе или заведение")counts.cafe++;
-  if(p.category==="Другое")counts.other++;
- });
- $("catCountAll").textContent=counts.all+" мест";
- $("catCountPublic").textContent=counts.public+" мест";
- $("catCountMall").textContent=counts.mall+" мест";
- $("catCountCafe").textContent=counts.cafe+" мест";
- $("catCountOther").textContent=counts.other+" мест";
-}
-
-/* Поиск */
-const searchInput=$("search"),suggestions=$("suggestions");
-function closeSuggestions(){suggestions.classList.add("hidden");}
-function showSuggestions(){
- const q=searchInput.value.trim().toLowerCase();
- suggestions.replaceChildren();
- suggestions.appendChild(el("div","suggestion-title",q?"Результаты поиска":"Популярные места"));
- let matches=places.filter(p=>(p.name+" "+p.address+" "+p.city+" "+p.category).toLowerCase().includes(q));
- if(!q)matches=[...places].sort((a,b)=>b.reviews.length-a.reviews.length);
- matches.slice(0,6).forEach(place=>{
-  const button=el("button","suggestion");
-  button.type="button";button.appendChild(el("strong","",place.name));
-  button.appendChild(el("small","",place.city+" · "+place.address));
-  button.onclick=()=>{searchInput.value=place.name;closeSuggestions();render();};
-  suggestions.appendChild(button);
- });
- if(!matches.length)suggestions.appendChild(el("div","suggestion","Ничего не найдено."));
- suggestions.classList.remove("hidden");
-}
-searchInput.addEventListener("focus",showSuggestions);
-searchInput.addEventListener("input",()=>{showSuggestions();render();});
-searchInput.addEventListener("keydown",e=>{if(e.key==="Escape")closeSuggestions();if(e.key==="Enter")closeSuggestions();});
-document.addEventListener("click",e=>{if(!e.target.closest(".search-wrap"))closeSuggestions();});
-document.querySelectorAll(".chip").forEach(button=>{
- button.addEventListener("click",()=>{
-  if(button.dataset.city)$("cityFilter").value=button.dataset.city;
-  searchInput.value="";closeSuggestions();render();
-  $("places").scrollIntoView({behavior:"smooth"});
- });
-});
-
-/* Отзывы */
-const ratingNames={1:"Ужасно",2:"Плохо",3:"Нормально",4:"Хорошо",5:"Отлично"};
-function setStars(value){
- selectedStars=value;$("stars").value=value;
- document.querySelectorAll(".star-button").forEach(b=>b.classList.toggle("active",Number(b.dataset.stars)<=value));
- $("ratingLabel").textContent=value+" из 5 — "+ratingNames[value];
-}
-document.querySelectorAll(".star-button").forEach(b=>b.onclick=()=>setStars(Number(b.dataset.stars)));
-
-async function openReview(place){
- const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session){showToast("Сначала войди в аккаунт");showMainTab("profileSection");return;}
- currentUserId=session.user.id;selectedPlaceId=place.id;
- const own=place.reviews.find(r=>r.user_id===currentUserId);
- $("reviewPlace").textContent=place.name+" · "+place.city;
- $("nickname").value=currentAccountNickname;
- $("comment").value=own?.comment||"";
- setStars(own?.stars||5);
- $("reviewSubmit").textContent=own?"Сохранить изменения":"Опубликовать отзыв";
- showMainTab("catalogSection");
- $("reviewPanel").classList.remove("hidden");
- $("reviewPanel").scrollIntoView({behavior:"smooth",block:"center"});
-}
-$("reviewForm").addEventListener("submit",async e=>{
- e.preventDefault();
- const place=places.find(p=>p.id===selectedPlaceId);
- if(!place){showToast("Место не найдено");return;}
- const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session){showToast("Сначала войди в аккаунт");return;}
- const comment=$("comment").value.trim();
- if(!comment){showToast("Напиши отзыв");return;}
- const button=$("reviewSubmit");button.disabled=true;button.textContent="Сохраняем...";
- try{
-  const {error}=await supabaseClient.from("reviews").upsert({
-   place_id:place.id,user_id:session.user.id,
-   nickname:currentAccountNickname,comment,stars:selectedStars
-  },{onConflict:"place_id,user_id"});
-  if(error)throw error;
-  $("reviewForm").reset();selectedPlaceId=null;
-  $("reviewPanel").classList.add("hidden");
-  await loadCloudData();showToast("Отзыв сохранён");
- }catch(error){console.error(error);showToast("Не удалось сохранить отзыв");}
- finally{button.disabled=false;button.textContent="Опубликовать отзыв";}
-});
-$("cancelReview").onclick=()=>{$("reviewPanel").classList.add("hidden");selectedPlaceId=null;showMainTab("catalogSection");};
-
-/* Комментарии */
-async function submitReviewComment(reviewId,textarea,button){
- const body=textarea.value.trim();
- if(!body||body.length>500){showToast("Комментарий должен содержать от 1 до 500 символов");return;}
- const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session){showToast("Войди в аккаунт, чтобы комментировать");return;}
- button.disabled=true;button.textContent="Отправка...";
- try{
-  const {error}=await supabaseClient.from("review_comments").insert({
-   review_id:reviewId,user_id:session.user.id,nickname:currentAccountNickname,body
-  });
-  if(error)throw error;
-  textarea.value="";await loadCloudData();showToast("Комментарий опубликован");
- }catch(error){console.error(error);showToast("Не удалось отправить комментарий");}
- finally{button.disabled=false;button.textContent="Ответить";}
-}
-async function deleteReviewComment(commentId){
- const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session||!confirm("Удалить свой комментарий?"))return;
- try{
-  const {error}=await supabaseClient.from("review_comments").delete().eq("id",commentId).eq("user_id",session.user.id);
-  if(error)throw error;
-  await loadCloudData();showToast("Комментарий удалён");
- }catch(error){console.error(error);showToast("Не удалось удалить комментарий");}
-}
-function renderComments(review,item){
- const section=el("div","comment-section");
- section.appendChild(el("div","comment-heading","Комментарии ("+(review.comments?.length||0)+")"));
- (review.comments||[]).forEach(c=>{
-  const block=el("div","comment-item");
-  block.appendChild(el("div","comment-author",c.nickname||"Пользователь"));
-  block.appendChild(el("div","comment-body",c.body));
-  block.appendChild(el("div","comment-date",new Date(c.created_at).toLocaleString("ru-RU")));
-  if(currentUserId&&c.user_id===currentUserId){
-   const del=el("button","secondary delete-comment","Удалить");
-   del.type="button";del.onclick=()=>deleteReviewComment(c.id);block.appendChild(del);
-  }
-  section.appendChild(block);
- });
- if(currentUserId){
-  const form=el("form","comment-form"),area=el("textarea","");
-  area.maxLength=500;area.placeholder="Написать комментарий...";area.required=true;
-  const button=el("button","primary","Ответить");button.type="submit";
-  form.append(area,button);
-  form.onsubmit=e=>{e.preventDefault();submitReviewComment(review.id,area,button);};
-  section.appendChild(form);
- }else section.appendChild(el("div","comment-login","Войди в аккаунт, чтобы комментировать."));
- item.appendChild(section);
-}
-
-/* Отображение каталога */
-function render(){
- const container=$("places");container.replaceChildren();
- const q=searchInput.value.trim().toLowerCase(),city=$("cityFilter").value,sort=$("sort").value;
- let filtered=places.filter(p=>{
-  const text=(p.name+" "+p.address+" "+p.city+" "+p.category).toLowerCase().includes(q);
-  return text&&(city==="all"||p.city===city)&&(selectedFilter==="all"||p.category===selectedFilter);
- });
- if(sort==="rating")filtered.sort((a,b)=>average(b)-average(a));
- if(sort==="reviews")filtered.sort((a,b)=>b.reviews.length-a.reviews.length);
- if(sort==="new")filtered.sort((a,b)=>b.createdAt-a.createdAt);
- if(!filtered.length){
-  container.appendChild(el("div","empty",places.length?"Ничего не найдено. Измени поиск или фильтры.":"Каталог пока пустой. Добавь первое место."));
+  if(requestId!==verificationRequestId)return;
+  selectedPointVerified=false;
+  selectedPoint=null;
+  if(mapMarker&&map)map.removeLayer(mapMarker);
+  mapMarker=null;
+  setMapStatus("Не получилось проверить город. Попробуй выбрать точку ещё раз.","error");
  }
- filtered.forEach(place=>{
-  const card=el("article","place");
-  card.appendChild(el("div","place-title",place.name));
-  card.appendChild(el("div","place-meta",place.city+", "+place.address));
-  card.appendChild(el("div","place-meta",place.category));
-  card.appendChild(el("div","place-rating",place.reviews.length?average(place).toFixed(1)+" / 5":"Пока нет оценок"));
-  card.appendChild(el("div","muted",place.reviews.length+" отзывов"));
-  place.reviews.forEach(review=>{
-   const item=el("div","review");
-   item.appendChild(el("div","review-name",review.nickname||"Аноним"));
-   item.appendChild(el("div","review-stars","★".repeat(review.stars)));
-   item.appendChild(el("div","",review.comment));
-   item.appendChild(el("div","review-date",new Date(review.updated_at||review.created_at||review.date).toLocaleDateString("ru-RU")));
-   if(currentUserId&&review.user_id===currentUserId){
-    const edit=el("button","secondary","Редактировать мой отзыв");
-    edit.type="button";edit.style.marginTop="10px";edit.onclick=()=>openReview(place);item.appendChild(edit);
-   }
-   renderComments(review,item);card.appendChild(item);
-  });
-  const actions=el("div","place-actions");
-  const own=place.reviews.find(r=>r.user_id===currentUserId);
-  const reviewButton=el("button","secondary",own?"Изменить отзыв":"Написать отзыв");
-  reviewButton.type="button";reviewButton.onclick=()=>openReview(place);actions.appendChild(reviewButton);
-  const mapButton=el("a","secondary map-link","Открыть карту");
-  mapButton.href=place.lat!==null&&place.lon!==null
-   ?"https://www.openstreetmap.org/?mlat="+place.lat+"&mlon="+place.lon+"#map=18/"+place.lat+"/"+place.lon
-   :"https://www.openstreetmap.org/search?query="+encodeURIComponent(place.city+", "+place.address);
-  mapButton.target="_blank";mapButton.rel="noopener noreferrer";actions.appendChild(mapButton);
-  card.appendChild(actions);container.appendChild(card);
- });
- updateStats();updateCategoryCounts();
- renderAllReviews();renderPopularReviews();
 }
-function getReviewsWithPlace(){
- return places.flatMap(p=>p.reviews.map(r=>({...r,placeName:p.name,placeCity:p.city})))
-}
-function renderReviewList(container,items,emptyText){
- if(!container)return;
- container.replaceChildren();
- if(!items.length){container.appendChild(el("div","empty",emptyText));return;}
- items.forEach(r=>{
-  const item=el("div","review");
-  item.appendChild(el("div","review-name",r.nickname||"Аноним"));
-  item.appendChild(el("div","muted",r.placeName+" · "+r.placeCity));
-  item.appendChild(el("div","review-stars","★".repeat(Number(r.stars)||0)));
-  item.appendChild(el("div","",r.comment||""));
-  item.appendChild(el("div","review-date",new Date(r.updated_at||r.created_at||r.date).toLocaleDateString("ru-RU")));
-  item.appendChild(el("div","muted",(r.comments?.length||0)+" комментариев"));
-  container.appendChild(item);
+
+function initMap(){
+ if(map||!$("placeMap"))return;
+ map=L.map("placeMap").setView([55.531,28.65],13);
+ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+  attribution:"&copy; OpenStreetMap contributors",
+  maxZoom:19
+ }).addTo(map);
+ map.on("click",event=>{
+  const {lat,lng}=event.latlng;
+  if(mapMarker)map.removeLayer(mapMarker);
+  mapMarker=L.marker([lat,lng]).addTo(map);
+  verifyPoint(lat,lng);
  });
 }
-function renderAllReviews(){
- const all=getReviewsWithPlace().sort((a,b)=>new Date(b.created_at||b.date)-new Date(a.created_at||a.date));
- renderReviewList($("allReviews"),all,"Отзывов пока нет.");
+
+function renderStats(){
+ $("statPlaces").textContent=allPlaces.length;
+ $("statReviews").textContent=allReviews.length;
+ $("statUsers").textContent=allProfiles.length;
 }
+
+function averageRating(placeId){
+ const reviews=allReviews.filter(review=>review.place_id===placeId);
+ if(!reviews.length)return 0;
+ return reviews.reduce((sum,review)=>sum+Number(review.rating||0),0)/reviews.length;
+}
+
+function reviewsCount(placeId){
+ return allReviews.filter(review=>review.place_id===placeId).length;
+}
+
+function renderReview(review){
+ const place=allPlaces.find(item=>item.id===review.place_id);
+ const author=allProfiles.find(item=>item.id===review.user_id);
+ return `<div class="review">
+  <div class="review-name">${escapeHtml(author?.nickname||"Пользователь")}</div>
+  <div class="review-stars">${"★".repeat(Number(review.rating||0))}${"☆".repeat(5-Number(review.rating||0))}</div>
+  <div>${escapeHtml(review.text||"")}</div>
+  <div class="review-date">${escapeHtml(place?.name||"Место")} · ${formatDate(review.created_at)}</div>
+ </div>`;
+}
+
 function renderPopularReviews(){
- const all=getReviewsWithPlace().sort((a,b)=>{
-  const scoreA=(Number(a.stars)||0)*10+(a.comments?.length||0)*2;
-  const scoreB=(Number(b.stars)||0)*10+(b.comments?.length||0)*2;
-  return scoreB-scoreA||new Date(b.created_at||b.date)-new Date(a.created_at||a.date);
- }).slice(0,10);
- renderReviewList($("popularReviews"),all,"Пока нет отзывов. Стань первым, кто оставит отзыв!");
+ const sorted=[...allReviews].sort((a,b)=>Number(b.rating||0)-Number(a.rating||0)).slice(0,10);
+ $("popularReviews").innerHTML=sorted.length?sorted.map(renderReview).join(""):'<div class="empty">Пока нет отзывов. Стань первым!</div>';
 }
 
-/* Карта и добавление мест */
-const selectedCity=$("selectedCity"),selectedCategory=$("selectedCategory");
-const addressInput=$("placeAddress");
-function setMapStatus(message,type=""){$("mapStatus").textContent=message;$("mapStatus").className="map-status "+type;}
-function clearMapSelection(clearAddress=false){
- selectedCoordinates=null;$("placeLatitude").value="";$("placeLongitude").value="";
- if(placeMarker&&placeMap){placeMap.removeLayer(placeMarker);placeMarker=null;}
- if(clearAddress){addressInput.value="";addressInput.dataset.manualEdit="false";}
+function renderAllReviews(){
+ const sorted=[...allReviews].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ $("allReviews").innerHTML=sorted.length?sorted.map(renderReview).join(""):'<div class="empty">Отзывов пока нет.</div>';
 }
-function escapeMapText(value){return String(value).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
-function initPlaceMap(){
- if(!window.L){setMapStatus("Не удалось загрузить карту. Проверь интернет.","error");return;}
- placeMap=L.map("placeMap",{scrollWheelZoom:false}).setView(cityCenters[selectedCity.value],15);
- L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(placeMap);
- placeMap.on("click",async e=>{
-  const lat=e.latlng.lat,lon=e.latlng.lng;
-  selectedCoordinates={lat,lon};$("placeLatitude").value=lat.toFixed(7);$("placeLongitude").value=lon.toFixed(7);
-  addressInput.dataset.manualEdit="false";
-  if(placeMarker)placeMarker.setLatLng(e.latlng);else placeMarker=L.marker(e.latlng).addTo(placeMap);
-  placeMarker.bindPopup("Выбранная точка<br>Определяем адрес...").openPopup();
-  setMapStatus("Точка выбрана. Определяем адрес...");
-  await reverseGeocode(lat,lon);
- });
- setMapStatus("Нажми на карте, чтобы поставить метку.");
- setTimeout(()=>placeMap.invalidateSize(),250);
+
+function renderPlaces(){
+ const category=$("catalogCategory").value;
+ const sort=$("sortSelect").value;
+ let places=allPlaces.filter(place=>place.city===currentCity);
+ if(category)places=places.filter(place=>place.category===category);
+ if(sort==="rating")places.sort((a,b)=>averageRating(b.id)-averageRating(a.id));
+ if(sort==="new")places.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ if(sort==="reviews")places.sort((a,b)=>reviewsCount(b.id)-reviewsCount(a.id));
+ $("catalogPlaces").innerHTML=places.length?places.map(place=>{
+  const rating=averageRating(place.id);
+  const reviews=allReviews.filter(review=>review.place_id===place.id);
+  return `<article class="place">
+   <div class="place-title">${categoryIcon(place.category)} ${escapeHtml(place.name)}</div>
+   <div class="place-meta">${categoryName(place.category)} · ${escapeHtml(place.city)}<br>${escapeHtml(place.address||"Адрес не указан")}</div>
+   <div class="place-rating">${rating?rating.toFixed(1)+" ★":"Нет оценок"}</div>
+   <div class="place-meta">${reviews.length} отзыв(ов)</div>
+   ${reviews.map(renderReview).join("")}
+   ${place.lat&&place.lng?`<div class="place-actions"><a class="secondary map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lng}#map=17/${place.lat}/${place.lng}">Открыть на карте</a></div>`:""}
+  </article>`;
+ }).join(""):'<div class="empty">В этом городе пока нет мест в выбранной категории.</div>';
 }
-async function reverseGeocode(lat,lon){
- if(reverseBusy)return;
- reverseBusy=true;
- const wait=Math.max(0,1100-(Date.now()-lastReverseTime));
- if(wait)await new Promise(r=>setTimeout(r,wait));
- lastReverseTime=Date.now();
+
+function renderMyReviews(){
+ if(!currentUser)return;
+ const reviews=allReviews.filter(review=>review.user_id===currentUser.id);
+ $("myReviews").innerHTML=reviews.length?reviews.map(renderReview).join(""):'<div class="empty">Ты пока не оставлял отзывов.</div>';
+}
+
+async function loadData(){
  try{
-  const url="https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&zoom=18&accept-language=ru&lat="+lat+"&lon="+lon;
-  const response=await fetch(url);if(!response.ok)throw new Error("HTTP "+response.status);
-  const data=await response.json(),a=data.address||{};
-  const street=a.road||a.pedestrian||a.residential||a.footway||a.path||a.square||"";
-  const house=a.house_number||"";
-  const address=[street,house].filter(Boolean).join(", ")||(data.display_name||"").split(", ").slice(0,3).join(", ");
-  if(!address)throw new Error("Адрес не найден");
-  if(selectedCoordinates&&Math.abs(selectedCoordinates.lat-lat)<0.000001){
-   if(addressInput.dataset.manualEdit!=="true")addressInput.value=address;
-   if(placeMarker)placeMarker.setPopupContent("Место выбрано<br>"+escapeMapText(address)).openPopup();
-   setMapStatus("Адрес определён. Проверь его и при необходимости исправь.","success");
-  }
- }catch(error){console.warn(error);setMapStatus("Адрес не определён. Введи его вручную.","error");}
- finally{reverseBusy=false;}
-}
-addressInput.addEventListener("input",()=>addressInput.dataset.manualEdit="true");
-initPlaceMap();
-
-document.querySelectorAll(".city-button").forEach(button=>{
- button.onclick=()=>{
-  document.querySelectorAll(".city-button").forEach(b=>b.classList.toggle("active",b===button));
-  selectedCity.value=button.dataset.city;clearMapSelection(true);
-  if(placeMap)placeMap.setView(cityCenters[selectedCity.value],15);
-  setMapStatus("Карта перемещена в город: "+selectedCity.value+".");
- };
-});
-document.querySelectorAll(".category-button").forEach(button=>{
- button.onclick=()=>{
-  document.querySelectorAll(".category-button").forEach(b=>b.classList.toggle("active",b===button));
-  selectedCategory.value=button.dataset.category;
- };
-});
-$("placeForm").addEventListener("submit",async function(e){
- e.preventDefault();
- const {data:{session}}=await supabaseClient.auth.getSession();
- if(!session){showToast("Войди в аккаунт, чтобы добавить место");showMainTab("profileSection");return;}
- if(!cloudReady){showToast("Общая база пока недоступна");return;}
- const name=$("placeName").value.trim(),address=addressInput.value.trim();
- if(!name||!address){showToast("Заполни все поля");return;}
- const city=selectedCity.value,category=selectedCategory.value;
- if(places.some(p=>p.name.toLowerCase()===name.toLowerCase()&&p.address.toLowerCase()===address.toLowerCase()&&p.city===city)){
-  showToast("Такое место уже есть");return;
+  const [placesResult,reviewsResult,profilesResult]=await Promise.all([
+   supabaseClient.from("places").select("*"),
+   supabaseClient.from("reviews").select("*"),
+   supabaseClient.from("profiles").select("*")
+  ]);
+  if(placesResult.error)throw placesResult.error;
+  if(reviewsResult.error)throw reviewsResult.error;
+  if(profilesResult.error)throw profilesResult.error;
+  allPlaces=placesResult.data||[];
+  allReviews=reviewsResult.data||[];
+  allProfiles=profilesResult.data||[];
+  renderStats();
+  renderPopularReviews();
+  renderAllReviews();
+  renderPlaces();
+  renderMyReviews();
+ }catch(error){
+  console.error("Ошибка загрузки:",error);
+  showToast("Не удалось загрузить данные");
  }
- const button=this.querySelector('[type="submit"]');button.disabled=true;button.textContent="Добавляем...";
+}
+
+async function checkSession(){
+ const {data,error}=await supabaseClient.auth.getSession();
+ if(error)console.error(error);
+ if(data?.session){
+  currentUser=data.session.user;
+  await loadProfileInfo();
+ }else{
+  currentUser=null;
+  $("authForms").classList.remove("hidden");
+  $("profileInfo").classList.add("hidden");
+ }
+}
+
+async function loadProfileInfo(){
+ if(!currentUser)return;
+ const {data,error}=await supabaseClient.from("profiles").select("*").eq("id",currentUser.id).maybeSingle();
+ if(error){
+  console.error(error);
+  return;
+ }
+ $("profileNickname").textContent=data?.nickname||currentUser.email||"Пользователь";
+ $("profileEmail").textContent=currentUser.email||"";
+ $("authForms").classList.add("hidden");
+ $("profileInfo").classList.remove("hidden");
+ renderMyReviews();
+}
+
+function setAuthTab(tab){
+ $("loginTab").classList.toggle("active",tab==="login");
+ $("registerTab").classList.toggle("active",tab==="register");
+ $("loginForm").classList.toggle("hidden",tab!=="login");
+ $("registerForm").classList.toggle("hidden",tab!=="register");
+ setStatus("authStatus","");
+}
+$("loginTab").addEventListener("click",()=>setAuthTab("login"));
+$("registerTab").addEventListener("click",()=>setAuthTab("register"));
+
+async function login(){
+ const nickname=$("loginNickname").value.trim();
+ const password=$("loginPassword").value;
+ if(!nickname||!password){
+  setStatus("authStatus","Заполни никнейм и пароль","error");
+  return;
+ }
+ $("loginButton").disabled=true;
+ setStatus("authStatus","Выполняется вход...");
  try{
-  const {error}=await supabaseClient.from("places").insert({
-   id:Date.now().toString()+Math.random().toString(36).slice(2,8),
-   name,address,city,category,
-   lat:selectedCoordinates?selectedCoordinates.lat:null,
-   lon:selectedCoordinates?selectedCoordinates.lon:null,
-   created_by:session.user.id
+  const response=await fetch(SUPABASE_URL+"/functions/v1/login-with-nickname",{
+   method:"POST",
+   headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},
+   body:JSON.stringify({nickname,password})
+  });
+  const result=await response.json();
+  if(!response.ok)throw new Error(result.error||result.message||"Неверный никнейм или пароль");
+  if(!result.access_token||!result.refresh_token)throw new Error("Сервер не вернул данные входа");
+  const {error}=await supabaseClient.auth.setSession({
+   access_token:result.access_token,
+   refresh_token:result.refresh_token
   });
   if(error)throw error;
-  this.reset();clearMapSelection(true);
-  selectedCity.value="Новополоцк";selectedCategory.value="Общественный туалет";
-  document.querySelectorAll(".city-button").forEach(b=>b.classList.toggle("active",b.dataset.city==="Новополоцк"));
-  document.querySelectorAll(".category-button").forEach(b=>b.classList.toggle("active",b.dataset.category==="Общественный туалет"));
-  if(placeMap)placeMap.setView(cityCenters["Новополоцк"],15);
-  await loadCloudData();showToast("Место добавлено для всех пользователей");
-  showMainTab("catalogSection");
- }catch(error){console.error(error);showToast("Не удалось добавить место");}
- finally{button.disabled=false;button.textContent="Добавить в каталог";}
-});
-$("cityFilter").addEventListener("change",render);
-$("sort").addEventListener("change",render);
+  const {data}=await supabaseClient.auth.getUser();
+  currentUser=data.user;
+  setStatus("authStatus","Вход выполнен!","success");
+  await loadProfileInfo();
+  await loadData();
+ }catch(error){
+  setStatus("authStatus",error.message||"Ошибка входа","error");
+ }finally{
+  $("loginButton").disabled=false;
+ }
+}
+$("loginButton").addEventListener("click",login);
 
-updateStats();
-render();
-refreshIcons();
+async function register(){
+ const nickname=$("registerNickname").value.trim();
+ const email=$("registerEmail").value.trim();
+ const password=$("registerPassword").value;
+ if(!nickname||!email||!password){
+  setStatus("authStatus","Заполни все поля","error");
+  return;
+ }
+ if(nickname.length<3){
+  setStatus("authStatus","Никнейм должен содержать минимум 3 символа","error");
+  return;
+ }
+ if(password.length<6){
+  setStatus("authStatus","Пароль должен содержать минимум 6 символов","error");
+  return;
+ }
+ $("registerButton").disabled=true;
+ setStatus("authStatus","Создаём аккаунт...");
+ try{
+  const response=await fetch(SUPABASE_URL+"/functions/v1/register-with-nickname",{
+   method:"POST",
+   headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},
+   body:JSON.stringify({nickname,email,password})
+  });
+  const result=await response.json();
+  if(!response.ok){
+   if(response.status===409)throw new Error("Этот никнейм или почта уже заняты");
+   throw new Error(result.error||result.message||"Не удалось создать аккаунт");
+  }
+  if(result.access_token&&result.refresh_token){
+   const {error}=await supabaseClient.auth.setSession({
+    access_token:result.access_token,
+    refresh_token:result.refresh_token
+   });
+   if(error)throw error;
+   const {data}=await supabaseClient.auth.getUser();
+   currentUser=data.user;
+   await loadProfileInfo();
+   await loadData();
+  }else{
+   setStatus("authStatus","Аккаунт создан. Теперь войди.","success");
+   setAuthTab("login");
+   $("loginNickname").value=nickname;
+  }
+ }catch(error){
+  setStatus("authStatus",error.message||"Ошибка регистрации","error");
+ }finally{
+  $("registerButton").disabled=false;
+ }
+}
+$("registerButton").addEventListener("click",register);
+
+async function logout(){
+ await supabaseClient.auth.signOut();
+ currentUser=null;
+ $("authForms").classList.remove("hidden");
+ $("profileInfo").classList.add("hidden");
+ showToast("Ты вышел из аккаунта");
+}
+$("logoutButton").addEventListener("click",logout);
+
+$("ratingButtons").addEventListener("click",event=>{
+ const button=event.target.closest("[data-rating]");
+ if(!button)return;
+ selectedRating=Number(button.dataset.rating);
+ document.querySelectorAll(".star-button").forEach(star=>{
+  star.classList.toggle("active",Number(star.dataset.rating)<=selectedRating);
+ });
+});
+
+async function submitReview(){
+ if(!currentUser){
+  showToast("Сначала войди в аккаунт");
+  switchPage("profilePage");
+  return;
+ }
+ const name=$("placeName").value.trim();
+ const address=$("placeAddress").value.trim();
+ const text=$("reviewText").value.trim();
+ if(!name||!text||!selectedRating){
+  setStatus("addStatus","Заполни название, отзыв и поставь оценку","error");
+  return;
+ }
+ if(!selectedPoint||!selectedPointVerified){
+  setStatus("addStatus","Выбери точку на карте и дождись подтверждения города","error");
+  return;
+ }
+ $("submitReview").disabled=true;
+ setStatus("addStatus","Публикуем отзыв...");
+ try{
+  const {data:existing,error:findError}=await supabaseClient.from("places")
+   .select("*").eq("name",name).eq("city",addCity).maybeSingle();
+  if(findError)throw findError;
+  let placeId=existing?.id;
+  if(!placeId){
+   const {data:newPlace,error:placeError}=await supabaseClient.from("places").insert({
+    name,
+    address,
+    city:addCity,
+    category:selectedCategory,
+    lat:selectedPoint.lat,
+    lng:selectedPoint.lng,
+    user_id:currentUser.id
+   }).select().single();
+   if(placeError)throw placeError;
+   placeId=newPlace.id;
+  }
+  const {error:reviewError}=await supabaseClient.from("reviews").insert({
+   place_id:placeId,
+   user_id:currentUser.id,
+   rating:selectedRating,
+   text
+  });
+  if(reviewError)throw reviewError;
+  setStatus("addStatus","Отзыв опубликован!","success");
+  $("placeName").value="";
+  $("placeAddress").value="";
+  $("reviewText").value="";
+  selectedRating=0;
+  selectedPoint=null;
+  selectedPointVerified=false;
+  verificationRequestId++;
+  document.querySelectorAll(".star-button").forEach(button=>button.classList.remove("active"));
+  if(mapMarker&&map)map.removeLayer(mapMarker);
+  mapMarker=null;
+  setMapStatus("Сначала выбери точку на карте.");
+  await loadData();
+  showToast("Отзыв успешно опубликован!");
+  switchPage("reviewsPage");
+ }catch(error){
+  console.error(error);
+  setStatus("addStatus",error.message||"Не удалось опубликовать отзыв","error");
+ }finally{
+  $("submitReview").disabled=false;
+ }
+}
+$("submitReview").addEventListener("click",submitReview);
+
+$("catalogCategory").addEventListener("change",renderPlaces);
+$("sortSelect").addEventListener("change",renderPlaces);
+
+$("searchInput").addEventListener("input",()=>{
+ const query=$("searchInput").value.trim().toLowerCase();
+ const box=$("suggestions");
+ if(!query){
+  box.classList.add("hidden");
+  return;
+ }
+ const matches=allPlaces.filter(place=>
+  String(place.name||"").toLowerCase().includes(query)||
+  String(place.address||"").toLowerCase().includes(query)||
+  String(place.city||"").toLowerCase().includes(query)
+ ).slice(0,8);
+ if(!matches.length){
+  box.innerHTML='<div class="suggestion-title">Ничего не найдено</div>';
+ }else{
+  box.innerHTML='<div class="suggestion-title">Найденные места</div>'+matches.map(place=>`
+   <button class="suggestion" data-search-place="${escapeHtml(place.id)}">
+    <strong>${categoryIcon(place.category)} ${escapeHtml(place.name)}</strong>
+    <small>${escapeHtml(place.city)} · ${escapeHtml(place.address||"Адрес не указан")}</small>
+   </button>`).join("");
+ }
+ box.classList.remove("hidden");
+});
+$("suggestions").addEventListener("click",event=>{
+ const button=event.target.closest("[data-search-place]");
+ if(!button)return;
+ const place=allPlaces.find(item=>String(item.id)===button.dataset.searchPlace);
+ if(!place)return;
+ currentCity=place.city;
+ $("catalogCategory").value=place.category;
+ document.querySelectorAll(".city-button[data-city]").forEach(b=>{
+  if(!b.closest("#addCityButtons"))b.classList.toggle("active",b.dataset.city===currentCity);
+ });
+ $("suggestions").classList.add("hidden");
+ $("searchInput").value="";
+ switchPage("catalogPage");
+ renderPlaces();
+});
+document.addEventListener("click",event=>{
+ if(!event.target.closest(".search-wrap"))$("suggestions").classList.add("hidden");
+});
+
+async function init(){
+ renderCategoryOptions();
+ initMap();
+ await checkSession();
+ await loadData();
+ supabaseClient.auth.onAuthStateChange(async(event,session)=>{
+  if(event==="SIGNED_IN"&&session){
+   currentUser=session.user;
+   await loadProfileInfo();
+   await loadData();
+  }
+  if(event==="SIGNED_OUT"){
+   currentUser=null;
+   $("authForms").classList.remove("hidden");
+   $("profileInfo").classList.add("hidden");
+  }
+ });
+ if(window.lucide)lucide.createIcons();
+}
+init();
 </script>
 </body>
 </html>
