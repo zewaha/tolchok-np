@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 8.3</title>
+<title>Tolchok NP — BETA 8.4</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -146,7 +146,7 @@ footer strong{color:var(--green)}
  <div class="logo">TOLCHOK NP</div>
  <p>Городской рейтинг туалетов</p>
  <p>Новополоцк · Полоцк</p>
- <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.3</div>
+ <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.4</div>
 </header>
 
 <main class="container">
@@ -164,6 +164,9 @@ footer strong{color:var(--green)}
    <div class="stat"><strong id="totalReviews">0</strong><span>Отзывов</span></div>
    <div class="stat"><strong id="average">—</strong><span>Средняя оценка</span></div>
   </div>
+  <h2>Популярные отзывы</h2>
+  <p class="muted">Отзывы с высокими оценками и активным обсуждением</p>
+  <div id="popularReviews"></div>
   <div class="notice">Выбирай разделы в нижней панели. В каталоге можно искать места, смотреть категории и читать отзывы.</div>
  </section>
 
@@ -229,6 +232,7 @@ footer strong{color:var(--green)}
   <div id="places"></div>
  </section>
 
+ <!-- ОТДЕЛЬНАЯ СТРАНИЦА КАТЕГОРИЙ -->
  <section id="categoriesSection" class="hidden">
   <button class="page-back" id="backToCatalog"><i data-lucide="arrow-left" class="icon"></i> Назад в каталог</button>
   <h2><i data-lucide="shapes" class="icon"></i> Категории мест</h2>
@@ -321,23 +325,22 @@ footer strong{color:var(--green)}
 <footer>
  <strong>TOLCHOK NP</strong> © 2026<br><br>
  Новополоцк · Полоцк<br><br>
- BETA VERSION 8.3<br><br>
+ BETA VERSION 8.4<br><br>
  Сделано для городского сообщества
 </footer>
 
 <nav class="bottom-nav">
  <button class="nav-button active" data-tab="homeSection"><i data-lucide="house" class="icon"></i><span>Главная</span></button>
- <button class="nav-button" data-tab="profileSection"><i data-lucide="user-round" class="icon"></i><span>Профиль</span></button>
- <button class="nav-button" data-tab="addSection"><i data-lucide="plus-circle" class="icon"></i><span>Добавить</span></button>
  <button class="nav-button" data-tab="catalogSection"><i data-lucide="layout-grid" class="icon"></i><span>Каталог</span></button>
+ <button class="nav-button" data-tab="addSection"><i data-lucide="plus-circle" class="icon"></i><span>Добавить</span></button>
  <button class="nav-button" data-tab="reviewsSection"><i data-lucide="message-square" class="icon"></i><span>Отзывы</span></button>
+ <button class="nav-button" data-tab="profileSection"><i data-lucide="user-round" class="icon"></i><span>Профиль</span></button>
 </nav>
 <div class="toast" id="toast"></div>
 
 <script>
 const SUPABASE_URL="https://ddlbvswesbqyghmtmlxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_RHcQvREUKdBGXpYI851FVQ_JI-lIq0X";
-
 // Сохраняем сессию в localStorage: вход останется после закрытия вкладки/браузера.
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
  auth:{
@@ -374,6 +377,21 @@ function showToast(message){
 function setAccountStatus(message,type=""){
  $("accountStatus").textContent=message;
  $("accountStatus").className="account-status "+type;
+}
+async function getFunctionErrorMessage(error){
+ let message=error?.message||"Не удалось выполнить запрос.";
+ try{
+  const response=error?.context;
+  if(response&&typeof response.clone==="function"){
+   const payload=await response.clone().json();
+   message=payload?.error||payload?.message||message;
+   if(response.status===409||/already exists|already taken|nickname.*(exists|taken)|никнейм.*(занят|существ)/i.test(message)){
+    return "Этот никнейм уже занят. Придумай другой.";
+   }
+  }
+ }catch(_){ }
+ if(/already exists|already taken|nickname.*(exists|taken)|никнейм.*(занят|существ)/i.test(message))return "Этот никнейм уже занят. Придумай другой.";
+ return message;
 }
 function showAuthTab(tab){
  const login=tab==="login";
@@ -412,7 +430,7 @@ $("registerForm").addEventListener("submit",async e=>{
   showToast("Аккаунт создан");
  }catch(error){
   console.error(error);
-  setAccountStatus(error.message||"Не удалось создать аккаунт.","error");
+  setAccountStatus(await getFunctionErrorMessage(error),"error");
  }finally{
   button.disabled=false;button.textContent="Создать аккаунт";
  }
@@ -473,7 +491,7 @@ $("logoutButton").addEventListener("click",async()=>{
  else{showToast("Ты вышел из аккаунта");setAccountStatus("Ты вышел из аккаунта.");}
 });
 
-/* Переключение страниц через нижнюю панель */
+/* Переключение полноценных страниц через нижнюю панель */
 function showMainTab(tabId){
  const target=$(tabId);
  if(!target)return;
@@ -514,6 +532,7 @@ $("backToCatalog").onclick=closeCategoriesPage;
 document.querySelectorAll(".category-page-card").forEach(button=>{
  button.addEventListener("click",()=>{
   selectedFilter=button.dataset.filter;
+  $("filterStatus")?.textContent;
   $("search").value="";
   closeSuggestions();
   closeCategoriesPage();
@@ -790,23 +809,37 @@ function render(){
   card.appendChild(actions);container.appendChild(card);
  });
  updateStats();updateCategoryCounts();
- renderAllReviews();
+ renderAllReviews();renderPopularReviews();
 }
-function renderAllReviews(){
- const container=$("allReviews");if(!container)return;
+function getReviewsWithPlace(){
+ return places.flatMap(p=>p.reviews.map(r=>({...r,placeName:p.name,placeCity:p.city})))
+}
+function renderReviewList(container,items,emptyText){
+ if(!container)return;
  container.replaceChildren();
- const all=places.flatMap(p=>p.reviews.map(r=>({...r,placeName:p.name,placeCity:p.city})))
-  .sort((a,b)=>new Date(b.created_at||b.date)-new Date(a.created_at||a.date));
- if(!all.length){container.appendChild(el("div","empty","Отзывов пока нет."));return;}
- all.forEach(r=>{
+ if(!items.length){container.appendChild(el("div","empty",emptyText));return;}
+ items.forEach(r=>{
   const item=el("div","review");
   item.appendChild(el("div","review-name",r.nickname||"Аноним"));
   item.appendChild(el("div","muted",r.placeName+" · "+r.placeCity));
-  item.appendChild(el("div","review-stars","★".repeat(r.stars)));
-  item.appendChild(el("div","",r.comment));
-  item.appendChild(el("div","review-date",new Date(r.created_at||r.date).toLocaleDateString("ru-RU")));
+  item.appendChild(el("div","review-stars","★".repeat(Number(r.stars)||0)));
+  item.appendChild(el("div","",r.comment||""));
+  item.appendChild(el("div","review-date",new Date(r.updated_at||r.created_at||r.date).toLocaleDateString("ru-RU")));
+  item.appendChild(el("div","muted",(r.comments?.length||0)+" комментариев"));
   container.appendChild(item);
  });
+}
+function renderAllReviews(){
+ const all=getReviewsWithPlace().sort((a,b)=>new Date(b.created_at||b.date)-new Date(a.created_at||a.date));
+ renderReviewList($("allReviews"),all,"Отзывов пока нет.");
+}
+function renderPopularReviews(){
+ const all=getReviewsWithPlace().sort((a,b)=>{
+  const scoreA=(Number(a.stars)||0)*10+(a.comments?.length||0)*2;
+  const scoreB=(Number(b.stars)||0)*10+(b.comments?.length||0)*2;
+  return scoreB-scoreA||new Date(b.created_at||b.date)-new Date(a.created_at||a.date);
+ }).slice(0,10);
+ renderReviewList($("popularReviews"),all,"Пока нет отзывов. Стань первым, кто оставит отзыв!");
 }
 
 /* Карта и добавление мест */
