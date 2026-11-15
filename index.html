@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 8.1</title>
+<title>Tolchok NP — BETA 8.2</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -126,7 +125,7 @@ footer strong{color:var(--green)}
 .category-page-card strong{display:block;font-size:14px}
 .category-page-card small{display:block;margin-top:7px;color:var(--muted);font-size:11px}
 .page-back{display:inline-flex;align-items:center;gap:8px;margin:10px 0 15px;padding:10px 13px;color:var(--green);background:#55edb014;border:1px solid #55edb044;border-radius:10px}
-.bottom-nav{position:fixed;z-index:80;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(4,1fr);padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#101b2d;border-top:1px solid #30425b;box-shadow:0 -8px 25px #0004}
+.bottom-nav{position:fixed;z-index:80;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#101b2d;border-top:1px solid #30425b;box-shadow:0 -8px 25px #0004}
 .nav-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:7px 2px;border:0;border-radius:10px;background:transparent;color:#9aabc0;font-size:11px}
 .nav-button.active{color:var(--green);background:#55edb014}
 .nav-button.active .icon{color:var(--green)}
@@ -147,17 +146,28 @@ footer strong{color:var(--green)}
  <div class="logo">TOLCHOK NP</div>
  <p>Городской рейтинг туалетов</p>
  <p>Новополоцк · Полоцк</p>
- <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.1</div>
+ <div class="beta"><span class="beta-dot"></span>BETA VERSION 8.2</div>
 </header>
 
 <main class="container">
- <div class="stats">
-  <div class="stat"><strong id="totalPlaces">0</strong><span>Мест</span></div>
-  <div class="stat"><strong id="totalReviews">0</strong><span>Отзывов</span></div>
-  <div class="stat"><strong id="average">—</strong><span>Средняя оценка</span></div>
- </div>
+ <section class="main-page" id="homeSection">
+  <div class="panel" style="text-align:center;padding:28px 20px">
+   <div style="color:var(--green);font-size:12px;font-weight:bold;letter-spacing:2px">ГОРОДСКОЙ СПРАВОЧНИК</div>
+   <h2 style="font-size:27px;margin:12px 0">Добро пожаловать в TOLCHOK NP!</h2>
+   <p class="muted" style="font-size:14px;line-height:1.7">Находи общественные туалеты, смотри оценки и отзывы, а также добавляй новые места для жителей Новополоцка и Полоцка.</p>
+   <button type="button" class="primary" id="homeCatalogButton" style="margin-top:14px">Открыть каталог</button>
+   <button type="button" class="secondary" id="homeProfileButton" style="width:100%;margin-top:10px">Мой профиль</button>
+  </div>
+  <h2>Статистика проекта</h2>
+  <div class="stats">
+   <div class="stat"><strong id="totalPlaces">0</strong><span>Мест</span></div>
+   <div class="stat"><strong id="totalReviews">0</strong><span>Отзывов</span></div>
+   <div class="stat"><strong id="average">—</strong><span>Средняя оценка</span></div>
+  </div>
+  <div class="notice">Выбирай разделы в нижней панели. В каталоге можно искать места, смотреть категории и читать отзывы.</div>
+ </section>
 
- <section class="panel" id="profileSection">
+ <section class="panel main-page hidden" id="profileSection">
   <h2><i data-lucide="user-round" class="icon"></i> Профиль</h2>
   <div id="authForms">
    <div class="account-tabs">
@@ -171,7 +181,7 @@ footer strong{color:var(--green)}
     <button type="submit" class="primary">Войти</button>
    </form>
    <form id="registerForm" class="hidden">
-    <input id="registerNickname" placeholder="Придумай никнейм" minlength="3" maxlength="24" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,24}" autocomplete="username" required>
+    <input id="registerNickname" placeholder="Придумай никнейм" title="3–24 символа: русские/английские буквы, цифры и _" minlength="3" maxlength="24" pattern="[A-Za-zА-Яа-яЁё0-9_]{3,24}" autocomplete="username" required>
     <input id="registerPassword" type="password" placeholder="Пароль (минимум 8 символов)" minlength="8" autocomplete="new-password" required>
     <button type="submit" class="primary">Создать аккаунт</button>
     <p class="auth-note">Никнейм от 3 до 24 символов: буквы, цифры и нижнее подчёркивание. Почта не нужна.</p>
@@ -185,7 +195,7 @@ footer strong{color:var(--green)}
   <div id="accountStatus" class="account-status" aria-live="polite"></div>
  </section>
 
- <section id="catalogSection">
+ <section id="catalogSection" class="main-page hidden">
   <h2><i data-lucide="layout-grid" class="icon"></i> Каталог мест</h2>
   <div class="search-wrap">
    <input id="search" type="search" autocomplete="off" placeholder="Название, адрес или улица...">
@@ -248,7 +258,7 @@ footer strong{color:var(--green)}
   </div>
  </section>
 
- <section class="panel" id="addSection">
+ <section class="panel main-page hidden" id="addSection">
   <h2><i data-lucide="plus-circle" class="icon"></i> Добавить место</h2>
   <p class="muted">Добавлять места могут пользователи с аккаунтом.</p>
   <form id="placeForm">
@@ -301,7 +311,7 @@ footer strong{color:var(--green)}
   </form>
  </section>
 
- <section class="panel hidden" id="reviewsSection">
+ <section class="panel main-page hidden" id="reviewsSection">
   <h2><i data-lucide="message-square" class="icon"></i> Все отзывы</h2>
   <div id="allReviews"></div>
  </section>
@@ -312,12 +322,13 @@ footer strong{color:var(--green)}
 <footer>
  <strong>TOLCHOK NP</strong> © 2026<br><br>
  Новополоцк · Полоцк<br><br>
- BETA VERSION 8.1<br><br>
+ BETA VERSION 8.2<br><br>
  Сделано для городского сообщества
 </footer>
 
 <nav class="bottom-nav">
- <button class="nav-button active" data-tab="profileSection"><i data-lucide="user-round" class="icon"></i><span>Профиль</span></button>
+ <button class="nav-button active" data-tab="homeSection"><i data-lucide="house" class="icon"></i><span>Главная</span></button>
+ <button class="nav-button" data-tab="profileSection"><i data-lucide="user-round" class="icon"></i><span>Профиль</span></button>
  <button class="nav-button" data-tab="addSection"><i data-lucide="plus-circle" class="icon"></i><span>Добавить</span></button>
  <button class="nav-button" data-tab="catalogSection"><i data-lucide="layout-grid" class="icon"></i><span>Каталог</span></button>
  <button class="nav-button" data-tab="reviewsSection"><i data-lucide="message-square" class="icon"></i><span>Отзывы</span></button>
@@ -374,7 +385,7 @@ $("registerForm").addEventListener("submit",async e=>{
  const nickname=$("registerNickname").value.trim();
  const password=$("registerPassword").value;
  if(!/^[A-Za-zА-Яа-яЁё0-9_]{3,24}$/.test(nickname)){
-  setAccountStatus("Никнейм: от 3 до 24 символов, только буквы, цифры и _.","error");return;
+  setAccountStatus("Никнейм должен содержать 3–24 символа: только русские/английские буквы, цифры и _. Пробелы, +, точка и дефис запрещены.","error");return;
  }
  if(password.length<8){
   setAccountStatus("Пароль должен содержать минимум 8 символов.","error");return;
@@ -455,30 +466,39 @@ $("logoutButton").addEventListener("click",async()=>{
  else{showToast("Ты вышел из аккаунта");setAccountStatus("Ты вышел из аккаунта.");}
 });
 
-/* Навигация по нижнему меню */
+/* Переключение полноценных страниц через нижнюю панель */
 function showMainTab(tabId){
  const target=$(tabId);
  if(!target)return;
- document.querySelectorAll(".nav-button").forEach(b=>b.classList.toggle("active",b.dataset.tab===tabId));
- target.scrollIntoView({behavior:"smooth",block:"start"});
+ document.querySelectorAll(".main-page").forEach(page=>page.classList.add("hidden"));
+ $("categoriesSection").classList.add("hidden");
+ $("reviewPanel").classList.add("hidden");
+ target.classList.remove("hidden");
+ document.querySelectorAll(".nav-button").forEach(button=>{
+  button.classList.toggle("active",button.dataset.tab===tabId);
+ });
  if(tabId==="reviewsSection")renderAllReviews();
  if(tabId==="addSection"&&placeMap)setTimeout(()=>placeMap.invalidateSize(),250);
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 document.querySelectorAll(".nav-button").forEach(button=>{
  button.addEventListener("click",()=>showMainTab(button.dataset.tab));
 });
+$("homeCatalogButton").onclick=()=>showMainTab("catalogSection");
+$("homeProfileButton").onclick=()=>showMainTab("profileSection");
 
 /* Отдельная страница категорий */
 function openCategoriesPage(){
+ showMainTab("catalogSection");
  $("catalogSection").classList.add("hidden");
  $("categoriesSection").classList.remove("hidden");
- $("categoriesSection").scrollIntoView({behavior:"smooth",block:"start"});
  updateCategoryCounts();
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 function closeCategoriesPage(){
  $("categoriesSection").classList.add("hidden");
  $("catalogSection").classList.remove("hidden");
- $("catalogSection").scrollIntoView({behavior:"smooth",block:"start"});
+ window.scrollTo({top:0,behavior:"smooth"});
 }
 $("openCategories").onclick=openCategoriesPage;
 document.querySelectorAll("[data-open-categories]").forEach(b=>b.addEventListener("click",openCategoriesPage));
@@ -642,6 +662,7 @@ async function openReview(place){
  $("comment").value=own?.comment||"";
  setStars(own?.stars||5);
  $("reviewSubmit").textContent=own?"Сохранить изменения":"Опубликовать отзыв";
+ showMainTab("catalogSection");
  $("reviewPanel").classList.remove("hidden");
  $("reviewPanel").scrollIntoView({behavior:"smooth",block:"center"});
 }
@@ -666,7 +687,7 @@ $("reviewForm").addEventListener("submit",async e=>{
  }catch(error){console.error(error);showToast("Не удалось сохранить отзыв");}
  finally{button.disabled=false;button.textContent="Опубликовать отзыв";}
 });
-$("cancelReview").onclick=()=>{$("reviewPanel").classList.add("hidden");selectedPlaceId=null;};
+$("cancelReview").onclick=()=>{$("reviewPanel").classList.add("hidden");selectedPlaceId=null;showMainTab("catalogSection");};
 
 /* Комментарии */
 async function submitReviewComment(reviewId,textarea,button){
