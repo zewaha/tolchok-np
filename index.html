@@ -376,6 +376,7 @@ let captchaWidgets={login:null,register:null};
 let captchaTokens={login:"",register:""};
 let pendingConsentUser=null;
 let consentAcceptedForSession=false;
+let policyReadOnly=false;
 
 const $=id=>document.getElementById(id);
 
@@ -547,6 +548,15 @@ async function acceptExistingPolicy(){
 $("acceptPolicyButton").addEventListener("click",acceptExistingPolicy);
 
 $("declinePolicyButton").addEventListener("click",async()=>{
+ if(policyReadOnly){
+  policyReadOnly=false;
+  hidePolicyModal();
+  $("acceptPolicyButton").classList.remove("hidden");
+  $("declinePolicyButton").textContent="Выйти из аккаунта";
+  $("existingConsent").disabled=false;
+  $("existingConsent").parentElement.classList.remove("hidden");
+  return;
+ }
  await supabaseClient.auth.signOut();
  pendingConsentUser=null;
  currentUser=null;
@@ -842,14 +852,48 @@ async function checkSession(){
  const {data,error}=await supabaseClient.auth.getSession();
  if(error)console.error(error);
 
- if(data?.session){
-  currentUser=data.session.user;
-  await loadProfileInfo();
- }else{
+ if(!data?.session?.user){
   currentUser=null;
+  pendingConsentUser=null;
   $("authForms").classList.remove("hidden");
   $("profileInfo").classList.add("hidden");
+  return;
  }
+
+ const user=data.session.user;
+ const {data:consent,error:consentError}=await supabaseClient
+  .from("privacy_consents")
+  .select("id")
+  .eq("user_id",user.id)
+  .eq("policy_version",POLICY_VERSION)
+  .limit(1)
+  .maybeSingle();
+
+ if(consentError){
+  console.error("Consent check failed:",consentError);
+  await supabaseClient.auth.signOut();
+  currentUser=null;
+  pendingConsentUser=null;
+  $("authForms").classList.remove("hidden");
+  $("profileInfo").classList.add("hidden");
+  setStatus("authStatus","Не удалось проверить согласие с политикой. Войди ещё раз позже.","error");
+  return;
+ }
+
+ if(!consent){
+  currentUser=null;
+  pendingConsentUser=user;
+  consentAcceptedForSession=false;
+  $("authForms").classList.add("hidden");
+  $("profileInfo").classList.add("hidden");
+  showPolicyModal();
+  return;
+ }
+
+ pendingConsentUser=null;
+ consentAcceptedForSession=true;
+ currentUser=user;
+ await loadProfileInfo();
 }
 
 async function loadProfileInfo(){
@@ -891,7 +935,8 @@ $("openPolicyFromRegister").addEventListener("click",e=>{
 });
 
 function showPolicyModalForReading(){
- // Показывает информационное окно политики до регистрации.
+ // Режим просмотра: кнопка закрывает окно и не выполняет выход из аккаунта.
+ policyReadOnly=true;
  $("policyOverlay").classList.remove("hidden");
  $("acceptPolicyButton").classList.add("hidden");
  $("declinePolicyButton").textContent="Закрыть";
@@ -899,16 +944,6 @@ function showPolicyModalForReading(){
  $("existingConsent").disabled=true;
  $("existingConsent").parentElement.classList.add("hidden");
  setStatus("policyStatus","");
-
- $("declinePolicyButton").onclick=()=>{
-  hidePolicyModal();
-  $("acceptPolicyButton").classList.remove("hidden");
-  $("declinePolicyButton").textContent="Выйти из аккаунта";
-  $("existingConsent").disabled=false;
-  $("existingConsent").parentElement.classList.remove("hidden");
-  $("declinePolicyButton").onclick=null;
-  $("declinePolicyButton").addEventListener("click",declinePolicyAndLogout);
- };
 }
 
 async function declinePolicyAndLogout(){
