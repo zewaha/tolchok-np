@@ -226,7 +226,7 @@ footer strong{color:var(--green)}
    <button class="star-button" data-rating="5">★</button>
   </div>
   <h3>Текст отзыва</h3>
-  <textarea id="reviewText" placeholder="Расскажи о своём опыте..."></textarea>
+  <textarea id="reviewText" maxlength="500" placeholder="Расскажи о своём опыте... (до 500 символов)"></textarea>
   <button id="submitReview" class="primary">Опубликовать отзыв</button>
   <div id="addStatus" class="account-status"></div>
  </div>
@@ -369,7 +369,8 @@ const POLICY_VERSION="2026-11-16-v1";
 let currentUser=null,currentNickname="",currentCity="Новополоцк",addCity="Новополоцк";
 let selectedCategory="toilet",selectedRating=0,selectedPoint=null,selectedPointVerified=false;
 let map=null,mapMarker=null,verificationRequestId=0;
-let allPlaces=[],allReviews=[],allProfiles=[],allReactions=[];
+let allPlaces=[],allReviews=[],allProfiles=[],allReactions=[],allComments=[];
+let adminSearchSelection=null;
 let currentPage="homePage",adminSearchTimer=null;
 
 let captchaWidgets={login:null,register:null};
@@ -767,6 +768,7 @@ function reactionHTML(type,id){
 
 function renderReview(review){
  const place=allPlaces.find(p=>String(p.id)===String(review.place_id));
+ const comments=allComments.filter(c=>String(c.review_id)===String(review.id)).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
  const author=allProfiles.find(p=>p.id===review.user_id);
  const nickname=review.nickname||author?.nickname||"Пользователь";
  const stars=Math.max(0,Math.min(5,Number(review.stars||0)));
@@ -777,6 +779,11 @@ function renderReview(review){
   <div>${escapeHtml(review.comment||"")}</div>
   <div class="review-date">${escapeHtml(place?.name||"Место")} · ${formatDate(review.created_at)}</div>
   ${reactionHTML("review",review.id)}
+  <div class="comment-section">
+   <div class="comment-heading">Комментарии (${comments.length})</div>
+   ${comments.map(c=>`<div class="comment-item"><div class="comment-author">${escapeHtml(c.nickname||"Пользователь")}</div><div class="comment-body">${escapeHtml(c.body)}</div><div class="comment-date">${formatDate(c.created_at)}</div>${currentUser&&c.user_id===currentUser.id?`<button class="secondary danger delete-comment" data-comment-delete="${escapeHtml(c.id)}">Удалить</button>`:""}</div>`).join("")}
+   ${currentUser&&!pendingConsentUser?`<div class="comment-form" data-comment-form="${escapeHtml(review.id)}"><textarea maxlength="500" data-comment-input placeholder="Написать комментарий (до 500 символов)..."></textarea><button class="secondary" data-comment-submit="${escapeHtml(review.id)}">Отправить</button></div>`:`<div class="comment-login">Войди в аккаунт, чтобы комментировать.</div>`}
+  </div>
   ${currentUser&&review.user_id!==currentUser.id?`<button class="secondary report-button" data-report-review="${escapeHtml(review.id)}">Пожаловаться на отзыв</button> <button class="secondary report-button" data-report-user="${escapeHtml(review.user_id)}">Пожаловаться на автора</button>`:""}
  </div>`;
 }
@@ -827,12 +834,13 @@ async function loadData(){
    supabaseClient.from("places").select("*"),
    supabaseClient.from("reviews").select("*"),
    supabaseClient.from("profiles").select("*"),
-   supabaseClient.from("reactions").select("*")
+   supabaseClient.from("reactions").select("*"),
+   supabaseClient.from("review_comments").select("*").order("created_at",{ascending:true}).limit(1000)
   ]);
 
   for(const r of results)if(r.error)throw r.error;
 
-  [allPlaces,allReviews,allProfiles,allReactions]=results.map(r=>r.data||[]);
+  [allPlaces,allReviews,allProfiles,allReactions,allComments]=results.map(r=>r.data||[]);
 
   renderStats();
   renderPopularReviews();
@@ -1173,6 +1181,10 @@ async function submitReview(){
   setStatus("addStatus","Заполни название, отзыв и поставь оценку","error");
   return;
  }
+ if(comment.length>500){
+  setStatus("addStatus","Отзыв не должен превышать 500 символов","error");
+  return;
+ }
 
  if(!selectedPoint||!selectedPointVerified){
   setStatus("addStatus","Выбери точку на карте и дождись определения города","error");
@@ -1382,7 +1394,7 @@ async function loadAdminTab(tab){
    const {reviews=[]}=await callAdmin("list_reviews");
 
    target.innerHTML=reviews.length?reviews.map(r=>`
-    <article class="admin-row">
+    <article class="admin-row" data-admin-item-id="${escapeHtml(r.id)}">
      <b>${escapeHtml(r.nickname||"Пользователь")}</b> · ${"★".repeat(Number(r.stars||0))}
      <p>${escapeHtml(r.comment||"")}</p>
      <small class="muted">ID: ${escapeHtml(r.id)} · ${formatDate(r.created_at)}</small>
@@ -1397,7 +1409,7 @@ async function loadAdminTab(tab){
    if(error)throw error;
 
    target.innerHTML=data.length?data.map(p=>`
-    <article class="admin-row">
+    <article class="admin-row" data-admin-item-id="${escapeHtml(p.id)}">
      <b>${categoryIcon(p.category)} ${escapeHtml(p.name)}</b>
      <p>${escapeHtml(p.city)} · ${escapeHtml(p.address||"Адрес не указан")}<br><small class="muted">ID: ${escapeHtml(p.id)}</small></p>
      <div class="admin-actions">
@@ -1409,7 +1421,7 @@ async function loadAdminTab(tab){
    const {users=[]}=await callAdmin("list_users");
 
    target.innerHTML=users.length?users.map(u=>`
-    <article class="admin-row">
+    <article class="admin-row" data-admin-item-id="${escapeHtml(u.id)}">
      <b>${escapeHtml(u.nickname||"Без ника")}</b> ${u.is_admin?'<span class="muted">· администратор</span>':""}
      <p class="muted">
       ID: ${escapeHtml(u.id)}<br>
@@ -1419,7 +1431,7 @@ async function loadAdminTab(tab){
      <div class="admin-actions">
       <button class="secondary" data-user-action="${u.banned_until?"unban_user":"ban_user"}" data-user-id="${escapeHtml(u.id)}">${u.banned_until?"Разблокировать":"Заблокировать"}</button>
       ${currentUser.id===ROOT_ADMIN_ID&&u.id!==ROOT_ADMIN_ID?`<button class="secondary" data-user-action="${u.is_admin?"remove_admin":"promote_admin"}" data-user-id="${escapeHtml(u.id)}">${u.is_admin?"Снять админа":"Назначить админом"}</button>`:""}
-      <button class="secondary danger" data-user-action="delete_user" data-user-id="${escapeHtml(u.id)}">Удалить аккаунт</button>
+      <button class="secondary danger" data-user-action="delete_user" data-user-id="${escapeHtml(u.id)}">Удалить аккаунт (мягко)</button>
      </div>
     </article>`).join(""):'<div class="empty">Пользователей пока нет.</div>';
 
@@ -1434,6 +1446,13 @@ async function loadAdminTab(tab){
      <p class="muted">${escapeHtml(a.user_id)}</p>
      ${!a.is_root?`<button class="secondary" data-user-action="remove_admin" data-user-id="${escapeHtml(a.user_id)}">Снять права</button>`:""}
     </article>`).join("")||'<div class="empty">Администраторов нет.</div>';
+  }
+
+  if(adminSearchSelection&&adminSearchSelection.type===tab){
+   const rows=[...target.querySelectorAll("[data-admin-item-id]")];
+   rows.forEach(row=>row.hidden=row.dataset.adminItemId!==adminSearchSelection.id);
+   const match=rows.find(row=>row.dataset.adminItemId===adminSearchSelection.id);
+   if(match)match.scrollIntoView({behavior:"smooth",block:"center"});
   }
 
  }catch(e){
@@ -1498,19 +1517,19 @@ $("adminSearchResults").addEventListener("click",async e=>{
  if(type==="user"){
   await loadAdminTab("users");
   $("adminSearch").value="";
-  showToast("Пользователь найден — найди его в списке или используй поиск повторно");
+  showToast("Найденный пользователь открыт в списке");
  }
 
  if(type==="place"){
   await loadAdminTab("places");
   $("adminSearch").value="";
-  showToast("Место найдено — найди его в списке");
+  showToast("Найденное место открыто в списке");
  }
 
  if(type==="review"){
   await loadAdminTab("reviews");
   $("adminSearch").value="";
-  showToast("Отзыв найден — найди его в списке");
+  showToast("Найденный отзыв открыт в списке");
  }
 });
 
@@ -1536,8 +1555,9 @@ $("adminContent").addEventListener("click",async e=>{
    const r=reviews.find(x=>x.id===edit.dataset.reviewEdit);
    if(!r)return;
 
-   const comment=prompt("Измени текст отзыва:",r.comment);
+   const comment=prompt("Измени текст отзыва (до 500 символов):",r.comment);
    if(comment===null)return;
+   if(!comment.trim()||comment.trim().length>500)return showToast("Текст должен содержать от 1 до 500 символов");
 
    const stars=Number(prompt("Оценка от 1 до 5:",String(r.stars)));
 
@@ -1575,7 +1595,7 @@ $("adminContent").addEventListener("click",async e=>{
     unban_user:"Разблокировать пользователя?",
     promote_admin:"Назначить администратором?",
     remove_admin:"Снять права администратора?",
-    delete_user:"Полностью удалить аккаунт и профиль пользователя? Это действие нельзя отменить."
+    delete_user:"Отключить аккаунт и скрыть его данные? Supabase применит мягкое удаление, и восстановление может быть возможно ограниченное время."
    };
 
    if(!confirm(labels[action]||"Подтвердить действие?"))return;
@@ -1681,6 +1701,37 @@ async function submitUserReport(type,id){
   showToast(e.message||"Не удалось отправить жалобу");
  }
 }
+
+document.addEventListener("click",async e=>{
+ const submit=e.target.closest("[data-comment-submit]");
+ const remove=e.target.closest("[data-comment-delete]");
+ if(submit){
+  const form=submit.closest(".comment-form");
+  const input=form?.querySelector("[data-comment-input]");
+  const body=(input?.value||"").trim();
+  const reviewId=submit.dataset.commentSubmit;
+  if(!currentUser||pendingConsentUser)return showToast("Войди в аккаунт, чтобы комментировать");
+  if(!body||body.length>500)return showToast("Комментарий должен содержать от 1 до 500 символов");
+  submit.disabled=true;
+  try{
+   const {error}=await supabaseClient.from("review_comments").insert({review_id:reviewId,user_id:currentUser.id,nickname:currentNickname||"Пользователь",body});
+   if(error)throw error;
+   await loadData();
+   showToast("Комментарий опубликован");
+  }catch(err){showToast(err.message||"Не удалось добавить комментарий");}
+  finally{submit.disabled=false;}
+ }
+ if(remove){
+  if(!currentUser)return showToast("Войди в аккаунт");
+  if(!confirm("Удалить свой комментарий?"))return;
+  try{
+   const {error}=await supabaseClient.from("review_comments").delete().eq("id",remove.dataset.commentDelete).eq("user_id",currentUser.id);
+   if(error)throw error;
+   await loadData();
+   showToast("Комментарий удалён");
+  }catch(err){showToast(err.message||"Не удалось удалить комментарий");}
+ }
+});
 
 document.addEventListener("click",e=>{
  const r=e.target.closest("[data-report-review]");
