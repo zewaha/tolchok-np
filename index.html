@@ -1,33 +1,22 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0b1020">
-<title>Tolchok NP — BETA 9.1</title>
+<title>Tolchok NP — BETA 10.0</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
-:root{
- --bg:#0b1020;--panel:#17243a;--panel2:#111e32;
- --green:#55edb0;--text:#f4f6ff;--muted:#aab9cb;
- --border:#30425b;--yellow:#ffd45c;
-}
+:root{--bg:#0b1020;--panel:#17243a;--panel2:#111e32;--green:#55edb0;--text:#f4f6ff;--muted:#aab9cb;--border:#30425b;--yellow:#ffd45c}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:20px}
+html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;padding-bottom:85px}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-header{
- text-align:center;padding:38px 15px;min-height:185px;
- background:radial-gradient(circle at 15% 20%,#1d765b 0,transparent 40%),
- radial-gradient(circle at 90% 10%,#47337a 0,transparent 35%),
- linear-gradient(135deg,#142c42,#102d2c);
- border-bottom:1px solid #315a50
-}
+header{text-align:center;padding:38px 15px;min-height:185px;background:radial-gradient(circle at 15% 20%,#1d765b 0,transparent 40%),radial-gradient(circle at 90% 10%,#47337a 0,transparent 35%),linear-gradient(135deg,#142c42,#102d2c);border-bottom:1px solid #315a50}
 .logo{font-size:clamp(30px,8vw,44px);font-weight:1000;color:var(--green);text-shadow:0 0 25px #55edb055}
 header p{color:#c5d7e6;margin:10px 0}
 .beta{display:inline-flex;align-items:center;padding:8px 16px;margin-top:12px;border:1px solid #55edb077;border-radius:30px;background:#55edb018;color:var(--green);font-size:12px;font-weight:bold;letter-spacing:1px}
@@ -48,6 +37,7 @@ select option{background:#17243a}
 textarea{min-height:100px;resize:vertical}
 .primary{width:100%;padding:15px;color:#10251d;background:linear-gradient(120deg,#55edb0,#39c9a0);border:0;border-radius:12px;font-weight:bold}
 .secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 14px;color:white;background:#263750;border:1px solid #405571;border-radius:10px;font-size:13px}
+.danger{border-color:#a94d5b;background:#48212c;color:#ffd5dc}
 button:disabled{opacity:.6;cursor:not-allowed}
 .account-tabs{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}
 .account-tabs button{padding:13px;border:1px solid var(--border);border-radius:11px;background:var(--panel2);color:white}
@@ -67,8 +57,6 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .suggestion:hover{background:#263c53}
 .suggestion strong{display:block;font-size:14px}
 .suggestion small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
-.quick-chips{display:flex;flex-wrap:wrap;gap:8px;margin:13px 0}
-.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border);background:#1b2c43;color:white;border-radius:25px;padding:9px 13px;font-size:12px}
 .category-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:23px}
 .category-heading h2{margin:0 0 15px}
 .filters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
@@ -100,12 +88,11 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .map-status.success{color:var(--green)}
 .map-status.error{color:#ff9292}
 .map-hint{padding:11px 13px;border-radius:12px;background:#13263a;color:#bfd0e2;font-size:12px;line-height:1.6;margin:10px 0}
-.city-grid,.category-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.city-button{padding:16px 8px;background:var(--panel2);color:white;border:1px solid var(--border);border-radius:15px}
-.city-button.active,.category-button.active{background:#164438;border:2px solid var(--green)}
+.category-grid,.city-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .category-button{display:flex;align-items:center;gap:12px;padding:15px 11px;text-align:left;color:white;background:var(--panel2);border:1px solid var(--border);border-radius:15px}
 .category-button strong{display:block;font-size:13px}
 .category-button small{display:block;color:var(--muted);margin-top:7px;font-size:11px}
+.category-button.active{background:#164438;border:2px solid var(--green)}
 .rating-buttons{display:flex;justify-content:center;gap:7px;margin:12px 0}
 .star-button{width:47px;height:47px;font-size:27px;color:#718096;background:#263750;border:1px solid #405571;border-radius:10px}
 .star-button.active{color:var(--yellow);background:#3d351f;border-color:var(--yellow)}
@@ -120,10 +107,16 @@ button:disabled{opacity:.6;cursor:not-allowed}
 .admin-actions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
 .admin-actions button{width:auto}
 .report-button{padding:6px 9px;font-size:11px;margin-top:8px}
+.reaction-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.reaction-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:20px;border:1px solid #405571;background:#1b2c43;color:#dce7f4;font-size:13px}
+.reaction-btn.active{border-color:var(--green);background:#164438;color:var(--green)}
+.reaction-btn.dislike.active{border-color:#ff8181;background:#48212c;color:#ffaaaa}
+.admin-search-wrap{position:relative}
+.admin-search-results{position:absolute;z-index:50;top:100%;left:0;right:0;background:#1a2941;border:1px solid #405571;border-radius:12px;max-height:340px;overflow:auto;box-shadow:0 15px 35px #0009}
+.admin-search-results button{display:block;width:100%;padding:12px;text-align:left;background:transparent;color:white;border:0;border-bottom:1px solid #30425b}
+.admin-search-results button:hover{background:#263c53}
 footer{text-align:center;padding:35px 15px;color:#8292a8;font-size:13px;border-top:1px solid #24334a;margin-top:35px}
 footer strong{color:var(--green)}
-.icon{width:19px;height:19px;stroke-width:2;flex-shrink:0}
-.icon-lg{width:27px;height:27px}
 .category-page-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:90;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:#101b2c;border-top:1px solid #30425b}
 .nav-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:7px 2px;color:#91a2b8;background:transparent;border:0;border-radius:10px;font-size:10px}
@@ -131,21 +124,14 @@ footer strong{color:var(--green)}
 .nav-button .icon{width:21px;height:21px}
 .page{display:none}
 .page.active{display:block}
-@media(max-width:520px){
- .container{padding:12px}
- .panel{padding:15px}
- .place{padding:15px}
- .filters{grid-template-columns:1fr}
- .category-page-grid{grid-template-columns:1fr 1fr}
- .nav-button{font-size:9px}
-}
+@media(max-width:520px){.container{padding:12px}.panel{padding:15px}.place{padding:15px}.filters{grid-template-columns:1fr}.category-page-grid{grid-template-columns:1fr 1fr}.nav-button{font-size:9px}}
 </style>
 </head>
 <body>
 <header>
  <div class="logo">Tolchok NP</div>
  <p>Честные отзывы о местах городов Беларуси</p>
- <div class="beta"><span class="beta-dot"></span>BETA 9.1</div>
+ <div class="beta"><span class="beta-dot"></span>BETA 10.0</div>
 </header>
 <main class="container">
 <section id="homePage" class="page active">
@@ -164,11 +150,12 @@ footer strong{color:var(--green)}
  <div class="category-heading"><h2>Категории</h2></div>
  <div id="homeCategories" class="category-page-grid"></div>
 </section>
+
 <section id="catalogPage" class="page">
  <h2>Каталог мест</h2>
  <label for="catalogCitySearch" class="muted">Найти город</label>
  <input id="catalogCitySearch" type="search" placeholder="Начни вводить название города..." autocomplete="off">
- <select id="catalogCity" aria-label="Выбери город"></select>
+ <select id="catalogCity"></select>
  <div class="filters">
   <select id="catalogCategory"><option value="">Все категории</option></select>
   <select id="sortSelect">
@@ -179,13 +166,14 @@ footer strong{color:var(--green)}
  </div>
  <div id="catalogPlaces"></div>
 </section>
+
 <section id="addPage" class="page">
  <h2>Добавить отзыв</h2>
  <div class="panel">
   <div class="muted">Выбери город, в котором находится место</div>
   <label for="addCitySearch" class="muted">Найти город</label>
   <input id="addCitySearch" type="search" placeholder="Начни вводить название города..." autocomplete="off">
-  <select id="addCitySelect" aria-label="Выбери город"></select>
+  <select id="addCitySelect"></select>
   <h3>Категория</h3>
   <div id="addCategories" class="category-grid"></div>
   <h3>Название места</h3>
@@ -193,7 +181,7 @@ footer strong{color:var(--green)}
   <h3>Адрес</h3>
   <input id="placeAddress" placeholder="Улица, дом">
   <h3>Выбери место на карте</h3>
-  <div class="map-hint">Нажми на карту, чтобы поставить метку. Место должно находиться в выбранном городе.</div>
+  <div class="map-hint">Нажми на карту. Город и адрес определятся автоматически по выбранной точке.</div>
   <div id="placeMap"></div>
   <div id="mapStatus" class="map-status">Сначала выбери точку на карте.</div>
   <h3>Оценка</h3>
@@ -210,10 +198,12 @@ footer strong{color:var(--green)}
   <div id="addStatus" class="account-status"></div>
  </div>
 </section>
+
 <section id="reviewsPage" class="page">
  <h2>Все отзывы</h2>
  <div id="allReviews"></div>
 </section>
+
 <section id="profilePage" class="page">
  <h2>Профиль</h2>
  <div class="panel">
@@ -236,6 +226,7 @@ footer strong{color:var(--green)}
    <div id="authStatus" class="account-status"></div>
    <p class="auth-note">Для регистрации нужны никнейм, почта и пароль. Никнейм должен быть уникальным.</p>
   </div>
+
   <div id="profileInfo" class="hidden">
    <div class="account-profile">
     Вы вошли как:
@@ -245,13 +236,22 @@ footer strong{color:var(--green)}
    <h3>Мои отзывы</h3>
    <div id="myReviews"></div>
    <button id="logoutButton" class="secondary">Выйти из аккаунта</button>
+
    <section id="adminPanel" class="panel hidden">
     <h2>Панель администратора</h2>
     <div class="admin-tabs">
      <button class="secondary active" data-admin-tab="reports">Жалобы</button>
      <button class="secondary" data-admin-tab="reviews">Отзывы</button>
+     <button class="secondary" data-admin-tab="places">Места</button>
      <button class="secondary" data-admin-tab="users">Пользователи</button>
      <button class="secondary root-admin-only hidden" data-admin-tab="admins">Администраторы</button>
+    </div>
+    <div id="adminSearchArea" class="hidden">
+     <label class="muted">Поиск по никнейму, месту или отзыву</label>
+     <div class="admin-search-wrap">
+      <input id="adminSearch" placeholder="Введи минимум 2 буквы..." autocomplete="off">
+      <div id="adminSearchResults" class="admin-search-results hidden"></div>
+     </div>
     </div>
     <div id="adminContent"><div class="empty">Выбери раздел.</div></div>
    </section>
@@ -259,7 +259,9 @@ footer strong{color:var(--green)}
  </div>
 </section>
 </main>
+
 <footer><strong>Tolchok NP</strong><br>Проект отзывов о местах городов Беларуси</footer>
+
 <nav class="bottom-nav">
  <button class="nav-button active" data-page="homePage"><i data-lucide="house" class="icon"></i>Главная</button>
  <button class="nav-button" data-page="catalogPage"><i data-lucide="map" class="icon"></i>Каталог</button>
@@ -268,10 +270,12 @@ footer strong{color:var(--green)}
  <button class="nav-button" data-page="profilePage"><i data-lucide="user" class="icon"></i>Профиль</button>
 </nav>
 <div id="toast" class="toast"></div>
+
 <script>
 const SUPABASE_URL="https://ddlbvswesbqyghmtmlxv.supabase.co";
 const SUPABASE_KEY="sb_publishable_RHcQvREUKdBGXpYI851FVQ_JI-lIq0X";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const ROOT_ADMIN_ID="bfa898b9-dbd6-4f5e-b989-b1835ef1dbfc";
 
 const CATEGORIES=[
  {id:"toilet",name:"Туалеты",icon:"🚻",description:"Общественные туалеты"},
@@ -286,239 +290,118 @@ const BELARUS_CITIES=[
 "Барановичи","Барань","Белоозёрск","Белыничи","Березино","Березовка","Берёза","Бобруйск","Борисов","Браслав","Брест","Буда-Кошелево","Быхов","Василевичи","Верхнедвинск","Ветка","Вилейка","Витебск","Волковыск","Воложин","Высокое","Ганцевичи","Глубокое","Гомель","Горки","Городок","Гродно","Давид-Городок","Дзержинск","Дисна","Добруш","Докшицы","Дрогичин","Дубровно","Дятлово","Ельск","Жабинка","Житковичи","Жлобин","Жодино","Заславль","Иваново","Ивацевичи","Ивье","Калинковичи","Каменец","Кировск","Клецк","Климовичи","Кличев","Кобрин","Копыль","Коссово","Костюковичи","Кричев","Круглое","Крупки","Лепель","Лида","Логойск","Лунинец","Любань","Ляховичи","Малорита","Марьина Горка","Микашевичи","Минск","Миоры","Могилёв","Мозырь","Молодечно","Мосты","Мстиславль","Мядель","Наровля","Несвиж","Новогрудок","Новолукомль","Новополоцк","Орша","Осиповичи","Островец","Ошмяны","Петриков","Пинск","Полоцк","Поставы","Пружаны","Речица","Рогачёв","Светлогорск","Свислочь","Сенно","Скидель","Славгород","Слоним","Слуцк","Смолевичи","Сморгонь","Солигорск","Старые Дороги","Столбцы","Столин","Толочин","Туров","Узда","Фаниполь","Хойники","Чаусы","Чашники","Червень","Чериков","Чечерск","Шклов","Щучин"
 ].sort((a,b)=>a.localeCompare(b,"ru"));
 
-const ROOT_ADMIN_ID="bfa898b9-dbd6-4f5e-b989-b1835ef1dbfc";
-
-let currentUser=null;
-let currentNickname="";
-let currentCity="Новополоцк";
-let addCity="Новополоцк";
-let selectedCategory="toilet";
-let selectedRating=0;
-let selectedPoint=null;
-let selectedPointVerified=false;
-let map=null;
-let mapMarker=null;
-let verificationRequestId=0;
-let allPlaces=[];
-let allReviews=[];
-let allProfiles=[];
-let currentPage="homePage";
+let currentUser=null,currentNickname="",currentCity="Новополоцк",addCity="Новополоцк";
+let selectedCategory="toilet",selectedRating=0,selectedPoint=null,selectedPointVerified=false;
+let map=null,mapMarker=null,verificationRequestId=0;
+let allPlaces=[],allReviews=[],allProfiles=[],allReactions=[];
+let currentPage="homePage",adminSearchTimer=null;
 
 const $=id=>document.getElementById(id);
-const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[char]));
-const showToast=message=>{
- const toast=$("toast");
- toast.textContent=message;
- toast.classList.add("show");
- setTimeout(()=>toast.classList.remove("show"),3000);
-};
-const setStatus=(id,message,type="")=>{
- const el=$(id);
- if(!el)return;
- el.textContent=message;
- el.className="account-status "+type;
-};
+const escapeHtml=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const showToast=message=>{const t=$("toast");t.textContent=message;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3000)};
+const setStatus=(id,message,type="")=>{const e=$(id);if(e){e.textContent=message;e.className="account-status "+type}};
 const categoryName=id=>CATEGORIES.find(c=>c.id===id)?.name||"Другое";
 const categoryIcon=id=>CATEGORIES.find(c=>c.id===id)?.icon||"📍";
+const formatDate=value=>value?new Date(value).toLocaleDateString("ru-RU"):"";
 
-function normalizeCityText(value){
- return String(value||"")
-  .toLocaleLowerCase("ru")
-  .replace(/ё/g,"е")
-  .trim();
-}
-
-function fillCitySelects(){
- updateCitySelect("catalogCity","",currentCity);
- updateCitySelect("addCitySelect","",addCity);
- $("catalogCitySearch").value="";
- $("addCitySearch").value="";
-}
-
-/* Новый поиск: сначала показывает совпадения с начала названия,
-   затем остальные совпадения. Например "ново" найдёт три города. */
-function updateCitySelect(selectId,query,selectedCity){
- const select=$(selectId);
- const normalized=normalizeCityText(query);
-
- let matches=BELARUS_CITIES.filter(city=>{
-  const name=normalizeCityText(city);
-  return !normalized||name.startsWith(normalized);
- });
-
- if(normalized&&!matches.length){
-  matches=BELARUS_CITIES.filter(city=>
-   normalizeCityText(city).includes(normalized)
-  );
- }
-
+function normalizeCityText(v){return String(v||"").toLocaleLowerCase("ru").replace(/ё/g,"е").trim()}
+function updateCitySelect(id,query,selected){
+ const select=$(id),q=normalizeCityText(query);
+ let matches=BELARUS_CITIES.filter(c=>!q||normalizeCityText(c).startsWith(q));
+ if(q&&!matches.length)matches=BELARUS_CITIES.filter(c=>normalizeCityText(c).includes(q));
  matches.sort((a,b)=>a.localeCompare(b,"ru"));
-
- select.innerHTML=matches.map(city=>
-  `<option value="${escapeHtml(city)}">${escapeHtml(city)}</option>`
- ).join("");
-
- if(matches.includes(selectedCity)){
-  select.value=selectedCity;
- }else if(matches.length){
-  select.selectedIndex=0;
- }
-
- if(!matches.length){
-  select.innerHTML='<option value="">Город не найден</option>';
- }
+ select.innerHTML=matches.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+ if(matches.includes(selected))select.value=selected;
+ else if(matches.length)select.selectedIndex=0;
+ if(!matches.length)select.innerHTML='<option value="">Город не найден</option>';
 }
-
+function fillCitySelects(){updateCitySelect("catalogCity","",currentCity);updateCitySelect("addCitySelect","",addCity)}
 function connectCitySearch(searchId,selectId,onSelect,getCurrent){
- const search=$(searchId);
- const select=$(selectId);
-
+ const search=$(searchId),select=$(selectId);
  search.addEventListener("input",()=>{
-  const query=search.value;
-  updateCitySelect(selectId,query,getCurrent());
-
-  const exact=BELARUS_CITIES.find(city=>
-   normalizeCityText(city)===normalizeCityText(query)
-  );
-
-  if(exact){
-   select.value=exact;
-   onSelect(exact);
-  }
+  const q=search.value;updateCitySelect(selectId,q,getCurrent());
+  const exact=BELARUS_CITIES.find(c=>normalizeCityText(c)===normalizeCityText(q));
+  if(exact){select.value=exact;onSelect(exact)}
  });
-
- select.addEventListener("change",()=>{
-  if(!select.value)return;
-  onSelect(select.value);
- });
+ select.addEventListener("change",()=>{if(select.value)onSelect(select.value)});
 }
-
-const formatDate=value=>{
- if(!value)return "";
- return new Date(value).toLocaleDateString("ru-RU");
-};
 
 function switchPage(page){
  currentPage=page;
- document.querySelectorAll(".page").forEach(el=>el.classList.toggle("active",el.id===page));
- document.querySelectorAll(".nav-button").forEach(el=>el.classList.toggle("active",el.dataset.page===page));
- if(page==="addPage")setTimeout(()=>{if(map)map.invalidateSize()},150);
+ document.querySelectorAll(".page").forEach(e=>e.classList.toggle("active",e.id===page));
+ document.querySelectorAll(".nav-button").forEach(e=>e.classList.toggle("active",e.dataset.page===page));
+ if(page==="addPage")setTimeout(()=>map?.invalidateSize(),150);
  window.scrollTo({top:0,behavior:"smooth"});
 }
-document.querySelectorAll(".nav-button").forEach(button=>{
- button.addEventListener("click",()=>switchPage(button.dataset.page));
-});
+document.querySelectorAll(".nav-button").forEach(b=>b.addEventListener("click",()=>switchPage(b.dataset.page)));
 
 function renderCategoryOptions(){
  $("catalogCategory").innerHTML='<option value="">Все категории</option>'+CATEGORIES.map(c=>`<option value="${c.id}">${c.icon} ${c.name}</option>`).join("");
- $("addCategories").innerHTML=CATEGORIES.map(c=>`
- <button class="category-button ${selectedCategory===c.id?"active":""}" data-category="${c.id}">
-  <span>${c.icon}</span><span><strong>${c.name}</strong><small>${c.description}</small></span>
- </button>`).join("");
- $("homeCategories").innerHTML=CATEGORIES.map(c=>`
- <button class="category-button" data-home-category="${c.id}">
-  <span>${c.icon}</span><span><strong>${c.name}</strong><small>${c.description}</small></span>
- </button>`).join("");
- document.querySelectorAll("[data-category]").forEach(button=>{
-  button.addEventListener("click",()=>{
-   selectedCategory=button.dataset.category;
-   renderCategoryOptions();
-  });
- });
- document.querySelectorAll("[data-home-category]").forEach(button=>{
-  button.addEventListener("click",()=>{
-   $("catalogCategory").value=button.dataset.homeCategory;
-   switchPage("catalogPage");
-   renderPlaces();
-  });
- });
+ $("addCategories").innerHTML=CATEGORIES.map(c=>`<button class="category-button ${selectedCategory===c.id?"active":""}" data-category="${c.id}"><span>${c.icon}</span><span><strong>${c.name}</strong><small>${c.description}</small></span></button>`).join("");
+ $("homeCategories").innerHTML=CATEGORIES.map(c=>`<button class="category-button" data-home-category="${c.id}"><span>${c.icon}</span><span><strong>${c.name}</strong><small>${c.description}</small></span></button>`).join("");
+ document.querySelectorAll("[data-category]").forEach(b=>b.addEventListener("click",()=>{selectedCategory=b.dataset.category;renderCategoryOptions()}));
+ document.querySelectorAll("[data-home-category]").forEach(b=>b.addEventListener("click",()=>{$("catalogCategory").value=b.dataset.homeCategory;switchPage("catalogPage");renderPlaces()}));
 }
 
+function setMapStatus(message,type=""){$("mapStatus").textContent=message;$("mapStatus").className="map-status "+type}
 async function setAddCity(city){
  if(!BELARUS_CITIES.includes(city))return;
- addCity=city;
- selectedPoint=null;
- selectedPointVerified=false;
- verificationRequestId++;
- if(mapMarker&&map)map.removeLayer(mapMarker);
- mapMarker=null;
- $("addCitySelect").value=city;
- setMapStatus("Выбран город: "+city+". Загружаем карту города...","");
- if(map){
-  try{
-   const response=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&country=Belarus&city="+encodeURIComponent(city),{headers:{"Accept-Language":"ru"}});
-   const results=await response.json();
-   if(results[0])map.setView([Number(results[0].lat),Number(results[0].lon)],13);
-   else setMapStatus("Не удалось найти город на карте. Попробуй позже.","error");
-  }catch(error){setMapStatus("Не удалось загрузить центр города. Попробуй ещё раз.","error");}
- }
-}
-
-connectCitySearch("addCitySearch","addCitySelect",city=>setAddCity(city),()=>addCity);
-connectCitySearch("catalogCitySearch","catalogCity",city=>{
- currentCity=city;
- renderPlaces();
-},()=>currentCity);
-
-function setMapStatus(message,type=""){
- $("mapStatus").textContent=message;
- $("mapStatus").className="map-status "+type;
-}
-
-function cityMatchesAddress(address,city){
- if(!address)return false;
- const possible=[
-  address.city,address.town,address.municipality,address.village,
-  address.city_district,address.suburb,address.county
- ].filter(Boolean).map(value=>String(value).toLowerCase());
- const target=city.toLowerCase();
- return possible.some(value=>value===target||value.includes(target)||target.includes(value));
-}
-
-async function verifyPoint(lat,lng){
- const requestId=++verificationRequestId;
- selectedPoint={lat,lng};
- selectedPointVerified=false;
- setMapStatus("Проверяем, находится ли точка в городе "+addCity+"...","");
+ addCity=city;$("addCitySelect").value=city;
+ selectedPoint=null;selectedPointVerified=false;verificationRequestId++;
+ if(mapMarker&&map)map.removeLayer(mapMarker);mapMarker=null;
+ setMapStatus("Выбран город: "+city+". Загружаем карту...");
+ if(!map)return;
  try{
-  const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=14&addressdetails=1`;
-  const response=await fetch(url,{headers:{"Accept-Language":"ru"}});
-  if(!response.ok)throw new Error("Не удалось проверить адрес");
-  const data=await response.json();
-  if(requestId!==verificationRequestId)return;
-  const address=data.address||{};
-  if(cityMatchesAddress(address,addCity)){
-   selectedPointVerified=true;
-   setMapStatus("✓ Точка подтверждена: "+(data.display_name||addCity),"success");
-  }else{
-   selectedPointVerified=false;
-   selectedPoint=null;
-   if(mapMarker&&map)map.removeLayer(mapMarker);
-   mapMarker=null;
-   setMapStatus("✕ Не удалось подтвердить, что точка находится в городе "+addCity+". Выбери другую точку.","error");
+  const r=await fetch("https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&country=Belarus&city="+encodeURIComponent(city),{headers:{"Accept-Language":"ru"}});
+  const data=await r.json();if(data[0])map.setView([+data[0].lat,+data[0].lon],13);
+ }catch(e){setMapStatus("Не удалось загрузить карту города.","error")}
+}
+connectCitySearch("addCitySearch","addCitySelect",setAddCity,()=>addCity);
+connectCitySearch("catalogCitySearch","catalogCity",city=>{currentCity=city;renderPlaces()},()=>currentCity);
+
+function cityFromAddress(a){
+ const raw=a.city||a.town||a.municipality||a.village||a.city_district||a.county||"";
+ const normalized=normalizeCityText(raw);
+ return BELARUS_CITIES.find(c=>normalizeCityText(c)===normalized)||
+ BELARUS_CITIES.find(c=>normalized.includes(normalizeCityText(c))||normalizeCityText(c).includes(normalized)&&normalized.length>3)||null;
+}
+async function verifyPoint(lat,lng){
+ const id=++verificationRequestId;selectedPoint={lat,lng};selectedPointVerified=false;
+ setMapStatus("Определяем адрес и город...");
+ try{
+  const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`;
+  const r=await fetch(url,{headers:{"Accept-Language":"ru"}});
+  if(!r.ok)throw new Error("Не удалось определить адрес");
+  const data=await r.json();if(id!==verificationRequestId)return;
+  const detected=cityFromAddress(data.address||{});
+  if(!detected)throw new Error("Не удалось определить город. Выбери другую точку.");
+  addCity=detected;
+  $("addCitySelect").value=detected;
+  $("addCitySearch").value=detected;
+  if(data.address){
+   const a=data.address;
+   const street=a.road||a.pedestrian||a.residential||"";
+   const house=a.house_number||"";
+   const address=[street,house].filter(Boolean).join(", ");
+   if(address)$("placeAddress").value=address;
   }
- }catch(error){
-  if(requestId!==verificationRequestId)return;
-  selectedPointVerified=false;
-  selectedPoint=null;
-  if(mapMarker&&map)map.removeLayer(mapMarker);
-  mapMarker=null;
-  setMapStatus("Не получилось проверить город. Попробуй выбрать точку ещё раз.","error");
+  selectedPointVerified=true;
+  setMapStatus("✓ Город определён: "+detected+". "+(data.display_name||""),"success");
+ }catch(e){
+  if(id!==verificationRequestId)return;
+  selectedPoint=null;selectedPointVerified=false;
+  if(mapMarker&&map)map.removeLayer(mapMarker);mapMarker=null;
+  setMapStatus(e.message||"Не удалось проверить точку.","error");
  }
 }
-
 function initMap(){
- if(map||!$("placeMap"))return;
+ if(map)return;
  map=L.map("placeMap").setView([55.531,28.65],13);
- L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
-  attribution:"&copy; OpenStreetMap contributors",
-  maxZoom:19
- }).addTo(map);
- map.on("click",event=>{
-  const {lat,lng}=event.latlng;
+ L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"&copy; OpenStreetMap contributors",maxZoom:19}).addTo(map);
+ map.on("click",e=>{
   if(mapMarker)map.removeLayer(mapMarker);
-  mapMarker=L.marker([lat,lng]).addTo(map);
-  verifyPoint(lat,lng);
+  mapMarker=L.marker(e.latlng).addTo(map);
+  verifyPoint(e.latlng.lat,e.latlng.lng);
  });
 }
 
@@ -527,20 +410,24 @@ function renderStats(){
  $("statReviews").textContent=allReviews.length;
  $("statUsers").textContent=allProfiles.length;
 }
-
-function averageRating(placeId){
- const reviews=allReviews.filter(review=>review.place_id===placeId);
- if(!reviews.length)return 0;
- return reviews.reduce((sum,review)=>sum+Number(review.stars||0),0)/reviews.length;
+function averageRating(id){
+ const rs=allReviews.filter(r=>r.place_id===id);
+ return rs.length?rs.reduce((s,r)=>s+Number(r.stars||0),0)/rs.length:0;
 }
-
-function reviewsCount(placeId){
- return allReviews.filter(review=>review.place_id===placeId).length;
+function reactionsFor(type,id){
+ const rs=allReactions.filter(r=>r.target_type===type&&String(r.target_id)===String(id));
+ return {likes:rs.filter(r=>r.value===1).length,dislikes:rs.filter(r=>r.value===-1).length,mine:rs.find(r=>r.user_id===currentUser?.id)?.value||0};
 }
-
+function reactionHTML(type,id){
+ const r=reactionsFor(type,id);
+ return `<div class="reaction-row">
+ <button class="reaction-btn ${r.mine===1?"active":""}" data-react-type="${type}" data-react-id="${escapeHtml(id)}" data-react-value="1">👍 <span>${r.likes}</span></button>
+ <button class="reaction-btn dislike ${r.mine===-1?"active":""}" data-react-type="${type}" data-react-id="${escapeHtml(id)}" data-react-value="-1">👎 <span>${r.dislikes}</span></button>
+ </div>`;
+}
 function renderReview(review){
- const place=allPlaces.find(item=>item.id===review.place_id);
- const author=allProfiles.find(item=>item.id===review.user_id);
+ const place=allPlaces.find(p=>String(p.id)===String(review.place_id));
+ const author=allProfiles.find(p=>p.id===review.user_id);
  const nickname=review.nickname||author?.nickname||"Пользователь";
  const stars=Math.max(0,Math.min(5,Number(review.stars||0)));
  return `<div class="review">
@@ -548,287 +435,159 @@ function renderReview(review){
   <div class="review-stars">${"★".repeat(stars)}${"☆".repeat(5-stars)}</div>
   <div>${escapeHtml(review.comment||"")}</div>
   <div class="review-date">${escapeHtml(place?.name||"Место")} · ${formatDate(review.created_at)}</div>
+  ${reactionHTML("review",review.id)}
   ${currentUser&&review.user_id!==currentUser.id?`<button class="secondary report-button" data-report-review="${escapeHtml(review.id)}">Пожаловаться на отзыв</button> <button class="secondary report-button" data-report-user="${escapeHtml(review.user_id)}">Пожаловаться на автора</button>`:""}
  </div>`;
 }
-
 function renderPopularReviews(){
- const sorted=[...allReviews].sort((a,b)=>Number(b.stars||0)-Number(a.stars||0)).slice(0,10);
- $("popularReviews").innerHTML=sorted.length?sorted.map(renderReview).join(""):'<div class="empty">Пока нет отзывов. Стань первым!</div>';
+ const rs=[...allReviews].sort((a,b)=>Number(b.stars||0)-Number(a.stars||0)).slice(0,10);
+ $("popularReviews").innerHTML=rs.length?rs.map(renderReview).join(""):'<div class="empty">Пока нет отзывов. Стань первым!</div>';
 }
-
 function renderAllReviews(){
- const sorted=[...allReviews].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
- $("allReviews").innerHTML=sorted.length?sorted.map(renderReview).join(""):'<div class="empty">Отзывов пока нет.</div>';
+ const rs=[...allReviews].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+ $("allReviews").innerHTML=rs.length?rs.map(renderReview).join(""):'<div class="empty">Отзывов пока нет.</div>';
 }
-
 function renderPlaces(){
- const category=$("catalogCategory").value;
- const sort=$("sortSelect").value;
- let places=allPlaces.filter(place=>place.city===currentCity);
- if(category)places=places.filter(place=>place.category===category);
+ const cat=$("catalogCategory").value,sort=$("sortSelect").value;
+ let places=allPlaces.filter(p=>p.city===currentCity);
+ if(cat)places=places.filter(p=>p.category===cat);
  if(sort==="rating")places.sort((a,b)=>averageRating(b.id)-averageRating(a.id));
  if(sort==="new")places.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
- if(sort==="reviews")places.sort((a,b)=>reviewsCount(b.id)-reviewsCount(a.id));
- $("catalogPlaces").innerHTML=places.length?places.map(place=>{
-  const rating=averageRating(place.id);
-  const reviews=allReviews.filter(review=>review.place_id===place.id);
+ if(sort==="reviews")places.sort((a,b)=>allReviews.filter(r=>r.place_id===b.id).length-allReviews.filter(r=>r.place_id===a.id).length);
+ $("catalogPlaces").innerHTML=places.length?places.map(p=>{
+  const rating=averageRating(p.id),rs=allReviews.filter(r=>r.place_id===p.id);
   return `<article class="place">
-   <div class="place-title">${categoryIcon(place.category)} ${escapeHtml(place.name)}</div>
-   <div class="place-meta">${categoryName(place.category)} · ${escapeHtml(place.city)}<br>${escapeHtml(place.address||"Адрес не указан")}</div>
+   <div class="place-title">${categoryIcon(p.category)} ${escapeHtml(p.name)}</div>
+   <div class="place-meta">${categoryName(p.category)} · ${escapeHtml(p.city)}<br>${escapeHtml(p.address||"Адрес не указан")}</div>
    <div class="place-rating">${rating?rating.toFixed(1)+" ★":"Нет оценок"}</div>
-   <div class="place-meta">${reviews.length} отзыв(ов)</div>
-   ${reviews.map(renderReview).join("")}
-   ${place.lat&&place.lon?`<div class="place-actions"><a class="secondary map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${place.lat}&mlon=${place.lon}#map=17/${place.lat}/${place.lon}">Открыть на карте</a></div>`:""}
+   <div class="place-meta">${rs.length} отзыв(ов)</div>
+   ${reactionHTML("place",p.id)}
+   ${rs.map(renderReview).join("")}
+   ${p.lat&&p.lon?`<div class="place-actions"><a class="secondary map-link" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat=${p.lat}&mlon=${p.lon}#map=17/${p.lat}/${p.lon}">Открыть на карте</a></div>`:""}
   </article>`;
  }).join(""):'<div class="empty">В этом городе пока нет мест в выбранной категории.</div>';
 }
-
 function renderMyReviews(){
  if(!currentUser)return;
- const reviews=allReviews.filter(review=>review.user_id===currentUser.id);
- $("myReviews").innerHTML=reviews.length?reviews.map(renderReview).join(""):'<div class="empty">Ты пока не оставлял отзывов.</div>';
+ const rs=allReviews.filter(r=>r.user_id===currentUser.id);
+ $("myReviews").innerHTML=rs.length?rs.map(renderReview).join(""):'<div class="empty">Ты пока не оставлял отзывов.</div>';
 }
 
 async function loadData(){
  try{
-  const [placesResult,reviewsResult,profilesResult]=await Promise.all([
+  const results=await Promise.all([
    supabaseClient.from("places").select("*"),
    supabaseClient.from("reviews").select("*"),
-   supabaseClient.from("profiles").select("*")
+   supabaseClient.from("profiles").select("*"),
+   supabaseClient.from("reactions").select("*")
   ]);
-  if(placesResult.error)throw placesResult.error;
-  if(reviewsResult.error)throw reviewsResult.error;
-  if(profilesResult.error)throw profilesResult.error;
-  allPlaces=placesResult.data||[];
-  allReviews=reviewsResult.data||[];
-  allProfiles=profilesResult.data||[];
-  renderStats();
-  renderPopularReviews();
-  renderAllReviews();
-  renderPlaces();
-  renderMyReviews();
- }catch(error){
-  console.error("Ошибка загрузки:",error);
-  showToast("Не удалось загрузить данные");
- }
+  for(const r of results)if(r.error)throw r.error;
+  [allPlaces,allReviews,allProfiles,allReactions]=results.map(r=>r.data||[]);
+  renderStats();renderPopularReviews();renderAllReviews();renderPlaces();renderMyReviews();
+ }catch(e){console.error(e);showToast("Ошибка загрузки данных: "+(e.message||""))}
 }
 
 async function checkSession(){
  const {data,error}=await supabaseClient.auth.getSession();
  if(error)console.error(error);
- if(data?.session){
-  currentUser=data.session.user;
-  await loadProfileInfo();
- }else{
-  currentUser=null;
-  $("authForms").classList.remove("hidden");
-  $("profileInfo").classList.add("hidden");
- }
+ if(data?.session){currentUser=data.session.user;await loadProfileInfo()}
+ else{currentUser=null;$("authForms").classList.remove("hidden");$("profileInfo").classList.add("hidden")}
 }
-
 async function loadProfileInfo(){
  if(!currentUser)return;
  const {data,error}=await supabaseClient.from("profiles").select("*").eq("id",currentUser.id).maybeSingle();
- if(error){
-  console.error(error);
-  return;
- }
+ if(error){console.error(error);return}
  currentNickname=data?.nickname||currentUser.email||"Пользователь";
- $("profileNickname").textContent=currentNickname;
- $("profileEmail").textContent=currentUser.email||"";
-
- $("authForms").classList.add("hidden");
- $("profileInfo").classList.remove("hidden");
-
- await refreshAdminPanel();
- renderMyReviews();
+ $("profileNickname").textContent=currentNickname;$("profileEmail").textContent=currentUser.email||"";
+ $("authForms").classList.add("hidden");$("profileInfo").classList.remove("hidden");
+ await refreshAdminPanel();renderMyReviews();
 }
-
 function setAuthTab(tab){
- $("loginTab").classList.toggle("active",tab==="login");
- $("registerTab").classList.toggle("active",tab==="register");
- $("loginForm").classList.toggle("hidden",tab!=="login");
- $("registerForm").classList.toggle("hidden",tab!=="register");
+ $("loginTab").classList.toggle("active",tab==="login");$("registerTab").classList.toggle("active",tab==="register");
+ $("loginForm").classList.toggle("hidden",tab!=="login");$("registerForm").classList.toggle("hidden",tab!=="register");
  setStatus("authStatus","");
 }
 $("loginTab").addEventListener("click",()=>setAuthTab("login"));
 $("registerTab").addEventListener("click",()=>setAuthTab("register"));
 
 async function login(){
- const nickname=$("loginNickname").value.trim();
- const password=$("loginPassword").value;
- if(!nickname||!password){
-  setStatus("authStatus","Заполни никнейм и пароль","error");
-  return;
- }
- $("loginButton").disabled=true;
- setStatus("authStatus","Выполняется вход...");
+ const nickname=$("loginNickname").value.trim(),password=$("loginPassword").value;
+ if(!nickname||!password)return setStatus("authStatus","Заполни никнейм и пароль","error");
+ $("loginButton").disabled=true;setStatus("authStatus","Выполняется вход...");
  try{
-  const response=await fetch(SUPABASE_URL+"/functions/v1/login-with-nickname",{
-   method:"POST",
-   headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},
-   body:JSON.stringify({nickname,password})
-  });
-  const result=await response.json();
-  if(!response.ok)throw new Error(result.error||result.message||"Неверный никнейм или пароль");
-  if(!result.access_token||!result.refresh_token)throw new Error("Сервер не вернул данные входа");
-  const {error}=await supabaseClient.auth.setSession({
-   access_token:result.access_token,
-   refresh_token:result.refresh_token
-  });
-  if(error)throw error;
-  const {data}=await supabaseClient.auth.getUser();
-  currentUser=data.user;
-  setStatus("authStatus","Вход выполнен!","success");
-  await loadProfileInfo();
-  await loadData();
- }catch(error){
-  setStatus("authStatus",error.message||"Ошибка входа","error");
- }finally{
-  $("loginButton").disabled=false;
- }
+  const r=await fetch(SUPABASE_URL+"/functions/v1/login-with-nickname",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},body:JSON.stringify({nickname,password})});
+  const data=await r.json();if(!r.ok)throw new Error(data.error||data.message||"Неверный никнейм или пароль");
+  if(!data.access_token||!data.refresh_token)throw new Error("Сервер не вернул данные входа");
+  const {error}=await supabaseClient.auth.setSession({access_token:data.access_token,refresh_token:data.refresh_token});if(error)throw error;
+  const {data:userData}=await supabaseClient.auth.getUser();currentUser=userData.user;
+  setStatus("authStatus","Вход выполнен!","success");await loadProfileInfo();await loadData();
+ }catch(e){setStatus("authStatus",e.message||"Ошибка входа","error")}
+ finally{$("loginButton").disabled=false}
 }
 $("loginButton").addEventListener("click",login);
 
 async function register(){
- const nickname=$("registerNickname").value.trim();
- const email=$("registerEmail").value.trim();
- const password=$("registerPassword").value;
- if(!nickname||!email||!password){
-  setStatus("authStatus","Заполни все поля","error");
-  return;
- }
- if(nickname.length<3){
-  setStatus("authStatus","Никнейм должен содержать минимум 3 символа","error");
-  return;
- }
- if(password.length<6){
-  setStatus("authStatus","Пароль должен содержать минимум 6 символов","error");
-  return;
- }
- $("registerButton").disabled=true;
- setStatus("authStatus","Создаём аккаунт...");
+ const nickname=$("registerNickname").value.trim(),email=$("registerEmail").value.trim(),password=$("registerPassword").value;
+ if(!nickname||!email||!password)return setStatus("authStatus","Заполни все поля","error");
+ if(nickname.length<3)return setStatus("authStatus","Никнейм должен содержать минимум 3 символа","error");
+ if(password.length<6)return setStatus("authStatus","Пароль должен содержать минимум 6 символов","error");
+ $("registerButton").disabled=true;setStatus("authStatus","Создаём аккаунт...");
  try{
-  const response=await fetch(SUPABASE_URL+"/functions/v1/register-with-nickname",{
-   method:"POST",
-   headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},
-   body:JSON.stringify({nickname,email,password})
-  });
-  const result=await response.json();
-  if(!response.ok){
-   if(response.status===409)throw new Error("Этот никнейм или почта уже заняты");
-   throw new Error(result.error||result.message||"Не удалось создать аккаунт");
-  }
-  if(result.access_token&&result.refresh_token){
-   const {error}=await supabaseClient.auth.setSession({
-    access_token:result.access_token,
-    refresh_token:result.refresh_token
-   });
-   if(error)throw error;
-   const {data}=await supabaseClient.auth.getUser();
-   currentUser=data.user;
-   await loadProfileInfo();
-   await loadData();
-  }else{
-   setStatus("authStatus","Аккаунт создан. Теперь войди.","success");
-   setAuthTab("login");
-   $("loginNickname").value=nickname;
-  }
- }catch(error){
-  setStatus("authStatus",error.message||"Ошибка регистрации","error");
- }finally{
-  $("registerButton").disabled=false;
- }
+  const r=await fetch(SUPABASE_URL+"/functions/v1/register-with-nickname",{method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY},body:JSON.stringify({nickname,email,password})});
+  const data=await r.json();
+  if(!r.ok){if(r.status===409)throw new Error("Этот никнейм или почта уже заняты");throw new Error(data.error||data.message||"Не удалось создать аккаунт")}
+  if(data.access_token&&data.refresh_token){
+   const {error}=await supabaseClient.auth.setSession({access_token:data.access_token,refresh_token:data.refresh_token});if(error)throw error;
+   const {data:u}=await supabaseClient.auth.getUser();currentUser=u.user;await loadProfileInfo();await loadData();
+  }else{setStatus("authStatus","Аккаунт создан. Теперь войди.","success");setAuthTab("login");$("loginNickname").value=nickname}
+ }catch(e){setStatus("authStatus",e.message||"Ошибка регистрации","error")}
+ finally{$("registerButton").disabled=false}
 }
 $("registerButton").addEventListener("click",register);
 
 async function logout(){
- await supabaseClient.auth.signOut();
- currentUser=null;
- $("authForms").classList.remove("hidden");
- $("profileInfo").classList.add("hidden");
- $("adminPanel").classList.add("hidden");
+ await supabaseClient.auth.signOut();currentUser=null;currentNickname="";
+ $("authForms").classList.remove("hidden");$("profileInfo").classList.add("hidden");$("adminPanel").classList.add("hidden");
  showToast("Ты вышел из аккаунта");
 }
 $("logoutButton").addEventListener("click",logout);
 
-$("ratingButtons").addEventListener("click",event=>{
- const button=event.target.closest("[data-rating]");
- if(!button)return;
- selectedRating=Number(button.dataset.rating);
- document.querySelectorAll(".star-button").forEach(star=>{
-  star.classList.toggle("active",Number(star.dataset.rating)<=selectedRating);
- });
+$("ratingButtons").addEventListener("click",e=>{
+ const b=e.target.closest("[data-rating]");if(!b)return;
+ selectedRating=Number(b.dataset.rating);
+ document.querySelectorAll(".star-button").forEach(s=>s.classList.toggle("active",Number(s.dataset.rating)<=selectedRating));
 });
 
 async function submitReview(){
- if(!currentUser){
-  showToast("Сначала войди в аккаунт");
-  switchPage("profilePage");
-  return;
- }
- const name=$("placeName").value.trim();
- const address=$("placeAddress").value.trim();
- const text=$("reviewText").value.trim();
- if(!name||!text||!selectedRating){
-  setStatus("addStatus","Заполни название, отзыв и поставь оценку","error");
-  return;
- }
- if(!selectedPoint||!selectedPointVerified){
-  setStatus("addStatus","Выбери точку на карте и дождись подтверждения города","error");
-  return;
- }
- $("submitReview").disabled=true;
- setStatus("addStatus","Публикуем отзыв...");
+ if(!currentUser){showToast("Сначала войди в аккаунт");switchPage("profilePage");return}
+ const name=$("placeName").value.trim(),address=$("placeAddress").value.trim(),comment=$("reviewText").value.trim();
+ if(!name||!comment||!selectedRating){setStatus("addStatus","Заполни название, отзыв и поставь оценку","error");return}
+ if(!selectedPoint||!selectedPointVerified){setStatus("addStatus","Выбери точку на карте и дождись определения города","error");return}
+ $("submitReview").disabled=true;setStatus("addStatus","Публикуем отзыв...");
  try{
-  const {data:existing,error:findError}=await supabaseClient.from("places")
-   .select("*").eq("name",name).eq("city",addCity).maybeSingle();
+  const {data:existing,error:findError}=await supabaseClient.from("places").select("*").eq("name",name).eq("city",addCity).maybeSingle();
   if(findError)throw findError;
   let placeId=existing?.id;
   if(!placeId){
-   const {data:newPlace,error:placeError}=await supabaseClient.from("places").insert({
-    id:crypto.randomUUID(),
-    name,
-    address:address||"Адрес не указан",
-    city:addCity,
-    category:selectedCategory,
-    lat:selectedPoint.lat,
-    lon:selectedPoint.lng,
-    created_by:currentUser.id
+   const {data:newPlace,error}=await supabaseClient.from("places").insert({
+    id:crypto.randomUUID(),name,address:address||"Адрес не указан",city:addCity,category:selectedCategory,
+    lat:selectedPoint.lat,lon:selectedPoint.lng,created_by:currentUser.id
    }).select().single();
-   if(placeError)throw placeError;
-   placeId=newPlace.id;
+   if(error)throw error;placeId=newPlace.id;
   }
-  const {error:reviewError}=await supabaseClient.from("reviews").insert({
-   place_id:placeId,
-   user_id:currentUser.id,
-   nickname:currentNickname||"Пользователь",
-   stars:selectedRating,
-   comment:text
-  });
-  if(reviewError)throw reviewError;
+  const {error:reviewError}=await supabaseClient.from("reviews").insert({place_id:placeId,user_id:currentUser.id,nickname:currentNickname||"Пользователь",stars:selectedRating,comment});
+  if(reviewError){
+   if(reviewError.code==="23505")throw new Error("Ты уже оставлял отзыв на это место");
+   throw reviewError;
+  }
   setStatus("addStatus","Отзыв опубликован!","success");
-  $("placeName").value="";
-  $("placeAddress").value="";
-  $("reviewText").value="";
-  selectedRating=0;
-  selectedPoint=null;
-  selectedPointVerified=false;
-  verificationRequestId++;
-  document.querySelectorAll(".star-button").forEach(button=>button.classList.remove("active"));
-  if(mapMarker&&map)map.removeLayer(mapMarker);
-  mapMarker=null;
-  setMapStatus("Сначала выбери точку на карте.");
-  await loadData();
-  showToast("Отзыв успешно опубликован!");
-  switchPage("reviewsPage");
- }catch(error){
-  console.error(error);
-  setStatus("addStatus",error.message||"Не удалось опубликовать отзыв","error");
- }finally{
-  $("submitReview").disabled=false;
- }
+  $("placeName").value="";$("placeAddress").value="";$("reviewText").value="";
+  selectedRating=0;selectedPoint=null;selectedPointVerified=false;verificationRequestId++;
+  document.querySelectorAll(".star-button").forEach(b=>b.classList.remove("active"));
+  if(mapMarker&&map)map.removeLayer(mapMarker);mapMarker=null;setMapStatus("Сначала выбери точку на карте.");
+  await loadData();showToast("Отзыв успешно опубликован!");switchPage("reviewsPage");
+ }catch(e){console.error(e);setStatus("addStatus",e.message||"Не удалось опубликовать отзыв","error")}
+ finally{$("submitReview").disabled=false}
 }
 $("submitReview").addEventListener("click",submitReview);
 
@@ -836,280 +595,185 @@ $("catalogCategory").addEventListener("change",renderPlaces);
 $("sortSelect").addEventListener("change",renderPlaces);
 
 $("searchInput").addEventListener("input",()=>{
- const query=$("searchInput").value.trim().toLowerCase();
- const box=$("suggestions");
- if(!query){
-  box.classList.add("hidden");
-  return;
- }
- const matches=allPlaces.filter(place=>
-  String(place.name||"").toLowerCase().includes(query)||
-  String(place.address||"").toLowerCase().includes(query)||
-  String(place.city||"").toLowerCase().includes(query)
- ).slice(0,8);
- if(!matches.length){
-  box.innerHTML='<div class="suggestion-title">Ничего не найдено</div>';
- }else{
-  box.innerHTML='<div class="suggestion-title">Найденные места</div>'+matches.map(place=>`
-   <button class="suggestion" data-search-place="${escapeHtml(place.id)}">
-    <strong>${categoryIcon(place.category)} ${escapeHtml(place.name)}</strong>
-    <small>${escapeHtml(place.city)} · ${escapeHtml(place.address||"Адрес не указан")}</small>
-   </button>`).join("");
- }
+ const q=$("searchInput").value.trim().toLowerCase(),box=$("suggestions");
+ if(!q){box.classList.add("hidden");return}
+ const matches=allPlaces.filter(p=>[p.name,p.address,p.city].some(v=>String(v||"").toLowerCase().includes(q))).slice(0,8);
+ box.innerHTML=matches.length?'<div class="suggestion-title">Найденные места</div>'+matches.map(p=>`<button class="suggestion" data-search-place="${escapeHtml(p.id)}"><strong>${categoryIcon(p.category)} ${escapeHtml(p.name)}</strong><small>${escapeHtml(p.city)} · ${escapeHtml(p.address||"Адрес не указан")}</small></button>`).join(""):'<div class="suggestion-title">Ничего не найдено</div>';
  box.classList.remove("hidden");
 });
-$("suggestions").addEventListener("click",event=>{
- const button=event.target.closest("[data-search-place]");
- if(!button)return;
- const place=allPlaces.find(item=>String(item.id)===button.dataset.searchPlace);
- if(!place)return;
- currentCity=place.city;
- $("catalogCity").value=currentCity;
- $("catalogCategory").value=place.category;
- $("suggestions").classList.add("hidden");
- $("searchInput").value="";
- switchPage("catalogPage");
- renderPlaces();
+$("suggestions").addEventListener("click",e=>{
+ const b=e.target.closest("[data-search-place]");if(!b)return;
+ const p=allPlaces.find(x=>String(x.id)===b.dataset.searchPlace);if(!p)return;
+ currentCity=p.city;$("catalogCity").value=currentCity;$("catalogCategory").value=p.category;
+ $("suggestions").classList.add("hidden");$("searchInput").value="";switchPage("catalogPage");renderPlaces();
 });
-document.addEventListener("click",event=>{
- if(!event.target.closest(".search-wrap"))$("suggestions").classList.add("hidden");
-});
+document.addEventListener("click",e=>{if(!e.target.closest(".search-wrap"))$("suggestions").classList.add("hidden")});
 
 async function callAdmin(action,payload={}){
- const {data:{session},error:sessionError}=await supabaseClient.auth.getSession();
- if(sessionError)throw sessionError;
- if(!session?.access_token)throw new Error("Сначала войди в аккаунт");
-
- const response=await fetch(SUPABASE_URL+"/functions/v1/admin-actions",{
-  method:"POST",
-  headers:{
-   "Content-Type":"application/json",
-   "apikey":SUPABASE_KEY,
-   "Authorization":"Bearer "+session.access_token
-  },
+ const {data:{session},error}=await supabaseClient.auth.getSession();
+ if(error)throw error;if(!session?.access_token)throw new Error("Сначала войди в аккаунт");
+ const r=await fetch(SUPABASE_URL+"/functions/v1/admin-actions",{
+  method:"POST",headers:{"Content-Type":"application/json","apikey":SUPABASE_KEY,"Authorization":"Bearer "+session.access_token},
   body:JSON.stringify({action,...payload})
  });
-
- const result=await response.json().catch(()=>({}));
- if(!response.ok)throw new Error(result.error||"Ошибка администратора");
- return result;
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(data.error||"Ошибка администратора");
+ return data;
 }
 
-/* Исправленная проверка и отображение админ-панели */
 async function refreshAdminPanel(){
- const panel=$("adminPanel");
- const content=$("adminContent");
-
- panel.classList.add("hidden");
-
- const {data:{session},error:sessionError}=await supabaseClient.auth.getSession();
-
- if(sessionError||!session){
-  return;
- }
-
+ const panel=$("adminPanel");panel.classList.add("hidden");
+ const {data:{session}}=await supabaseClient.auth.getSession();if(!session)return;
  currentUser=session.user;
-
- const isRoot=currentUser.id===ROOT_ADMIN_ID;
-
- if(isRoot){
-  panel.classList.remove("hidden");
-
-  document.querySelectorAll(".root-admin-only").forEach(el=>{
-   el.classList.remove("hidden");
-  });
-
-  await loadAdminTab("reports");
-  return;
- }
-
+ const root=currentUser.id===ROOT_ADMIN_ID;
+ document.querySelectorAll(".root-admin-only").forEach(e=>e.classList.toggle("hidden",!root));
  try{
   await callAdmin("list_reviews");
-
   panel.classList.remove("hidden");
-
-  document.querySelectorAll(".root-admin-only").forEach(el=>{
-   el.classList.add("hidden");
-  });
-
   await loadAdminTab("reports");
-
- }catch(error){
-  console.warn("Проверка администратора:",error.message);
-  panel.classList.add("hidden");
- }
+ }catch(e){panel.classList.add("hidden")}
 }
 
 async function loadAdminTab(tab){
- document.querySelectorAll("[data-admin-tab]").forEach(button=>button.classList.toggle("active",button.dataset.adminTab===tab));
- const target=$("adminContent");
- target.innerHTML='<div class="empty">Загружаем...</div>';
-
+ document.querySelectorAll("[data-admin-tab]").forEach(b=>b.classList.toggle("active",b.dataset.adminTab===tab));
+ const searchArea=$("adminSearchArea");
+ searchArea.classList.toggle("hidden",!["users","places","reviews"].includes(tab));
+ $("adminSearch").value="";$("adminSearchResults").classList.add("hidden");
+ const target=$("adminContent");target.innerHTML='<div class="empty">Загружаем...</div>';
  try{
   if(tab==="reports"){
-   const result=await callAdmin("list_reports");
-   const reports=result.reports||[];
-   target.innerHTML=reports.length?reports.map(report=>`
-    <article class="admin-row">
-     <strong>${report.target_type==="review"?"Жалоба на отзыв":"Жалоба на пользователя"}</strong>
-     <p>Отправитель: <b>${escapeHtml(report.reporter_nickname)}</b><br>
-     Причина: ${escapeHtml(report.reason)}<br>
-     Подробности: ${escapeHtml(report.details||"—")}<br>
-     Статус: <b>${escapeHtml(report.status)}</b><br>
-     ${report.target_type==="user"?"Пользователь: "+escapeHtml(report.target_nickname||report.target_id):"Отзыв: "+escapeHtml(report.review_preview||"Отзыв уже удалён")}<br>
-     Дата: ${formatDate(report.created_at)}</p>
-     <div class="admin-actions">
-      <button class="secondary" data-report-status="reviewing" data-id="${escapeHtml(report.id)}">В работу</button>
-      <button class="secondary" data-report-status="resolved" data-id="${escapeHtml(report.id)}">Решено</button>
-      <button class="secondary" data-report-status="rejected" data-id="${escapeHtml(report.id)}">Отклонить</button>
-      ${report.target_user_id?`<button class="secondary" data-user-action="ban_user" data-user-id="${escapeHtml(report.target_user_id)}">Заблокировать пользователя</button>`:""}
-     </div>
-    </article>`).join(""):'<div class="empty">Жалоб пока нет.</div>';
-
+   const {reports=[]}=await callAdmin("list_reports");
+   target.innerHTML=reports.length?reports.map(r=>`
+    <article class="admin-row"><strong>${r.target_type==="review"?"Жалоба на отзыв":"Жалоба на пользователя"}</strong>
+    <p>Отправитель: <b>${escapeHtml(r.reporter_nickname)}</b><br>Причина: ${escapeHtml(r.reason)}<br>Подробности: ${escapeHtml(r.details||"—")}<br>Статус: <b>${escapeHtml(r.status)}</b><br>
+    ${r.target_type==="user"?"Пользователь: "+escapeHtml(r.target_nickname||r.target_id):"Отзыв: "+escapeHtml(r.review_preview||"Отзыв удалён")}<br>Дата: ${formatDate(r.created_at)}</p>
+    <div class="admin-actions"><button class="secondary" data-report-status="reviewing" data-id="${escapeHtml(r.id)}">В работу</button><button class="secondary" data-report-status="resolved" data-id="${escapeHtml(r.id)}">Решено</button><button class="secondary" data-report-status="rejected" data-id="${escapeHtml(r.id)}">Отклонить</button>
+    ${r.target_user_id?`<button class="secondary danger" data-user-action="ban_user" data-user-id="${escapeHtml(r.target_user_id)}">Заблокировать</button>`:""}</div></article>`).join(""):'<div class="empty">Жалоб пока нет.</div>';
   }else if(tab==="reviews"){
-   const result=await callAdmin("list_reviews");
-   const reviews=result.reviews||[];
-   target.innerHTML=reviews.length?reviews.map(review=>`
-    <article class="admin-row">
-     <b>${escapeHtml(review.nickname||"Пользователь")}</b> · ${"★".repeat(Number(review.stars||0))}<br>
-     <p>${escapeHtml(review.comment||"")}</p>
-     <small class="muted">ID: ${escapeHtml(review.id)} · ${formatDate(review.created_at)}</small>
-     <div class="admin-actions">
-      <button class="secondary" data-review-edit="${escapeHtml(review.id)}">Изменить</button>
-      <button class="secondary" data-review-delete="${escapeHtml(review.id)}">Удалить</button>
-     </div>
-    </article>`).join(""):'<div class="empty">Отзывов пока нет.</div>';
-
-  }else if(tab==="users"){
-   const result=await callAdmin("list_users");
-   const users=result.users||[];
-   target.innerHTML=users.length?users.map(user=>`
-    <article class="admin-row">
-     <b>${escapeHtml(user.nickname)}</b> ${user.is_admin?'<span class="muted">· администратор</span>':""}
-     <p class="muted">ID: ${escapeHtml(user.id)}<br>Регистрация: ${formatDate(user.created_at)}<br>Статус: ${user.banned_until?"Заблокирован":"Активен"}</p>
-     <div class="admin-actions">
-      <button class="secondary" data-user-action="${user.banned_until?"unban_user":"ban_user"}" data-user-id="${escapeHtml(user.id)}">${user.banned_until?"Разблокировать":"Заблокировать"}</button>
-      ${currentUser?.id===ROOT_ADMIN_ID&&user.id!==ROOT_ADMIN_ID?`<button class="secondary" data-user-action="${user.is_admin?"remove_admin":"promote_admin"}" data-user-id="${escapeHtml(user.id)}">${user.is_admin?"Снять админа":"Назначить админом"}</button>`:""}
-     </div>
-    </article>`).join(""):'<div class="empty">Пользователей пока нет.</div>';
-
-  }else if(tab==="admins"){
-   if(currentUser?.id!==ROOT_ADMIN_ID)throw new Error("Нет доступа");
-   const result=await callAdmin("list_admins");
-   target.innerHTML=(result.admins||[]).map(admin=>`
-    <article class="admin-row">
-     <b>${escapeHtml(admin.nickname)}</b> ${admin.is_root?'<span class="muted">· главный администратор</span>':""}
-     <p class="muted">${escapeHtml(admin.user_id)}</p>
-     ${!admin.is_root?`<button class="secondary" data-user-action="remove_admin" data-user-id="${escapeHtml(admin.user_id)}">Снять права</button>`:""}
-    </article>`).join("")||'<div class="empty">Администраторов нет.</div>';
-  }
-
- }catch(error){
-  target.innerHTML='<div class="empty">Не удалось загрузить раздел: '+escapeHtml(error.message||"Ошибка")+'</div>';
- }
-}
-
-document.querySelectorAll("[data-admin-tab]").forEach(button=>{
- button.addEventListener("click",()=>loadAdminTab(button.dataset.adminTab));
-});
-
-$("adminContent").addEventListener("click",async event=>{
- const statusButton=event.target.closest("[data-report-status]");
- const editButton=event.target.closest("[data-review-edit]");
- const deleteButton=event.target.closest("[data-review-delete]");
- const userButton=event.target.closest("[data-user-action]");
-
- try{
-  if(statusButton){
-   await callAdmin("update_report_status",{id:statusButton.dataset.id,status:statusButton.dataset.reportStatus});
-   showToast("Статус жалобы обновлён");
-   await loadAdminTab("reports");
-
-  }else if(editButton){
    const {reviews=[]}=await callAdmin("list_reviews");
-   const review=reviews.find(item=>item.id===editButton.dataset.reviewEdit);
-   if(!review)return;
-   const comment=prompt("Измени текст отзыва:",review.comment);
-   if(comment===null)return;
-   const starsRaw=prompt("Оценка от 1 до 5:",String(review.stars));
-   if(starsRaw===null)return;
-   await callAdmin("update_review",{id:review.id,comment,stars:Number(starsRaw)});
-   showToast("Отзыв изменён");
-   await loadData();
-   await loadAdminTab("reviews");
-
-  }else if(deleteButton){
-   if(!confirm("Точно удалить этот отзыв?"))return;
-   await callAdmin("delete_review",{id:deleteButton.dataset.reviewDelete});
-   showToast("Отзыв удалён");
-   await loadData();
-   await loadAdminTab("reviews");
-
-  }else if(userButton){
-   const action=userButton.dataset.userAction;
-   const userId=userButton.dataset.userId;
-   const prompts={
-    ban_user:"Заблокировать этого пользователя?",
-    unban_user:"Разблокировать этого пользователя?",
-    promote_admin:"Назначить этого пользователя администратором?",
-    remove_admin:"Снять с пользователя права администратора?"
-   };
-   if(!confirm(prompts[action]||"Подтвердить действие?"))return;
-   await callAdmin(action,{user_id:userId});
-   showToast("Действие выполнено");
-   await loadAdminTab("users");
+   target.innerHTML=reviews.length?reviews.map(r=>`<article class="admin-row"><b>${escapeHtml(r.nickname||"Пользователь")}</b> · ${"★".repeat(Number(r.stars||0))}<p>${escapeHtml(r.comment||"")}</p><small class="muted">ID: ${escapeHtml(r.id)} · ${formatDate(r.created_at)}</small><div class="admin-actions"><button class="secondary" data-review-edit="${escapeHtml(r.id)}">Изменить</button><button class="secondary danger" data-review-delete="${escapeHtml(r.id)}">Удалить</button></div></article>`).join(""):'<div class="empty">Отзывов пока нет.</div>';
+  }else if(tab==="places"){
+   const {data,error}=await supabaseClient.from("places").select("*").order("created_at",{ascending:false}).limit(500);
+   if(error)throw error;
+   target.innerHTML=data.length?data.map(p=>`<article class="admin-row"><b>${categoryIcon(p.category)} ${escapeHtml(p.name)}</b><p>${escapeHtml(p.city)} · ${escapeHtml(p.address||"Адрес не указан")}<br><small class="muted">ID: ${escapeHtml(p.id)}</small></p><div class="admin-actions"><button class="secondary danger" data-place-delete="${escapeHtml(p.id)}">Удалить место</button></div></article>`).join(""):'<div class="empty">Мест пока нет.</div>';
+  }else if(tab==="users"){
+   const {users=[]}=await callAdmin("list_users");
+   target.innerHTML=users.length?users.map(u=>`<article class="admin-row"><b>${escapeHtml(u.nickname||"Без ника")}</b> ${u.is_admin?'<span class="muted">· администратор</span>':""}<p class="muted">ID: ${escapeHtml(u.id)}<br>Регистрация: ${formatDate(u.created_at)}<br>Статус: ${u.banned_until?"Заблокирован":"Активен"}</p><div class="admin-actions"><button class="secondary" data-user-action="${u.banned_until?"unban_user":"ban_user"}" data-user-id="${escapeHtml(u.id)}">${u.banned_until?"Разблокировать":"Заблокировать"}</button>${currentUser.id===ROOT_ADMIN_ID&&u.id!==ROOT_ADMIN_ID?`<button class="secondary" data-user-action="${u.is_admin?"remove_admin":"promote_admin"}" data-user-id="${escapeHtml(u.id)}">${u.is_admin?"Снять админа":"Назначить админом"}</button>`:""}<button class="secondary danger" data-user-action="delete_user" data-user-id="${escapeHtml(u.id)}">Удалить аккаунт</button></div></article>`).join(""):'<div class="empty">Пользователей пока нет.</div>';
+  }else if(tab==="admins"){
+   if(currentUser.id!==ROOT_ADMIN_ID)throw new Error("Нет доступа");
+   const {admins=[]}=await callAdmin("list_admins");
+   target.innerHTML=admins.map(a=>`<article class="admin-row"><b>${escapeHtml(a.nickname)}</b> ${a.is_root?'<span class="muted">· главный администратор</span>':""}<p class="muted">${escapeHtml(a.user_id)}</p>${!a.is_root?`<button class="secondary" data-user-action="remove_admin" data-user-id="${escapeHtml(a.user_id)}">Снять права</button>`:""}</article>`).join("")||'<div class="empty">Администраторов нет.</div>';
   }
- }catch(error){
-  showToast(error.message||"Ошибка");
- }
+ }catch(e){target.innerHTML='<div class="empty">Не удалось загрузить раздел: '+escapeHtml(e.message||"Ошибка")+'</div>'}
+}
+document.querySelectorAll("[data-admin-tab]").forEach(b=>b.addEventListener("click",()=>loadAdminTab(b.dataset.adminTab)));
+
+$("adminSearch").addEventListener("input",()=>{
+ clearTimeout(adminSearchTimer);
+ const q=$("adminSearch").value.trim(),box=$("adminSearchResults");
+ if(q.length<2){box.classList.add("hidden");box.innerHTML="";return}
+ box.classList.remove("hidden");box.innerHTML='<div class="suggestion-title">Ищем...</div>';
+ adminSearchTimer=setTimeout(async()=>{
+  try{
+   const data=await callAdmin("search_admin",{query:q});
+   let html="";
+   (data.users||[]).forEach(u=>html+=`<button data-admin-result="user" data-id="${escapeHtml(u.id)}"><strong>👤 ${escapeHtml(u.nickname)}</strong><small>Пользователь</small></button>`);
+   (data.places||[]).forEach(p=>html+=`<button data-admin-result="place" data-id="${escapeHtml(p.id)}"><strong>📍 ${escapeHtml(p.name)}</strong><small>${escapeHtml(p.city)} · Место</small></button>`);
+   (data.reviews||[]).forEach(r=>html+=`<button data-admin-result="review" data-id="${escapeHtml(r.id)}"><strong>💬 ${escapeHtml(r.nickname||"Пользователь")}</strong><small>${escapeHtml(String(r.comment||"").slice(0,110))}</small></button>`);
+   box.innerHTML=html||'<div class="suggestion-title">Ничего не найдено</div>';
+  }catch(e){box.innerHTML='<div class="suggestion-title">'+escapeHtml(e.message)+'</div>'}
+ },300);
 });
 
-async function submitUserReport(targetType,targetId){
- if(!currentUser){showToast("Войди, чтобы отправить жалобу");switchPage("profilePage");return;}
- const reason=prompt("Укажи причину жалобы (например: оскорбления, спам, ложная информация):");
- if(reason===null)return;
- if(reason.trim().length<3){showToast("Напиши причину жалобы");return;}
+$("adminSearchResults").addEventListener("click",async e=>{
+ const b=e.target.closest("[data-admin-result]");if(!b)return;
+ const type=b.dataset.adminResult,id=b.dataset.id;
+ $("adminSearchResults").classList.add("hidden");
+ if(type==="user"){await loadAdminTab("users");$("adminSearch").value="";showToast("Пользователь найден — найди его в списке или используй поиск повторно")}
+ if(type==="place"){await loadAdminTab("places");$("adminSearch").value="";showToast("Место найдено — найди его в списке")}
+ if(type==="review"){await loadAdminTab("reviews");$("adminSearch").value="";showToast("Отзыв найден — найди его в списке")}
+});
+
+$("adminContent").addEventListener("click",async e=>{
+ const status=e.target.closest("[data-report-status]");
+ const edit=e.target.closest("[data-review-edit]");
+ const delReview=e.target.closest("[data-review-delete]");
+ const user=e.target.closest("[data-user-action]");
+ const delPlace=e.target.closest("[data-place-delete]");
+ try{
+  if(status){
+   await callAdmin("update_report_status",{id:status.dataset.id,status:status.dataset.reportStatus});
+   showToast("Статус жалобы обновлён");await loadAdminTab("reports");
+  }else if(edit){
+   const {reviews=[]}=await callAdmin("list_reviews"),r=reviews.find(x=>x.id===edit.dataset.reviewEdit);if(!r)return;
+   const comment=prompt("Измени текст отзыва:",r.comment);if(comment===null)return;
+   const stars=Number(prompt("Оценка от 1 до 5:",String(r.stars)));if(!Number.isInteger(stars)||stars<1||stars>5)return showToast("Оценка должна быть от 1 до 5");
+   await callAdmin("update_review",{id:r.id,comment,stars});showToast("Отзыв изменён");await loadData();await loadAdminTab("reviews");
+  }else if(delReview){
+   if(!confirm("Точно удалить этот отзыв?"))return;
+   await callAdmin("delete_review",{id:delReview.dataset.reviewDelete});showToast("Отзыв удалён");await loadData();await loadAdminTab("reviews");
+  }else if(delPlace){
+   if(!confirm("Удалить место и все отзывы к нему?"))return;
+   await callAdmin("delete_place",{id:delPlace.dataset.placeDelete});showToast("Место удалено");await loadData();await loadAdminTab("places");
+  }else if(user){
+   const action=user.dataset.userAction,id=user.dataset.userId;
+   const labels={ban_user:"Заблокировать пользователя?",unban_user:"Разблокировать пользователя?",promote_admin:"Назначить администратором?",remove_admin:"Снять права администратора?",delete_user:"Полностью удалить аккаунт и профиль пользователя? Это действие нельзя отменить."};
+   if(!confirm(labels[action]||"Подтвердить действие?"))return;
+   await callAdmin(action,{user_id:id});showToast("Действие выполнено");await loadData();
+   const tab=action.includes("admin")?"users":"users";await loadAdminTab(tab);
+  }
+ }catch(err){showToast(err.message||"Ошибка")}
+});
+
+async function toggleReaction(type,id,value){
+ if(!currentUser){showToast("Войди в аккаунт, чтобы ставить реакции");switchPage("profilePage");return}
+ try{
+  const existing=allReactions.find(r=>r.target_type===type&&String(r.target_id)===String(id)&&r.user_id===currentUser.id);
+  if(existing&&Number(existing.value)===Number(value)){
+   const {error}=await supabaseClient.from("reactions").delete().eq("id",existing.id);
+   if(error)throw error;
+  }else if(existing){
+   const {error}=await supabaseClient.from("reactions").update({value:Number(value),updated_at:new Date().toISOString()}).eq("id",existing.id);
+   if(error)throw error;
+  }else{
+   const {error}=await supabaseClient.from("reactions").insert({target_type:type,target_id:String(id),user_id:currentUser.id,value:Number(value)});
+   if(error)throw error;
+  }
+  const {data,error}=await supabaseClient.from("reactions").select("*");
+  if(error)throw error;allReactions=data||[];
+  renderPopularReviews();renderAllReviews();renderPlaces();renderMyReviews();
+ }catch(e){console.error(e);showToast(e.message||"Не удалось сохранить реакцию")}
+}
+document.addEventListener("click",e=>{
+ const b=e.target.closest("[data-react-type]");
+ if(b)toggleReaction(b.dataset.reactType,b.dataset.reactId,Number(b.dataset.reactValue));
+});
+
+async function submitUserReport(type,id){
+ if(!currentUser){showToast("Войди, чтобы отправить жалобу");switchPage("profilePage");return}
+ const reason=prompt("Укажи причину жалобы:");
+ if(reason===null)return;if(reason.trim().length<3)return showToast("Напиши причину жалобы");
  const details=prompt("Дополнительные подробности (необязательно):")||"";
  try{
-  const result=await callAdmin("create_report",{target_type:targetType,target_id:targetId,reason:reason.trim(),details:details.trim()});
+  const result=await callAdmin("create_report",{target_type:type,target_id:id,reason:reason.trim(),details:details.trim()});
   showToast(result.already_reported?"Такая жалоба уже отправлена":"Жалоба отправлена администраторам");
- }catch(error){
-  showToast(error.message||"Не удалось отправить жалобу");
- }
+ }catch(e){showToast(e.message||"Не удалось отправить жалобу")}
 }
-
-document.addEventListener("click",event=>{
- const reviewButton=event.target.closest("[data-report-review]");
- const userButton=event.target.closest("[data-report-user]");
- if(reviewButton)submitUserReport("review",reviewButton.dataset.reportReview);
- else if(userButton)submitUserReport("user",userButton.dataset.reportUser);
+document.addEventListener("click",e=>{
+ const r=e.target.closest("[data-report-review]"),u=e.target.closest("[data-report-user]");
+ if(r)submitUserReport("review",r.dataset.reportReview);
+ else if(u)submitUserReport("user",u.dataset.reportUser);
 });
 
 async function init(){
- fillCitySelects();
- renderCategoryOptions();
- initMap();
- await checkSession();
- await loadData();
-
+ fillCitySelects();renderCategoryOptions();initMap();
+ await checkSession();await loadData();
  supabaseClient.auth.onAuthStateChange(async(event,session)=>{
-  if(event==="SIGNED_IN"&&session){
-   currentUser=session.user;
-   await loadProfileInfo();
-   await loadData();
-  }
-
-  if(event==="SIGNED_OUT"){
-   currentUser=null;
-   $("authForms").classList.remove("hidden");
-   $("profileInfo").classList.add("hidden");
-   $("adminPanel").classList.add("hidden");
-  }
+  if(event==="SIGNED_IN"&&session){currentUser=session.user;await loadProfileInfo();await loadData()}
+  if(event==="SIGNED_OUT"){currentUser=null;$("authForms").classList.remove("hidden");$("profileInfo").classList.add("hidden");$("adminPanel").classList.add("hidden")}
  });
-
  if(window.lucide)lucide.createIcons();
 }
-
 init();
 </script>
 </body>
