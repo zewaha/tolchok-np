@@ -1447,6 +1447,7 @@ document.querySelectorAll("[data-admin-tab]").forEach(b=>{
 
 $("adminSearch").addEventListener("input",()=>{
  clearTimeout(adminSearchTimer);
+ adminSearchSelection=null;
 
  const q=$("adminSearch").value.trim();
  const box=$("adminSearchResults");
@@ -1490,6 +1491,7 @@ $("adminSearchResults").addEventListener("click",async e=>{
  if(!b)return;
 
  const type=b.dataset.adminResult;
+ adminSearchSelection={type:type==="user"?"users":type==="place"?"places":"reviews",id:b.dataset.id};
 
  $("adminSearchResults").classList.add("hidden");
 
