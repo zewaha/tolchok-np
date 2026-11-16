@@ -1702,8 +1702,9 @@ async function init(){
 
  supabaseClient.auth.onAuthStateChange(async(event,session)=>{
   if(event==="SIGNED_IN"&&session){
-   // Не обходим окно принятия политики при авторизации.
-   if(pendingConsentUser)return;
+   // SIGNED_IN приходит сразу после setSession, ещё до ответа функции входа.
+   // Не показываем аккаунт, пока проверка версии согласия не завершена.
+   if(!consentAcceptedForSession||pendingConsentUser)return;
 
    currentUser=session.user;
    await loadProfileInfo();
